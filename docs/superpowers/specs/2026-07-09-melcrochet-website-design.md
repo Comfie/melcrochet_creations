@@ -56,7 +56,7 @@ melcrochet-gifted-hands/
 ├── prisma/              schema.prisma, migrations, seed.ts
 ├── public/
 ├── docs/
-├── middleware.ts        admin route gate
+├── proxy.ts              admin route gate (Next.js 16 renamed middleware.ts → proxy.ts)
 ├── package.json
 └── README.md
 ```
@@ -281,7 +281,7 @@ sig+expiry (jose), returns 401 otherwise. This is the real security boundary.
 
 - Admin credentials in env, password **bcrypt-hashed** (`ADMIN_PASSWORD_HASH`).
   Provide `npm run hash-password` helper. No plaintext password in repo.
-- JWT signed/verified with **`jose`** (Edge-compatible, works in middleware), stored in
+- JWT signed/verified with **`jose`** (Edge-compatible, works in `proxy.ts`), stored in
   an **httpOnly cookie** (not localStorage) — XSS-safe.
 - **Zod** schemas validate every mutation's input at the route-handler boundary
   (replaces NestJS `class-validator`); unknown fields stripped, clean 400 on failure.
@@ -399,8 +399,9 @@ Product cards inject their own name; floating FAB uses the generic link.
 ## 6. Admin Panel
 
 - Lives at `/admin` in the same Next.js app, gated by the `mc_admin` cookie.
-- `middleware.ts` matches `/admin/:path*` (except `/admin/login`) and **verifies the
-  JWT** (jose is Edge-compatible), redirecting invalid/expired sessions to login.
+- `proxy.ts` (Next.js 16's renamed `middleware.ts`) matches `/admin/:path*` (except
+  `/admin/login`) and **verifies the JWT** (jose is Edge-compatible), redirecting
+  invalid/expired sessions to login.
   Defense in depth: every protected `/api/*` route handler **independently re-verifies**
   via `requireAuth()` — the API is the real security boundary, so a request that skips
   the page still can't mutate data. UI treats a 401 as session-dead → bounce to login.
@@ -441,7 +442,7 @@ multi-admin roles, product image gallery, blog comments, checkout/payments.
 1. **Foundation** — Next.js app scaffold, Tailwind + fonts, Prisma schema + migration +
    seed, `lib/prisma.ts` singleton, env config.
 2. **API layer** — `lib/queries.ts` (public reads), auth (login/logout/me + `jose` +
-   `requireAuth`), middleware gate, uploads → Cloudinary, Zod schemas, route handlers
+   `requireAuth`), `proxy.ts` route gate, uploads → Cloudinary, Zod schemas, route handlers
    for products/categories/testimonials/blog/enquiries, tests.
 3. **Public site** — design language/system, Home, Products, About, Blog, Contact,
    WhatsApp.
