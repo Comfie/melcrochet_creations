@@ -94,7 +94,7 @@ export default async function Home() {
             </p>
             <Link
               href="/about"
-              className="mt-6 inline-block font-sans text-sm font-semibold uppercase tracking-wide text-gold hover:text-brown"
+              className="mt-6 inline-block font-sans text-sm font-semibold uppercase tracking-wide text-brown hover:text-ink"
             >
               Read our story &rarr;
             </Link>

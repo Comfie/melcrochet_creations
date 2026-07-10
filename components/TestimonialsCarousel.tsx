@@ -42,7 +42,7 @@ export default function TestimonialsCarousel({
         )}
       </div>
       <p className="mt-6 font-display text-xl italic">&ldquo;{current.quote}&rdquo;</p>
-      <p className="mt-3 font-sans text-sm font-semibold text-gold">
+      <p className="mt-3 font-sans text-sm font-semibold text-brown">
         {current.customerName}
         {current.location ? ` — ${current.location}` : ""}
       </p>

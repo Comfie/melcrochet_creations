@@ -16,7 +16,7 @@ export default function CategoryTile({
     >
       <p className="font-display text-lg">{name}</p>
       {blurb && <p className="mt-1 font-sans text-sm text-ink/60">{blurb}</p>}
-      <span className="mt-3 font-sans text-xs font-semibold uppercase tracking-wide text-gold opacity-0 transition-opacity group-hover:opacity-100">
+      <span className="mt-3 font-sans text-xs font-semibold uppercase tracking-wide text-brown opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
         Shop {name} &rarr;
       </span>
     </Link>
