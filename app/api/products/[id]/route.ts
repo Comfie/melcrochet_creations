@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
 import { jsonError, jsonValidationError } from "@/lib/api-response";
@@ -37,13 +38,21 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     parsed.data.imagePublicId !== existing.imagePublicId &&
     existing.imagePublicId;
 
-  const product = await prisma.product.update({
-    where: { id },
-    data: parsed.data,
-  });
+  let product;
+  try {
+    product = await prisma.product.update({
+      where: { id },
+      data: parsed.data,
+    });
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2003") {
+      return jsonError("Category does not exist", 400);
+    }
+    throw error;
+  }
 
   if (imageIsReplaced && existing.imagePublicId) {
-    await deleteImage(existing.imagePublicId);
+    await deleteImage(existing.imagePublicId).catch(() => {});
   }
 
   return NextResponse.json(product);

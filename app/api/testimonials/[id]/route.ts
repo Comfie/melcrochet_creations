@@ -40,7 +40,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
   });
 
   if (imageIsReplaced && existing.imagePublicId) {
-    await deleteImage(existing.imagePublicId);
+    await deleteImage(existing.imagePublicId).catch(() => {});
   }
 
   return NextResponse.json(testimonial);

@@ -43,8 +43,13 @@ export async function POST(request: NextRequest) {
     });
     return NextResponse.json(product, { status: 201 });
   } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
-      return jsonError("A product with this slug already exists", 409);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === "P2002") {
+        return jsonError("A product with this slug already exists", 409);
+      }
+      if (error.code === "P2003") {
+        return jsonError("Category does not exist", 400);
+      }
     }
     throw error;
   }

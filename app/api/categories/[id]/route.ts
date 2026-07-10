@@ -26,11 +26,21 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
   const parsed = categoryInputSchema.partial().safeParse(body);
   if (!parsed.success) return jsonValidationError(parsed.error.issues);
 
-  const category = await prisma.category
-    .update({ where: { id }, data: parsed.data })
-    .catch(() => null);
-  if (!category) return jsonError("Category not found", 404);
-  return NextResponse.json(category);
+  const existing = await prisma.category.findUnique({ where: { id } });
+  if (!existing) return jsonError("Category not found", 404);
+
+  try {
+    const category = await prisma.category.update({
+      where: { id },
+      data: parsed.data,
+    });
+    return NextResponse.json(category);
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      return jsonError("A category with this name already exists", 409);
+    }
+    throw error;
+  }
 }
 
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
