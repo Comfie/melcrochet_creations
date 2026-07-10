@@ -12,6 +12,10 @@
      Plan 03 at least once — check before reusing gold on light content. */
   --color-gold: #c8a24a;   /* Warm Gold */
   --color-cream: #f7f0e3;  /* Soft Cream */
+  /* --color-taupe (#a78b71) also fails AA text contrast on bg-cream — 2.82:1,
+     under the 4.5:1 minimum (on bg-ink it's 5.72:1, comfortably fine). Same
+     trap as gold above: fine as a decorative/aria-hidden stroke or icon
+     color, not for real text on a light background. Use text-brown there. */
   --color-taupe: #a78b71;  /* Warm Taupe */
   --color-brown: #3b2d26;  /* Deep Brown */
 
