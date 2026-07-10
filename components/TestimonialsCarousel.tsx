@@ -21,7 +21,7 @@ export default function TestimonialsCarousel({
 
   if (testimonials.length === 0) {
     return (
-      <p className="font-sans text-ink/60">
+      <p className="font-sans text-ink/70">
         Customer stories are on their way — check back soon.
       </p>
     );

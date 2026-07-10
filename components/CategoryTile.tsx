@@ -15,7 +15,7 @@ export default function CategoryTile({
       className="group flex flex-col justify-end border border-taupe/30 bg-cream p-5 transition-colors hover:border-gold hover:bg-gold/5 focus-visible:border-gold"
     >
       <p className="font-display text-lg">{name}</p>
-      {blurb && <p className="mt-1 font-sans text-sm text-ink/60">{blurb}</p>}
+      {blurb && <p className="mt-1 font-sans text-sm text-ink/70">{blurb}</p>}
       <span className="mt-3 font-sans text-xs font-semibold uppercase tracking-wide text-brown opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
         Shop {name} &rarr;
       </span>

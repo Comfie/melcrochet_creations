@@ -29,7 +29,7 @@ export default async function ProductsPage({
         </div>
 
         {products.length === 0 ? (
-          <p className="mt-16 font-sans text-ink/60">
+          <p className="mt-16 font-sans text-ink/70">
             No products in this category yet — message us on WhatsApp, we&apos;re
             happy to take a custom order.
           </p>
