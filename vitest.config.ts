@@ -6,7 +6,7 @@ export default defineConfig({
   },
   test: {
     environment: "node",
-    include: ["**/*.test.ts"],
+    include: ["**/*.test.ts", "**/*.test.tsx"],
     // Tests run against a single shared, real Railway Postgres DB (no local
     // Docker DB, no per-file isolation). Running test files in parallel
     // workers causes cross-file races on shared fixture data (e.g. a
