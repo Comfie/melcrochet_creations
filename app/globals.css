@@ -3,6 +3,12 @@
 @theme {
   /* Brand colours */
   --color-ink: #151515;    /* Luxury Black */
+  /* --color-gold (#c8a24a) only passes WCAG AA text/UI contrast against the
+     dark bg-ink (7.59:1) — it measures 2.12:1 against bg-cream, well under
+     both the 4.5:1 text and 3:1 non-text minimums. Use text-gold ONLY on
+     bg-ink sections; use text-brown (11.66:1 on cream) for gold-intended
+     accents anywhere on a light background. This has bitten every task in
+     Plan 03 at least once — check before reusing gold on light content. */
   --color-gold: #c8a24a;   /* Warm Gold */
   --color-cream: #f7f0e3;  /* Soft Cream */
   --color-taupe: #a78b71;  /* Warm Taupe */
@@ -29,7 +35,13 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
 }
 
+/* A flat outline color can't pass 3:1 contrast against both the ink and
+   cream sections this design alternates between (gold, for instance, fails
+   on cream). A two-tone "halo" ring is background-independent instead: the
+   ink ring and its cream halo contrast with each other, not with whatever
+   is behind them. */
 :focus-visible {
-  outline: 2px solid var(--color-gold);
+  outline: 2px solid var(--color-ink);
   outline-offset: 2px;
+  box-shadow: 0 0 0 4px var(--color-cream);
 }
