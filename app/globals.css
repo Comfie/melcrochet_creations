@@ -11,6 +11,12 @@
   /* Typography — the vars are provided by next/font in layout.tsx */
   --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
   --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+
+  /* Fluid display sizes for hero/section moments — scale smoothly between
+     mobile and desktop instead of jumping at breakpoints. */
+  --text-hero: clamp(2.5rem, 1.6rem + 4.2vw, 5.5rem);
+  --text-display: clamp(2rem, 1.5rem + 2.4vw, 3.5rem);
+  --text-section: clamp(1.5rem, 1.3rem + 1vw, 2.25rem);
 }
 
 body {
@@ -21,4 +27,9 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
 }
