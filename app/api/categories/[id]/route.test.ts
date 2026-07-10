@@ -67,16 +67,19 @@ describe("DELETE /api/categories/[id]", () => {
       },
     });
 
-    const { DELETE } = await import("./route");
-    const req = new NextRequest(`http://localhost:3000/api/categories/${categoryId}`, {
-      method: "DELETE",
-      headers: { Cookie: await authCookie() },
-    });
-    const res = await DELETE(req, { params: Promise.resolve({ id: categoryId }) });
-    expect(res.status).toBe(409);
+    try {
+      const { DELETE } = await import("./route");
+      const req = new NextRequest(`http://localhost:3000/api/categories/${categoryId}`, {
+        method: "DELETE",
+        headers: { Cookie: await authCookie() },
+      });
+      const res = await DELETE(req, { params: Promise.resolve({ id: categoryId }) });
+      expect(res.status).toBe(409);
 
-    await prisma.product.delete({ where: { id: product.id } });
-    const stillThere = await prisma.category.findUnique({ where: { id: categoryId } });
-    expect(stillThere).not.toBeNull();
+      const stillThere = await prisma.category.findUnique({ where: { id: categoryId } });
+      expect(stillThere).not.toBeNull();
+    } finally {
+      await prisma.product.delete({ where: { id: product.id } }).catch(() => {});
+    }
   });
 });

@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { slugify } from "@/lib/slug";
 import { requireAuth } from "@/lib/auth";
-import { jsonValidationError } from "@/lib/api-response";
+import { jsonError, jsonValidationError } from "@/lib/api-response";
 import { categoryInputSchema } from "./schema";
 
 export async function GET(request: NextRequest) {
@@ -35,8 +36,15 @@ export async function POST(request: NextRequest) {
   if (!parsed.success) return jsonValidationError(parsed.error.issues);
 
   const slug = await uniqueSlug(parsed.data.name);
-  const category = await prisma.category.create({
-    data: { ...parsed.data, slug },
-  });
-  return NextResponse.json(category, { status: 201 });
+  try {
+    const category = await prisma.category.create({
+      data: { ...parsed.data, slug },
+    });
+    return NextResponse.json(category, { status: 201 });
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      return jsonError("A category with this name already exists", 409);
+    }
+    throw error;
+  }
 }

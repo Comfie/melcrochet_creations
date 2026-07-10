@@ -53,8 +53,59 @@ describe("POST /api/categories", () => {
     const res = await POST(req);
     expect(res.status).toBe(201);
     const body = await res.json();
-    expect(body.slug).toBe("vitest-tmp-category");
     createdIds.push(body.id);
+    expect(body.slug).toBe("vitest-tmp-category");
+  });
+
+  it("dedupes slugs when names differ but slugify to the same base", async () => {
+    const { POST } = await import("./route");
+
+    const req1 = new NextRequest("http://localhost:3000/api/categories", {
+      method: "POST",
+      headers: { Cookie: await authCookie(), "Content-Type": "application/json" },
+      body: JSON.stringify({ name: "Vitest Tmp Collision!" }),
+    });
+    const res1 = await POST(req1);
+    const body1 = await res1.json();
+    createdIds.push(body1.id);
+
+    const req2 = new NextRequest("http://localhost:3000/api/categories", {
+      method: "POST",
+      headers: { Cookie: await authCookie(), "Content-Type": "application/json" },
+      body: JSON.stringify({ name: "Vitest Tmp Collision?" }),
+    });
+    const res2 = await POST(req2);
+    const body2 = await res2.json();
+    createdIds.push(body2.id);
+
+    expect(res1.status).toBe(201);
+    expect(res2.status).toBe(201);
+    expect(body1.slug).toBe("vitest-tmp-collision");
+    expect(body2.slug).toBe("vitest-tmp-collision-2");
+  });
+
+  it("returns 409 when a category with the same name already exists", async () => {
+    const { POST } = await import("./route");
+
+    const req1 = new NextRequest("http://localhost:3000/api/categories", {
+      method: "POST",
+      headers: { Cookie: await authCookie(), "Content-Type": "application/json" },
+      body: JSON.stringify({ name: "Vitest Tmp Duplicate" }),
+    });
+    const res1 = await POST(req1);
+    const body1 = await res1.json();
+    createdIds.push(body1.id);
+    expect(res1.status).toBe(201);
+
+    const req2 = new NextRequest("http://localhost:3000/api/categories", {
+      method: "POST",
+      headers: { Cookie: await authCookie(), "Content-Type": "application/json" },
+      body: JSON.stringify({ name: "Vitest Tmp Duplicate" }),
+    });
+    const res2 = await POST(req2);
+    expect(res2.status).toBe(409);
+    const body2 = await res2.json();
+    expect(body2.error).toBe("A category with this name already exists");
   });
 
   it("rejects invalid input", async () => {

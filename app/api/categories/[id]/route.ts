@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
 import { jsonError, jsonValidationError } from "@/lib/api-response";
@@ -45,6 +46,12 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     );
   }
 
-  await prisma.category.delete({ where: { id } }).catch(() => null);
+  try {
+    await prisma.category.delete({ where: { id } });
+  } catch (error) {
+    if (!(error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025")) {
+      return jsonError("Failed to delete category", 500);
+    }
+  }
   return new NextResponse(null, { status: 204 });
 }
