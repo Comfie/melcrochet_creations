@@ -51,9 +51,9 @@ describe("POST /api/categories", () => {
       body: JSON.stringify({ name: "Vitest Tmp Category" }),
     });
     const res = await POST(req);
-    expect(res.status).toBe(201);
     const body = await res.json();
     createdIds.push(body.id);
+    expect(res.status).toBe(201);
     expect(body.slug).toBe("vitest-tmp-category");
   });
 
