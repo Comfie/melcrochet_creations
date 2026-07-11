@@ -45,13 +45,13 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="https://instagram.com/melz.crotchet.creations"
+                  href="https://instagram.com/melz_crotchet_creations"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 hover:text-cream"
                 >
                   <InstagramIcon className="h-4 w-4 shrink-0" />
-                  @melz.crotchet.creations
+                  @melz_crotchet_creations
                 </a>
               </li>
               <li>

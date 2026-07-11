@@ -22,7 +22,7 @@ export default function ContactPage() {
           <ul className="mt-8 flex flex-col gap-3 font-sans text-sm text-ink/70">
             <li>
               <a
-                href="https://instagram.com/melz.crotchet.creations"
+                href="https://instagram.com/melz_crotchet_creations"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 font-semibold text-brown hover:text-ink"
