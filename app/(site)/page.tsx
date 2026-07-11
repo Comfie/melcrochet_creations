@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { getCategories, getProducts, getTestimonials } from "@/lib/queries";
 import { buildWhatsAppLink, buildProductWhatsAppLink } from "@/lib/whatsapp";
@@ -19,8 +20,17 @@ export default async function Home() {
   return (
     <>
       {/* Hero */}
-      <section className="bg-ink text-cream">
-        <div className="mx-auto flex max-w-6xl flex-col items-start gap-6 px-5 py-24 sm:py-32">
+      <section className="relative overflow-hidden bg-ink text-cream">
+        <Image
+          src="/landing-page-hero.jpg"
+          alt="MelCrochet handmade blankets, hats, and scrunchies displayed at a market stall"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-ink/70" aria-hidden="true" />
+        <div className="relative mx-auto flex max-w-6xl flex-col items-start gap-6 px-5 py-24 sm:py-32">
           <h1 className="text-hero max-w-2xl">
             Providing Warmth, Comfort &amp; Timeless Handmade Creations
           </h1>
