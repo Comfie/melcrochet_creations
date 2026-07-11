@@ -1,6 +1,8 @@
+import { Mail } from "lucide-react";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import EnquiryForm from "@/components/EnquiryForm";
+import { FacebookIcon, InstagramIcon } from "@/components/SocialIcons";
 
 export default function ContactPage() {
   return (
@@ -17,19 +19,39 @@ export default function ContactPage() {
             <WhatsAppButton href={buildWhatsAppLink()} label="Message us on WhatsApp" />
           </div>
 
-          <div className="mt-8 font-sans text-sm text-ink/70">
-            <p>
-              Instagram:{" "}
+          <ul className="mt-8 flex flex-col gap-3 font-sans text-sm text-ink/70">
+            <li>
               <a
                 href="https://instagram.com/melz.crotchet.creations"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-semibold text-brown hover:text-ink"
+                className="flex items-center gap-2 font-semibold text-brown hover:text-ink"
               >
+                <InstagramIcon className="h-4 w-4 shrink-0" />
                 @melz.crotchet.creations
               </a>
-            </p>
-          </div>
+            </li>
+            <li>
+              <a
+                href="https://www.facebook.com/share/1BUMGQo84u/?mibextid=wwXIfr"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 font-semibold text-brown hover:text-ink"
+              >
+                <FacebookIcon className="h-4 w-4 shrink-0" />
+                MelCrochet
+              </a>
+            </li>
+            <li>
+              <a
+                href="mailto:buchiemel@gmail.com"
+                className="flex items-center gap-2 font-semibold text-brown hover:text-ink"
+              >
+                <Mail className="h-4 w-4 shrink-0" aria-hidden="true" />
+                buchiemel@gmail.com
+              </a>
+            </li>
+          </ul>
         </div>
 
         <EnquiryForm />

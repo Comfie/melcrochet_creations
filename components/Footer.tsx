@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { Mail, MessageCircle } from "lucide-react";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
+import { FacebookIcon, InstagramIcon } from "@/components/SocialIcons";
 
 export default function Footer() {
   return (
@@ -29,9 +31,15 @@ export default function Footer() {
             <p className="font-sans text-sm font-semibold uppercase tracking-wide text-gold">
               Get in touch
             </p>
-            <ul className="mt-3 flex flex-col gap-2 font-sans text-sm text-cream/70">
+            <ul className="mt-3 flex flex-col gap-3 font-sans text-sm text-cream/70">
               <li>
-                <a href={buildWhatsAppLink()} target="_blank" rel="noopener noreferrer" className="hover:text-cream">
+                <a
+                  href={buildWhatsAppLink()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 hover:text-cream"
+                >
+                  <MessageCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
                   WhatsApp: 067 059 0600
                 </a>
               </li>
@@ -40,9 +48,27 @@ export default function Footer() {
                   href="https://instagram.com/melz.crotchet.creations"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-cream"
+                  className="flex items-center gap-2 hover:text-cream"
                 >
+                  <InstagramIcon className="h-4 w-4 shrink-0" />
                   @melz.crotchet.creations
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://www.facebook.com/share/1BUMGQo84u/?mibextid=wwXIfr"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 hover:text-cream"
+                >
+                  <FacebookIcon className="h-4 w-4 shrink-0" />
+                  MelCrochet
+                </a>
+              </li>
+              <li>
+                <a href="mailto:buchiemel@gmail.com" className="flex items-center gap-2 hover:text-cream">
+                  <Mail className="h-4 w-4 shrink-0" aria-hidden="true" />
+                  Email: buchiemel@gmail.com
                 </a>
               </li>
             </ul>
