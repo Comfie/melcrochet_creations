@@ -39,7 +39,10 @@ export default function EnquiriesPage() {
     await mutate(`/api/enquiries/${id}`, {
       method: "PATCH",
       body: { status },
-      onSuccess: refresh,
+      onSuccess: () => {
+        refresh();
+        window.dispatchEvent(new Event("mc:enquiries-updated"));
+      },
       onError: (msg) => setToast({ message: msg, type: "error" }),
     });
   }

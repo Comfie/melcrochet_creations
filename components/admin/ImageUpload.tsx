@@ -60,7 +60,7 @@ export default function ImageUpload({ currentUrl, onUploaded }: ImageUploadProps
         onDragLeave={() => setDragOver(false)}
         onDrop={handleDrop}
         className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 transition ${
-          dragOver ? "border-gold bg-gold/5" : "border-gray-300 hover:border-gray-400"
+          dragOver ? "border-brown bg-brown/5" : "border-gray-300 hover:border-gray-400"
         }`}
       >
         {uploading ? (

@@ -250,7 +250,7 @@ export default function ProductsPage() {
             </td>
             <td className="px-4 py-3 text-sm">
               {product.featured && (
-                <span className="text-gold">★</span>
+                <span className="text-brown">★</span>
               )}
             </td>
           </tr>

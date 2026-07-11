@@ -89,6 +89,20 @@ export default function AdminLayout({
     checkAuth();
   }, [pathname, router, fetchEnquiryCount]);
 
+  // The Enquiries page mutates enquiry status client-side without a
+  // navigation, so the layout's pathname-triggered fetch above won't
+  // re-run. Listen for a broadcast event the page fires after a
+  // successful status change so the sidebar badge stays in sync.
+  useEffect(() => {
+    if (pathname === "/admin/login") {
+      return;
+    }
+    window.addEventListener("mc:enquiries-updated", fetchEnquiryCount);
+    return () => {
+      window.removeEventListener("mc:enquiries-updated", fetchEnquiryCount);
+    };
+  }, [pathname, fetchEnquiryCount]);
+
   if (pathname === "/admin/login") {
     return <>{children}</>;
   }
