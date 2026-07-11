@@ -318,7 +318,7 @@ export default function ProductsPage() {
                   value="FIXED"
                   checked={form.priceType === "FIXED"}
                   onChange={() => updateForm("priceType", "FIXED")}
-                  className="text-gold focus:ring-gold"
+                  className="text-brown focus:ring-gold"
                 />
                 Fixed price
               </label>
@@ -329,7 +329,7 @@ export default function ProductsPage() {
                   value="QUOTE"
                   checked={form.priceType === "QUOTE"}
                   onChange={() => updateForm("priceType", "QUOTE")}
-                  className="text-gold focus:ring-gold"
+                  className="text-brown focus:ring-gold"
                 />
                 Quote on request
               </label>
@@ -414,7 +414,7 @@ export default function ProductsPage() {
                 type="checkbox"
                 checked={form.featured}
                 onChange={(e) => updateForm("featured", e.target.checked)}
-                className="rounded text-gold focus:ring-gold"
+                className="rounded text-brown focus:ring-gold"
               />
               Featured
             </label>
@@ -424,7 +424,7 @@ export default function ProductsPage() {
                   type="checkbox"
                   checked={form.isActive}
                   onChange={(e) => updateForm("isActive", e.target.checked)}
-                  className="rounded text-gold focus:ring-gold"
+                  className="rounded text-brown focus:ring-gold"
                 />
                 Active
               </label>
