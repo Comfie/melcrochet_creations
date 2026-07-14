@@ -9,6 +9,8 @@ import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import Toast from "@/components/admin/Toast";
 import AdminTable from "@/components/admin/AdminTable";
 import StatusBadge from "@/components/admin/StatusBadge";
+import Pagination from "@/components/admin/Pagination";
+import { usePagination } from "@/hooks/use-pagination";
 
 interface Category {
   id: string;
@@ -176,6 +178,8 @@ export default function ProductsPage() {
     ? products.filter((p) => p.categoryId === filterCategory)
     : products;
 
+  const { page, pageItems, totalPages, setPage, resetPage } = usePagination(filtered);
+
   if (loading) {
     return <p className="text-sm text-gray-400">Loading products…</p>;
   }
@@ -199,7 +203,10 @@ export default function ProductsPage() {
       <div className="mb-4">
         <select
           value={filterCategory}
-          onChange={(e) => setFilterCategory(e.target.value)}
+          onChange={(e) => {
+            setFilterCategory(e.target.value);
+            resetPage();
+          }}
           className="rounded-md border border-gray-300 px-3 py-1.5 text-sm"
         >
           <option value="">All categories</option>
@@ -212,7 +219,7 @@ export default function ProductsPage() {
       </div>
 
       <AdminTable headers={["Image", "Name", "Category", "Price", "Status", "Featured"]}>
-        {filtered.map((product) => (
+        {pageItems.map((product) => (
           <tr
             key={product.id}
             onClick={() => openEdit(product)}
@@ -256,6 +263,8 @@ export default function ProductsPage() {
           </tr>
         ))}
       </AdminTable>
+
+      <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
 
       <SlideOver
         open={panelOpen}
