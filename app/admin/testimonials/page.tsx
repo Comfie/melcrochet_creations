@@ -9,6 +9,8 @@ import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import Toast from "@/components/admin/Toast";
 import AdminTable from "@/components/admin/AdminTable";
 import StatusBadge from "@/components/admin/StatusBadge";
+import Pagination from "@/components/admin/Pagination";
+import { usePagination } from "@/hooks/use-pagination";
 
 interface Testimonial {
   id: string;
@@ -137,6 +139,8 @@ export default function TestimonialsPage() {
     setFormError(null);
   }
 
+  const { page, pageItems, totalPages, setPage } = usePagination(testimonials);
+
   if (loading) {
     return <p className="text-sm text-gray-400">Loading testimonials…</p>;
   }
@@ -158,7 +162,7 @@ export default function TestimonialsPage() {
       </div>
 
       <AdminTable headers={["Photo", "Customer", "Quote", "Rating", "Status"]}>
-        {testimonials.map((t) => (
+        {pageItems.map((t) => (
           <tr
             key={t.id}
             onClick={() => openEdit(t)}
@@ -185,6 +189,8 @@ export default function TestimonialsPage() {
           </tr>
         ))}
       </AdminTable>
+
+      <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
 
       <SlideOver
         open={panelOpen}
