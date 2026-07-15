@@ -69,18 +69,20 @@ export default async function Home() {
             <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {featured.slice(0, 6).map((product) => (
                 <div key={product.id} className="border border-cream/20 p-4">
-                  <div className="aspect-square w-full overflow-hidden">
-                    {product.imageUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={product.imageUrl} alt={product.name} className="h-full w-full object-cover" />
-                    ) : (
-                      <ImagePlaceholder className="h-full w-full" />
-                    )}
-                  </div>
-                  <p className="mt-4 font-display text-lg">{product.name}</p>
-                  <p className="mt-1 font-sans text-sm text-cream/60">
-                    {product.priceType === "FIXED" ? `R${product.price}` : "Quote on Request"}
-                  </p>
+                  <Link href={`/products/${product.slug}`}>
+                    <div className="aspect-square w-full overflow-hidden">
+                      {product.imageUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={product.imageUrl} alt={product.name} className="h-full w-full object-cover" />
+                      ) : (
+                        <ImagePlaceholder className="h-full w-full" />
+                      )}
+                    </div>
+                    <p className="mt-4 font-display text-lg">{product.name}</p>
+                    <p className="mt-1 font-sans text-sm text-cream/60">
+                      {product.priceType === "FIXED" ? `R${product.price}` : "Quote on Request"}
+                    </p>
+                  </Link>
                   <div className="mt-4">
                     <WhatsAppButton href={buildProductWhatsAppLink(product.name)} />
                   </div>
