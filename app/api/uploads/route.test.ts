@@ -52,6 +52,18 @@ describe("POST /api/uploads", () => {
     expect(res.status).toBe(400);
   });
 
+  it("returns 400 for a file over the size limit", async () => {
+    const { POST } = await import("./route");
+    const { signSessionToken } = await import("@/lib/auth");
+    const token = await signSessionToken("melissa");
+    const oversized = new Uint8Array(4 * 1024 * 1024 + 1);
+    const file = new File([oversized], "big.jpg", { type: "image/jpeg" });
+    const res = await POST(makeUploadRequest(file, `mc_admin=${token}`));
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error).toMatch(/too large/i);
+  });
+
   it("uploads a valid image and returns url + publicId", async () => {
     const { POST } = await import("./route");
     const { signSessionToken } = await import("@/lib/auth");

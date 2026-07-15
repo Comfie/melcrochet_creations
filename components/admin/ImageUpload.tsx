@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, type DragEvent } from "react";
+import { resizeImageIfNeeded } from "@/lib/image-resize";
 
 interface ImageUploadProps {
   currentUrl?: string | null;
@@ -18,16 +19,20 @@ export default function ImageUpload({ currentUrl, onUploaded }: ImageUploadProps
     setError(null);
     setUploading(true);
     try {
+      const uploadable = await resizeImageIfNeeded(file);
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("file", uploadable);
       const res = await fetch("/api/uploads", { method: "POST", body: formData });
       if (res.status === 401) {
         window.location.href = "/admin/login";
         return;
       }
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        setError((data as { error?: string }).error ?? "Upload failed");
+        const data = await res.json().catch(() => null);
+        setError(
+          (data as { error?: string } | null)?.error ??
+            "Upload failed — the image may be too large. Try a smaller photo."
+        );
         return;
       }
       const { url, publicId } = (await res.json()) as { url: string; publicId: string };

@@ -3,7 +3,10 @@ import { requireAuth } from "@/lib/auth";
 import { jsonError } from "@/lib/api-response";
 import { uploadImageBuffer } from "@/lib/cloudinary";
 
-const MAX_BYTES = 5 * 1024 * 1024;
+// Vercel Serverless Functions hard-cap request bodies at 4.5MB; stay under
+// that with headroom for multipart overhead. Client-side resizing (see
+// lib/image-resize.ts) keeps uploads well below this in practice.
+const MAX_BYTES = 4 * 1024 * 1024;
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/avif"];
 
 export async function POST(request: NextRequest) {
@@ -20,7 +23,7 @@ export async function POST(request: NextRequest) {
     return jsonError("Unsupported file type", 400);
   }
   if (file.size > MAX_BYTES) {
-    return jsonError("File too large (max 5MB)", 400);
+    return jsonError("File too large (max 4MB)", 400);
   }
 
   const buffer = Buffer.from(await file.arrayBuffer());
