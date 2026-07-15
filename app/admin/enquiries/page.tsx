@@ -5,6 +5,8 @@ import { useApiList } from "@/hooks/use-api-list";
 import { useApiMutation } from "@/hooks/use-api-mutation";
 import Toast from "@/components/admin/Toast";
 import StatusBadge from "@/components/admin/StatusBadge";
+import Pagination from "@/components/admin/Pagination";
+import { usePagination } from "@/hooks/use-pagination";
 
 interface Enquiry {
   id: string;
@@ -34,6 +36,8 @@ export default function EnquiriesPage() {
   };
 
   const filtered = filter === "ALL" ? enquiries : enquiries.filter((e) => e.status === filter);
+
+  const { page, pageItems, totalPages, setPage, resetPage } = usePagination(filtered);
 
   async function markStatus(id: string, status: "READ" | "ARCHIVED") {
     await mutate(`/api/enquiries/${id}`, {
@@ -86,7 +90,10 @@ export default function EnquiriesPage() {
         {(["ALL", "NEW", "READ", "ARCHIVED"] as const).map((tab) => (
           <button
             key={tab}
-            onClick={() => setFilter(tab)}
+            onClick={() => {
+              setFilter(tab);
+              resetPage();
+            }}
             className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${
               filter === tab
                 ? "bg-white shadow-sm"
@@ -112,7 +119,7 @@ export default function EnquiriesPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 bg-white">
-            {filtered.map((enquiry) => (
+            {pageItems.map((enquiry) => (
               <tr key={enquiry.id} className="group">
                 <td colSpan={6} className="p-0">
                   <button
@@ -185,6 +192,8 @@ export default function EnquiriesPage() {
           </tbody>
         </table>
       </div>
+
+      <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
 
       {toast && (
         <Toast
