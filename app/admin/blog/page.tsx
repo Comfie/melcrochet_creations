@@ -10,6 +10,8 @@ import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import Toast from "@/components/admin/Toast";
 import AdminTable from "@/components/admin/AdminTable";
 import StatusBadge from "@/components/admin/StatusBadge";
+import Pagination from "@/components/admin/Pagination";
+import { usePagination } from "@/hooks/use-pagination";
 
 interface BlogPost {
   id: string;
@@ -142,6 +144,8 @@ export default function BlogPage() {
     });
   }
 
+  const { page, pageItems, totalPages, setPage } = usePagination(posts);
+
   if (loading) {
     return <p className="text-sm text-gray-400">Loading posts…</p>;
   }
@@ -163,7 +167,7 @@ export default function BlogPage() {
       </div>
 
       <AdminTable headers={["Cover", "Title", "Status", "Published", "Created"]}>
-        {posts.map((post) => (
+        {pageItems.map((post) => (
           <tr
             key={post.id}
             onClick={() => openEdit(post)}
@@ -192,6 +196,8 @@ export default function BlogPage() {
           </tr>
         ))}
       </AdminTable>
+
+      <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
 
       <SlideOver
         open={panelOpen}
