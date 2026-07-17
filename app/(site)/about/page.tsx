@@ -1,5 +1,12 @@
+import type { Metadata } from "next";
 import ImagePlaceholder from "@/components/ImagePlaceholder";
 import StitchDivider from "@/components/StitchDivider";
+
+export const metadata: Metadata = {
+  title: "About MelCrochet Gifted Hands",
+  description:
+    "Meet Melissa Ruvimbo Buchirai, founder of MelCrochet Gifted Hands — handmade crochet blankets, bags and gifts crafted with patience and care in South Africa.",
+};
 
 const VALUES = [
   { name: "Quality", description: "Every product should be neat, durable and carefully finished." },

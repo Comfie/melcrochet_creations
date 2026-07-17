@@ -1,8 +1,15 @@
+import type { Metadata } from "next";
 import { Mail } from "lucide-react";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import EnquiryForm from "@/components/EnquiryForm";
 import { FacebookIcon, InstagramIcon } from "@/components/SocialIcons";
+
+export const metadata: Metadata = {
+  title: "Contact Us",
+  description:
+    "Message MelCrochet Gifted Hands on WhatsApp or by email to order handmade crochet blankets, bags, hats and gifts, or ask about custom orders.",
+};
 
 export default function ContactPage() {
   return (

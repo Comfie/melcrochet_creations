@@ -1,7 +1,14 @@
+import type { Metadata } from "next";
 import { getPublishedBlogPosts } from "@/lib/queries";
 import BlogCard from "@/components/BlogCard";
 
 export const revalidate = 60;
+
+export const metadata: Metadata = {
+  title: "Blog",
+  description:
+    "Tips on crochet care, size guides and behind-the-scenes stories from MelCrochet Gifted Hands.",
+};
 
 export default async function BlogIndexPage() {
   const posts = await getPublishedBlogPosts();
