@@ -2,6 +2,7 @@ import "dotenv/config";
 import { describe, it, expect } from "vitest";
 import {
   getCategories,
+  getCategoryBySlug,
   getProducts,
   getProductBySlug,
   getTestimonials,
@@ -14,6 +15,18 @@ describe("getCategories", () => {
     const categories = await getCategories();
     expect(categories).toHaveLength(12);
     expect(categories[0].name).toBe("Baby Blankets");
+  });
+});
+
+describe("getCategoryBySlug", () => {
+  it("finds the Hats category by slug", async () => {
+    const category = await getCategoryBySlug("hats");
+    expect(category?.name).toBe("Hats");
+  });
+
+  it("returns null for an unknown slug", async () => {
+    const category = await getCategoryBySlug("does-not-exist-xyz");
+    expect(category).toBeNull();
   });
 });
 

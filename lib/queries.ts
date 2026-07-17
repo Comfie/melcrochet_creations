@@ -4,6 +4,10 @@ export function getCategories() {
   return prisma.category.findMany({ orderBy: { sortOrder: "asc" } });
 }
 
+export function getCategoryBySlug(slug: string) {
+  return prisma.category.findUnique({ where: { slug } });
+}
+
 export function getProducts(options?: {
   categorySlug?: string;
   featured?: boolean;

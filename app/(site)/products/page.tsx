@@ -1,14 +1,37 @@
-import { getCategories, getProducts } from "@/lib/queries";
+import type { Metadata } from "next";
+import { getCategories, getCategoryBySlug, getProducts } from "@/lib/queries";
 import CategoryFilter from "@/components/CategoryFilter";
 import ProductCard from "@/components/ProductCard";
 
 export const revalidate = 60;
 
-export default async function ProductsPage({
-  searchParams,
-}: {
+type Props = {
   searchParams: Promise<{ category?: string }>;
-}) {
+};
+
+export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+  const { category } = await searchParams;
+
+  if (!category) {
+    return {
+      title: "Shop Handmade Crochet Products",
+      description:
+        "Browse handmade crochet blankets, bags, hats, baskets and gifts — made to order in South Africa. Order via WhatsApp.",
+      alternates: { canonical: "/products" },
+    };
+  }
+
+  const categoryRecord = await getCategoryBySlug(category);
+  const label = categoryRecord?.name ?? category;
+
+  return {
+    title: `Handmade ${label}`,
+    description: `Shop handmade ${label.toLowerCase()} from MelCrochet Gifted Hands — made to order in South Africa. Order via WhatsApp.`,
+    alternates: { canonical: `/products?category=${category}` },
+  };
+}
+
+export default async function ProductsPage({ searchParams }: Props) {
   const { category } = await searchParams;
   const [categories, products] = await Promise.all([
     getCategories(),
