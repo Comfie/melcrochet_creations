@@ -5,12 +5,14 @@ import { useApiList } from "@/hooks/use-api-list";
 import { useApiMutation } from "@/hooks/use-api-mutation";
 import SlideOver from "@/components/admin/SlideOver";
 import ImageUpload from "@/components/admin/ImageUpload";
+import GalleryUpload from "@/components/admin/GalleryUpload";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import Toast from "@/components/admin/Toast";
 import AdminTable from "@/components/admin/AdminTable";
 import StatusBadge from "@/components/admin/StatusBadge";
 import Pagination from "@/components/admin/Pagination";
 import { usePagination } from "@/hooks/use-pagination";
+import { parseGallery, type ProductGalleryImage } from "@/lib/product-gallery";
 
 interface Category {
   id: string;
@@ -29,8 +31,10 @@ interface Product {
   sizes: string | null;
   colours: string | null;
   leadTime: string | null;
+  careInstructions: string | null;
   imageUrl: string | null;
   imagePublicId: string | null;
+  gallery: unknown;
   featured: boolean;
   isActive: boolean;
   sortOrder: number;
@@ -47,8 +51,10 @@ interface FormState {
   sizes: string;
   colours: string;
   leadTime: string;
+  careInstructions: string;
   imageUrl: string;
   imagePublicId: string;
+  gallery: ProductGalleryImage[];
   featured: boolean;
   isActive: boolean;
   sortOrder: string;
@@ -63,8 +69,10 @@ const emptyForm: FormState = {
   sizes: "",
   colours: "",
   leadTime: "",
+  careInstructions: "",
   imageUrl: "",
   imagePublicId: "",
+  gallery: [],
   featured: false,
   isActive: true,
   sortOrder: "0",
@@ -101,8 +109,10 @@ export default function ProductsPage() {
       sizes: product.sizes ?? "",
       colours: product.colours ?? "",
       leadTime: product.leadTime ?? "",
+      careInstructions: product.careInstructions ?? "",
       imageUrl: product.imageUrl ?? "",
       imagePublicId: product.imagePublicId ?? "",
+      gallery: parseGallery(product.gallery),
       featured: product.featured,
       isActive: product.isActive,
       sortOrder: product.sortOrder.toString(),
@@ -130,8 +140,10 @@ export default function ProductsPage() {
       sizes: form.sizes || undefined,
       colours: form.colours || undefined,
       leadTime: form.leadTime || undefined,
+      careInstructions: form.careInstructions || undefined,
       imageUrl: form.imageUrl || undefined,
       imagePublicId: form.imagePublicId || undefined,
+      gallery: form.gallery,
       featured: form.featured,
       isActive: form.isActive,
       sortOrder: Number(form.sortOrder) || 0,
@@ -171,6 +183,11 @@ export default function ProductsPage() {
 
   function updateForm(field: keyof FormState, value: string | boolean) {
     setForm((prev) => ({ ...prev, [field]: value }));
+    setFormError(null);
+  }
+
+  function updateGallery(gallery: ProductGalleryImage[]) {
+    setForm((prev) => ({ ...prev, gallery }));
     setFormError(null);
   }
 
@@ -405,6 +422,20 @@ export default function ProductsPage() {
           </div>
 
           <div>
+            <label htmlFor="prod-care" className="block text-sm font-medium text-gray-700">
+              Care Instructions
+            </label>
+            <textarea
+              id="prod-care"
+              value={form.careInstructions}
+              onChange={(e) => updateForm("careInstructions", e.target.value)}
+              rows={2}
+              placeholder="e.g. Hand wash cold, dry flat"
+              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-brown"
+            />
+          </div>
+
+          <div>
             <label className="block text-sm font-medium text-gray-700">Image</label>
             <div className="mt-1">
               <ImageUpload
@@ -414,6 +445,13 @@ export default function ProductsPage() {
                   setForm((prev) => ({ ...prev, imagePublicId: publicId }));
                 }}
               />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Gallery</label>
+            <div className="mt-1">
+              <GalleryUpload value={form.gallery} onChange={updateGallery} />
             </div>
           </div>
 
