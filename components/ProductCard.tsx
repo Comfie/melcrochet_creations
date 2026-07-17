@@ -2,6 +2,7 @@ import Link from "next/link";
 import ImagePlaceholder from "@/components/ImagePlaceholder";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { buildProductWhatsAppLink } from "@/lib/whatsapp";
+import { formatPrice } from "@/lib/format-price";
 
 type Product = {
   id: string;
@@ -11,6 +12,7 @@ type Product = {
   price: unknown; // Prisma Decimal — stringify for display, never do arithmetic on it here
   currency: string;
   imageUrl: string | null;
+  leadTime: string | null;
 };
 
 export default function ProductCard({ product }: { product: Product }) {
@@ -28,10 +30,13 @@ export default function ProductCard({ product }: { product: Product }) {
         <div className="flex flex-1 flex-col p-4">
           <p className="font-display text-lg">{product.name}</p>
           <p className="mt-1 font-sans text-sm font-semibold text-brown">
-            {product.priceType === "FIXED"
-              ? `${product.currency === "ZAR" ? "R" : product.currency}${product.price}`
-              : "Quote on Request"}
+            {formatPrice(product.priceType, product.price, product.currency)}
           </p>
+          {product.leadTime && (
+            <p className="mt-1 font-sans text-xs text-ink/50">
+              Made to order · {product.leadTime}
+            </p>
+          )}
         </div>
       </Link>
       <div className="px-4 pb-4">
