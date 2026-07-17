@@ -33,8 +33,10 @@ model Product {
   sizes         String?
   colours       String?
   leadTime      String?
+  careInstructions String?
   imageUrl      String?
   imagePublicId String?
+  gallery       Json?
   featured      Boolean   @default(false)
   isActive      Boolean   @default(true)
   sortOrder     Int       @default(0)
