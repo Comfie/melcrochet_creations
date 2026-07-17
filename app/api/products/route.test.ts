@@ -62,6 +62,7 @@ describe("POST /api/products", () => {
         priceType: "FIXED",
         price: 123,
         categoryId,
+        imageUrl: "https://res.cloudinary.com/demo/image/upload/v1/products/fixed.jpg",
       }),
     });
     const res = await POST(req);
@@ -97,6 +98,7 @@ describe("POST /api/products", () => {
         description: "quote based",
         priceType: "QUOTE",
         categoryId,
+        imageUrl: "https://res.cloudinary.com/demo/image/upload/v1/products/quote.jpg",
       }),
     });
     const res = await POST(req);
@@ -104,5 +106,67 @@ describe("POST /api/products", () => {
     const body = await res.json();
     createdProductIds.push(body.id);
     expect(body.price).toBeNull();
+  });
+
+  it("rejects an active product with no image", async () => {
+    const { POST } = await import("./route");
+    const req = new NextRequest("http://localhost:3000/api/products", {
+      method: "POST",
+      headers: { Cookie: await authCookie(), "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: "Vitest Tmp No Image",
+        description: "no image, defaults to active",
+        priceType: "QUOTE",
+        categoryId,
+      }),
+    });
+    const res = await POST(req);
+    expect(res.status).toBe(400);
+  });
+
+  it("allows an imageless product when explicitly saved as inactive (draft)", async () => {
+    const { POST } = await import("./route");
+    const req = new NextRequest("http://localhost:3000/api/products", {
+      method: "POST",
+      headers: { Cookie: await authCookie(), "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: "Vitest Tmp Draft",
+        description: "draft product, no image yet",
+        priceType: "QUOTE",
+        categoryId,
+        isActive: false,
+      }),
+    });
+    const res = await POST(req);
+    expect(res.status).toBe(201);
+    const body = await res.json();
+    createdProductIds.push(body.id);
+  });
+
+  it("accepts a gallery array and careInstructions", async () => {
+    const { POST } = await import("./route");
+    const req = new NextRequest("http://localhost:3000/api/products", {
+      method: "POST",
+      headers: { Cookie: await authCookie(), "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: "Vitest Tmp Gallery Product",
+        description: "has a gallery",
+        priceType: "QUOTE",
+        categoryId,
+        imageUrl: "https://res.cloudinary.com/demo/image/upload/v1/products/main.jpg",
+        gallery: [
+          { url: "https://res.cloudinary.com/demo/image/upload/v1/products/a.jpg", publicId: "products/a" },
+        ],
+        careInstructions: "Hand wash cold, dry flat.",
+      }),
+    });
+    const res = await POST(req);
+    expect(res.status).toBe(201);
+    const body = await res.json();
+    createdProductIds.push(body.id);
+    expect(body.gallery).toEqual([
+      { url: "https://res.cloudinary.com/demo/image/upload/v1/products/a.jpg", publicId: "products/a" },
+    ]);
+    expect(body.careInstructions).toBe("Hand wash cold, dry flat.");
   });
 });
