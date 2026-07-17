@@ -15,7 +15,7 @@ const PRESETS: Record<Preset, string> = {
 
 export function cld(url: string, preset: Preset): string {
   if (!url.includes("/upload/")) return url;
-  return url.replace(/\/upload\/(?:[a-z]_[a-z0-9_,]*\/)?/, `/upload/${PRESETS[preset]}/`);
+  return url.replace(/\/upload\/(?:(?!v\d+\/)[^/]+\/)?/, `/upload/${PRESETS[preset]}/`);
 }
 
 export const IMG_SIZES = {

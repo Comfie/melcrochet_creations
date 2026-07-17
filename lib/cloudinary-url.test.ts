@@ -30,6 +30,14 @@ describe("cld", () => {
     );
   });
 
+  it("replaces a transformation containing a colon without duplication", () => {
+    const withCardPreset =
+      "https://res.cloudinary.com/demo/image/upload/f_auto,q_auto,c_fill,ar_1:1,w_600/v1/products/abc.jpg";
+    expect(cld(withCardPreset, "thumb")).toBe(
+      "https://res.cloudinary.com/demo/image/upload/f_auto,q_auto,c_fill,ar_1:1,w_150/v1/products/abc.jpg"
+    );
+  });
+
   it("returns non-Cloudinary URLs unchanged", () => {
     expect(cld("https://example.com/photo.jpg", "card")).toBe("https://example.com/photo.jpg");
   });
