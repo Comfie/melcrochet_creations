@@ -7,6 +7,8 @@ import CategoryTile from "@/components/CategoryTile";
 import TestimonialsCarousel from "@/components/TestimonialsCarousel";
 import ImagePlaceholder from "@/components/ImagePlaceholder";
 import StitchDivider from "@/components/StitchDivider";
+import { LocalBusinessJsonLd } from "@/components/seo/JsonLd";
+import { formatPrice } from "@/lib/format-price";
 
 export const revalidate = 60;
 
@@ -19,6 +21,8 @@ export default async function Home() {
 
   return (
     <>
+      <LocalBusinessJsonLd />
+
       {/* Hero */}
       <section className="relative overflow-hidden bg-ink text-cream">
         <Image
@@ -80,7 +84,7 @@ export default async function Home() {
                     </div>
                     <p className="mt-4 font-display text-lg">{product.name}</p>
                     <p className="mt-1 font-sans text-sm text-cream/60">
-                      {product.priceType === "FIXED" ? `R${product.price}` : "Quote on Request"}
+                      {formatPrice(product.priceType, product.price, product.currency)}
                     </p>
                   </Link>
                   <div className="mt-4">

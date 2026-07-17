@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
+import { SITE } from "@/lib/site";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -15,8 +16,17 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "MelCrochet Gifted Hands",
-  description: "Providing Warmth, Comfort & Timeless Handmade Creations",
+  metadataBase: new URL(SITE.url),
+  title: {
+    default: `${SITE.name} | Handmade Crochet Blankets, Bags & Gifts in South Africa`,
+    template: `%s | ${SITE.shortName}`,
+  },
+  description: SITE.description,
+  openGraph: {
+    siteName: SITE.name,
+    type: "website",
+    locale: "en_ZA",
+  },
 };
 
 export default function RootLayout({
