@@ -42,6 +42,25 @@ describe("ProductJsonLd", () => {
     const data = extractJson(html) as Record<string, unknown>;
     expect(data.offers).toBeUndefined();
   });
+
+  it("escapes dangerous characters in admin-entered product description to prevent XSS", () => {
+    const maliciousDescription = 'Nice blanket</script><script>alert(1)</script>';
+    const html = renderToStaticMarkup(
+      <ProductJsonLd
+        name="Product"
+        description={maliciousDescription}
+        slug="product-slug"
+        images={[]}
+        priceType="QUOTE"
+        price={null}
+      />
+    );
+    // Assert the raw HTML does not contain the literal closing/opening script tags
+    expect(html).not.toContain("</script><script>");
+    // Assert the JSON-LD is still valid and recovers the original description
+    const data = extractJson(html) as Record<string, unknown>;
+    expect(data.description).toBe(maliciousDescription);
+  });
 });
 
 describe("LocalBusinessJsonLd", () => {

@@ -8,11 +8,19 @@
 import { SITE } from "@/lib/site";
 
 function JsonLdScript({ data }: { data: object }) {
+  // Escape dangerous characters that could break out of the <script> tag.
+  // This prevents XSS if the JSON contains admin-entered content like product descriptions.
+  // Standard JSON parsers (including JSON.parse and schema.org validators) transparently
+  // decode these escapes back to the original characters.
+  const json = JSON.stringify(data)
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e")
+    .replace(/&/g, "\\u0026");
+
   return (
     <script
       type="application/ld+json"
-      // JSON.stringify of our own trusted data — no user HTML involved.
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+      dangerouslySetInnerHTML={{ __html: json }}
     />
   );
 }
