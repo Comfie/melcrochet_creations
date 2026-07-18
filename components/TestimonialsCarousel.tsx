@@ -41,7 +41,10 @@ export default function TestimonialsCarousel({
           <ImagePlaceholder className="h-full w-full" />
         )}
       </div>
-      <p className="mt-6 font-display text-xl italic">&ldquo;{current.quote}&rdquo;</p>
+      <span aria-hidden="true" className="mt-6 block font-display text-5xl leading-none text-gold">
+        &ldquo;
+      </span>
+      <p className="mt-2 font-display text-2xl italic text-ink">{current.quote}</p>
       <p className="mt-3 font-sans text-sm font-semibold text-brown">
         {current.customerName}
         {current.location ? ` — ${current.location}` : ""}
