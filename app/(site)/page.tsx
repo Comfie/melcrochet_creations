@@ -1,20 +1,19 @@
 import Image from "next/image";
 import Link from "next/link";
-import { getCategories, getProducts, getTestimonials } from "@/lib/queries";
-import { buildWhatsAppLink, buildProductWhatsAppLink } from "@/lib/whatsapp";
+import { getCategoriesWithImages, getProducts, getTestimonials } from "@/lib/queries";
+import { buildWhatsAppLink } from "@/lib/whatsapp";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import CategoryTile from "@/components/CategoryTile";
+import ProductCard from "@/components/ProductCard";
 import TestimonialsCarousel from "@/components/TestimonialsCarousel";
-import ImagePlaceholder from "@/components/ImagePlaceholder";
 import StitchDivider from "@/components/StitchDivider";
 import { LocalBusinessJsonLd } from "@/components/seo/JsonLd";
-import { formatPrice } from "@/lib/format-price";
 
 export const revalidate = 60;
 
 export default async function Home() {
   const [categories, featured, testimonials] = await Promise.all([
-    getCategories(),
+    getCategoriesWithImages(),
     getProducts({ featured: true }),
     getTestimonials(),
   ]);
@@ -24,7 +23,7 @@ export default async function Home() {
       <LocalBusinessJsonLd />
 
       {/* Hero */}
-      <section className="relative overflow-hidden bg-ink text-cream">
+      <section className="relative flex min-h-[70vh] items-end overflow-hidden bg-ink text-cream">
         <Image
           src="/landing-page-hero.jpg"
           alt="MelCrochet handmade blankets, hats, and scrunchies displayed at a market stall"
@@ -33,16 +32,30 @@ export default async function Home() {
           sizes="100vw"
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-ink/70" aria-hidden="true" />
-        <div className="relative mx-auto flex max-w-6xl flex-col items-start gap-6 px-5 py-24 sm:py-32">
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/55 to-ink/35"
+        />
+        <div className="relative mx-auto flex w-full max-w-6xl flex-col items-start gap-6 px-5 py-20 sm:py-28">
+          <p className="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-gold">
+            Handmade in South Africa
+          </p>
           <h1 className="text-hero max-w-2xl">
             Providing Warmth, Comfort &amp; Timeless Handmade Creations
           </h1>
-          <p className="max-w-xl font-sans text-cream/70">
+          <p className="max-w-xl font-sans text-cream/80">
             Every MelCrochet piece is made by hand, with patience and care —
             blankets, bags, hats and gifts designed to last.
           </p>
-          <WhatsAppButton href={buildWhatsAppLink()} label="Chat with us on WhatsApp" />
+          <div className="flex flex-wrap items-center gap-3">
+            <WhatsAppButton href={buildWhatsAppLink()} label="Chat with us on WhatsApp" />
+            <Link
+              href="/products"
+              className="inline-flex items-center rounded-full border border-cream/40 px-5 py-2.5 font-sans text-sm font-semibold text-cream transition-colors hover:border-cream hover:bg-cream/10"
+            >
+              Browse products
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -52,13 +65,14 @@ export default async function Home() {
       <section className="bg-cream">
         <div className="mx-auto max-w-6xl px-5 py-20">
           <h2 className="text-section">Shop by Category</h2>
-          <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             {categories.map((category) => (
               <CategoryTile
                 key={category.id}
                 name={category.name}
                 slug={category.slug}
                 blurb={category.blurb}
+                imageUrl={category.imageUrl}
               />
             ))}
           </div>
@@ -72,25 +86,19 @@ export default async function Home() {
             <h2 className="text-section">Featured Pieces</h2>
             <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {featured.slice(0, 6).map((product) => (
-                <div key={product.id} className="border border-cream/20 p-4">
-                  <Link href={`/products/${product.slug}`}>
-                    <div className="aspect-square w-full overflow-hidden">
-                      {product.imageUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={product.imageUrl} alt={product.name} className="h-full w-full object-cover" />
-                      ) : (
-                        <ImagePlaceholder className="h-full w-full" />
-                      )}
-                    </div>
-                    <p className="mt-4 font-display text-lg">{product.name}</p>
-                    <p className="mt-1 font-sans text-sm text-cream/60">
-                      {formatPrice(product.priceType, product.price, product.currency)}
-                    </p>
-                  </Link>
-                  <div className="mt-4">
-                    <WhatsAppButton href={buildProductWhatsAppLink(product.name)} />
-                  </div>
-                </div>
+                <ProductCard
+                  key={product.id}
+                  product={{
+                    id: product.id,
+                    slug: product.slug,
+                    name: product.name,
+                    priceType: product.priceType,
+                    price: product.price,
+                    currency: product.currency,
+                    imageUrl: product.imageUrl,
+                    leadTime: product.leadTime,
+                  }}
+                />
               ))}
             </div>
           </div>
@@ -115,7 +123,15 @@ export default async function Home() {
               Read our story &rarr;
             </Link>
           </div>
-          <ImagePlaceholder className="aspect-[4/3] w-full" />
+          <div className="relative aspect-[3/4] w-full overflow-hidden border border-taupe/30">
+            <Image
+              src="/melissa.jpg"
+              alt="Melissa Ruvimbo Buchirai, founder of MelCrochet Gifted Hands, wrapped in a handmade crochet blanket"
+              fill
+              sizes="(max-width: 640px) 100vw, 50vw"
+              className="object-cover"
+            />
+          </div>
         </div>
       </section>
 
