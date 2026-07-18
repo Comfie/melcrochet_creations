@@ -104,7 +104,7 @@ describe("getCategoriesWithImages", () => {
     // URL, since product images can be re-uploaded over time in this shared DB.
     const expected = await prisma.product.findFirst({
       where: { category: { slug: "throw-blankets" }, isActive: true, imageUrl: { not: null } },
-      orderBy: { sortOrder: "asc" },
+      orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
       select: { imageUrl: true },
     });
     expect(expected?.imageUrl).toEqual(expect.any(String));

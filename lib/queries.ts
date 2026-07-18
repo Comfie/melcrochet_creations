@@ -62,7 +62,7 @@ export async function getCategoriesWithImages(): Promise<
     prisma.product.findMany({
       where: { isActive: true, imageUrl: { not: null } },
       select: { categoryId: true, imageUrl: true, sortOrder: true },
-      orderBy: { sortOrder: "asc" },
+      orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
     }),
   ]);
 
