@@ -12,11 +12,11 @@ import { LocalBusinessJsonLd } from "@/components/seo/JsonLd";
 export const revalidate = 60;
 
 export default async function Home() {
-  const [categories, featured, testimonials] = await Promise.all([
-    getCategoriesWithImages(),
-    getProducts({ featured: true }),
-    getTestimonials(),
-  ]);
+  // Sequential, not Promise.all: see the comment in getCategoriesWithImages
+  // for why this page avoids opening several Postgres connections at once.
+  const categories = await getCategoriesWithImages();
+  const featured = await getProducts({ featured: true });
+  const testimonials = await getTestimonials();
 
   return (
     <>

@@ -57,14 +57,17 @@ export function getBlogPostBySlug(slug: string) {
 export async function getCategoriesWithImages(): Promise<
   { id: string; name: string; slug: string; blurb: string | null; imageUrl: string | null }[]
 > {
-  const [categories, products] = await Promise.all([
-    prisma.category.findMany({ orderBy: { sortOrder: "asc" } }),
-    prisma.product.findMany({
-      where: { isActive: true, imageUrl: { not: null } },
-      select: { categoryId: true, imageUrl: true, sortOrder: true },
-      orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
-    }),
-  ]);
+  // Sequential, not Promise.all: this app's DATABASE_URL is a direct
+  // (non-pooled) Railway connection, and opening several Postgres
+  // connections in the same instant during Vercel's single-worker build
+  // has triggered the server to close a connection mid-query (P1017).
+  // One query in flight at a time avoids that trigger condition.
+  const categories = await prisma.category.findMany({ orderBy: { sortOrder: "asc" } });
+  const products = await prisma.product.findMany({
+    where: { isActive: true, imageUrl: { not: null } },
+    select: { categoryId: true, imageUrl: true, sortOrder: true },
+    orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
+  });
 
   // First (lowest sortOrder) photographed product image per category.
   const imageByCategory = new Map<string, string>();
