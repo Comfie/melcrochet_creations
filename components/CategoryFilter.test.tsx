@@ -49,4 +49,11 @@ describe("CategoryFilter", () => {
     const allTag = getOpeningTag(html, 'href="/products"');
     expect(allTag).toContain("aria-current");
   });
+
+  it("wraps the pills in a horizontal scroll container", () => {
+    const html = renderToStaticMarkup(
+      <CategoryFilter categories={categories} activeSlug={undefined} />
+    );
+    expect(html).toContain("overflow-x-auto");
+  });
 });
