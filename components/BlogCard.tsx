@@ -1,5 +1,7 @@
 import Link from "next/link";
+import Image from "next/image";
 import ImagePlaceholder from "@/components/ImagePlaceholder";
+import { cld, IMG_SIZES } from "@/lib/cloudinary-url";
 
 type BlogPost = {
   id: string;
@@ -13,10 +15,17 @@ type BlogPost = {
 export default function BlogCard({ post }: { post: BlogPost }) {
   return (
     <Link href={`/blog/${post.slug}`} className="group flex flex-col border border-taupe/30 bg-cream">
-      <div className="aspect-[16/10] w-full overflow-hidden">
+      <div className="relative aspect-[16/10] w-full overflow-hidden">
         {post.coverImageUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={post.coverImageUrl} alt={post.title} className="h-full w-full object-cover" />
+          <Image
+            src={cld(post.coverImageUrl, "detail")}
+            alt={post.title}
+            fill
+            sizes={IMG_SIZES.card}
+            placeholder="blur"
+            blurDataURL={cld(post.coverImageUrl, "blur")}
+            className="object-cover"
+          />
         ) : (
           <ImagePlaceholder className="h-full w-full" />
         )}
