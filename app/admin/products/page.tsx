@@ -130,6 +130,10 @@ export default function ProductsPage() {
       setFormError("Price is required for fixed-price products.");
       return;
     }
+    if (form.isActive && !form.imageUrl) {
+      setFormError("Add at least one image before saving this product.");
+      return;
+    }
 
     const body = {
       name: form.name,
