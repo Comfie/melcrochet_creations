@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import ImagePlaceholder from "@/components/ImagePlaceholder";
+import Image from "next/image";
+import { Compass, Eye, Sparkles, Palette, Star, ShieldCheck, Heart, Briefcase } from "lucide-react";
 import StitchDivider from "@/components/StitchDivider";
 
 export const metadata: Metadata = {
@@ -9,26 +10,49 @@ export const metadata: Metadata = {
 };
 
 const VALUES = [
-  { name: "Quality", description: "Every product should be neat, durable and carefully finished." },
-  { name: "Creativity", description: "Designs should feel beautiful, fresh and personal." },
-  { name: "Excellence", description: "The business should improve its process with every order." },
-  { name: "Integrity", description: "Customers should receive honest updates and clear policies." },
-  { name: "Customer Satisfaction", description: "The experience should be warm, helpful and reliable." },
-  { name: "Professionalism", description: "MelCrochet should operate with records, systems and standards." },
+  { name: "Quality", description: "Every product should be neat, durable and carefully finished.", icon: Sparkles },
+  { name: "Creativity", description: "Designs should feel beautiful, fresh and personal.", icon: Palette },
+  { name: "Excellence", description: "The business should improve its process with every order.", icon: Star },
+  { name: "Integrity", description: "Customers should receive honest updates and clear policies.", icon: ShieldCheck },
+  { name: "Customer Satisfaction", description: "The experience should be warm, helpful and reliable.", icon: Heart },
+  { name: "Professionalism", description: "MelCrochet should operate with records, systems and standards.", icon: Briefcase },
 ];
 
 export default function AboutPage() {
   return (
     <>
-      <section className="bg-ink text-cream">
-        <div className="mx-auto max-w-6xl px-5 py-24">
-          <h1 className="text-hero max-w-2xl">Meet the Maker</h1>
+      <section className="relative flex min-h-[60vh] items-end overflow-hidden bg-ink text-cream">
+        <Image
+          src="/melissa.jpg"
+          alt="Melissa Ruvimbo Buchirai, founder of MelCrochet Gifted Hands, wrapped in a handmade crochet blanket"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/55 to-ink/35"
+        />
+        <div className="relative mx-auto w-full max-w-6xl px-5 py-20">
+          <p className="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-gold">
+            Our Story
+          </p>
+          <h1 className="mt-3 text-hero max-w-2xl">Meet the Maker</h1>
         </div>
       </section>
 
       <section className="bg-cream">
         <div className="mx-auto grid max-w-6xl gap-10 px-5 py-20 sm:grid-cols-2 sm:items-center">
-          <ImagePlaceholder className="aspect-[4/3] w-full order-2 sm:order-1" />
+          <div className="relative aspect-[3/4] w-full overflow-hidden border border-taupe/30 order-2 sm:order-1">
+            <Image
+              src="/melissa.jpg"
+              alt="Melissa Ruvimbo Buchirai, founder of MelCrochet Gifted Hands, wrapped in a handmade crochet blanket"
+              fill
+              sizes="(max-width: 640px) 100vw, 50vw"
+              className="object-cover"
+            />
+          </div>
           <div className="order-1 sm:order-2">
             <h2 className="text-section">Melissa Ruvimbo Buchirai</h2>
             <p className="mt-4 font-sans text-ink/70">
@@ -53,7 +77,8 @@ export default function AboutPage() {
         <div className="mx-auto max-w-6xl px-5 py-20">
           <div className="grid gap-8 sm:grid-cols-2">
             <div className="border border-taupe/30 p-8">
-              <p className="font-sans text-sm font-semibold uppercase tracking-wide text-brown">
+              <Compass className="h-6 w-6 text-brown" aria-hidden="true" />
+              <p className="mt-3 font-sans text-sm font-semibold uppercase tracking-wide text-brown">
                 Mission
               </p>
               <p className="mt-3 font-display text-xl">
@@ -62,7 +87,8 @@ export default function AboutPage() {
               </p>
             </div>
             <div className="border border-taupe/30 p-8">
-              <p className="font-sans text-sm font-semibold uppercase tracking-wide text-brown">
+              <Eye className="h-6 w-6 text-brown" aria-hidden="true" />
+              <p className="mt-3 font-sans text-sm font-semibold uppercase tracking-wide text-brown">
                 Vision
               </p>
               <p className="mt-3 font-display text-xl">
@@ -80,8 +106,12 @@ export default function AboutPage() {
           <h2 className="text-section">Our Values</h2>
           <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {VALUES.map((value) => (
-              <div key={value.name}>
-                <p className="font-display text-lg text-gold">{value.name}</p>
+              <div
+                key={value.name}
+                className="border border-cream/10 p-6 transition-colors hover:border-gold/40"
+              >
+                <value.icon className="h-6 w-6 text-gold" aria-hidden="true" />
+                <p className="mt-3 font-display text-lg text-gold">{value.name}</p>
                 <p className="mt-2 font-sans text-sm text-cream/70">{value.description}</p>
               </div>
             ))}
