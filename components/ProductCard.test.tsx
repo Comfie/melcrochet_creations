@@ -37,4 +37,16 @@ describe("ProductCard", () => {
     const html = renderToStaticMarkup(<ProductCard product={baseProduct} />);
     expect(html).not.toContain("Made to order");
   });
+
+  it("renders the product image routed through the card preset", () => {
+    const html = renderToStaticMarkup(
+      <ProductCard
+        product={{ ...baseProduct, imageUrl: "https://res.cloudinary.com/pk8vhsyp/image/upload/v1/melcrochet/x.jpg" }}
+      />
+    );
+    expect(html).toContain("<img");
+    const srcSetMatch = html.match(/srcSet="([^"]+)"/);
+    expect(srcSetMatch).not.toBeNull();
+    expect(decodeURIComponent(srcSetMatch![1])).toContain("f_auto,q_auto,c_fill,ar_1:1,w_600");
+  });
 });

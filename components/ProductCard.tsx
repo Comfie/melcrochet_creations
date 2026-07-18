@@ -1,8 +1,10 @@
 import Link from "next/link";
+import Image from "next/image";
 import ImagePlaceholder from "@/components/ImagePlaceholder";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { buildProductWhatsAppLink } from "@/lib/whatsapp";
 import { formatPrice } from "@/lib/format-price";
+import { cld, IMG_SIZES } from "@/lib/cloudinary-url";
 
 type Product = {
   id: string;
@@ -19,10 +21,17 @@ export default function ProductCard({ product }: { product: Product }) {
   return (
     <div className="flex flex-col border border-taupe/30 bg-cream">
       <Link href={`/products/${product.slug}`} className="flex flex-1 flex-col">
-        <div className="aspect-square w-full overflow-hidden">
+        <div className="relative aspect-square w-full overflow-hidden">
           {product.imageUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={product.imageUrl} alt={product.name} className="h-full w-full object-cover" />
+            <Image
+              src={cld(product.imageUrl, "card")}
+              alt={product.name}
+              fill
+              sizes={IMG_SIZES.card}
+              placeholder="blur"
+              blurDataURL={cld(product.imageUrl, "blur")}
+              className="object-cover"
+            />
           ) : (
             <ImagePlaceholder className="h-full w-full" />
           )}
