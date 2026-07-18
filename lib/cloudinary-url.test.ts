@@ -41,6 +41,12 @@ describe("cld", () => {
   it("returns non-Cloudinary URLs unchanged", () => {
     expect(cld("https://example.com/photo.jpg", "card")).toBe("https://example.com/photo.jpg");
   });
+
+  it("injects the blur transformation for placeholders", () => {
+    expect(cld(SAMPLE, "blur")).toBe(
+      "https://res.cloudinary.com/demo/image/upload/e_blur:1000,q_1,w_40,f_auto/v1699999999/products/abc123.jpg"
+    );
+  });
 });
 
 describe("IMG_SIZES", () => {

@@ -4,13 +4,14 @@
  * secure_url strings from the upload API (see lib/cloudinary.ts), so this
  * only needs to inject a transformation segment after "/upload/".
  */
-type Preset = "card" | "thumb" | "detail" | "og";
+type Preset = "card" | "thumb" | "detail" | "og" | "blur";
 
 const PRESETS: Record<Preset, string> = {
   card: "f_auto,q_auto,c_fill,ar_1:1,w_600",
   thumb: "f_auto,q_auto,c_fill,ar_1:1,w_150",
   detail: "f_auto,q_auto,w_1200",
   og: "f_auto,q_auto,c_fill,w_1200,h_630",
+  blur: "e_blur:1000,q_1,w_40,f_auto",
 };
 
 export function cld(url: string, preset: Preset): string {
