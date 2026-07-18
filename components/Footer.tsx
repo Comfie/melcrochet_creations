@@ -23,6 +23,7 @@ export default function Footer() {
               <li><Link href="/products" className="hover:text-cream">Products</Link></li>
               <li><Link href="/about" className="hover:text-cream">About</Link></li>
               <li><Link href="/blog" className="hover:text-cream">Blog</Link></li>
+              <li><Link href="/faq" className="hover:text-cream">FAQ</Link></li>
               <li><Link href="/contact" className="hover:text-cream">Contact</Link></li>
             </ul>
           </div>
