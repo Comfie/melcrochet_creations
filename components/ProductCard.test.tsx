@@ -49,4 +49,15 @@ describe("ProductCard", () => {
     expect(srcSetMatch).not.toBeNull();
     expect(decodeURIComponent(srcSetMatch![1])).toContain("f_auto,q_auto,c_fill,ar_1:1,w_600");
   });
+
+  it("carries its own text-ink color instead of inheriting ambient color", () => {
+    const html = renderToStaticMarkup(
+      <div className="text-cream">
+        <ProductCard product={baseProduct} />
+      </div>
+    );
+    const rootMatch = html.match(/<div class="([^"]*border-taupe\/30[^"]*)"/);
+    expect(rootMatch).not.toBeNull();
+    expect(rootMatch![1]).toContain("text-ink");
+  });
 });

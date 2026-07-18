@@ -19,7 +19,7 @@ type Product = {
 
 export default function ProductCard({ product }: { product: Product }) {
   return (
-    <div className="flex flex-col border border-taupe/30 bg-cream">
+    <div className="flex flex-col border border-taupe/30 bg-cream text-ink">
       <Link href={`/products/${product.slug}`} className="flex flex-1 flex-col">
         <div className="relative aspect-square w-full overflow-hidden">
           {product.imageUrl ? (
