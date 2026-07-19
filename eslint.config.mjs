@@ -12,9 +12,6 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
-    // Reference bundle from the improvement spec — example code, not part
-    // of the app; excluded from tsc in tsconfig.json for the same reason.
-    "docs/new_spec/**",
   ]),
 ]);
 
