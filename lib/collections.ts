@@ -13,6 +13,12 @@ export type Collection = {
   tagline: string;
   /** Category slugs (see prisma/seed-data.ts) in display order. */
   categorySlugs: readonly string[];
+  /**
+   * Product slugs to try first for the collection's lead image, so e.g.
+   * Crochet Fashion leads with adult pieces rather than whichever photographed
+   * product happens to sort first. Falls back to catalogue order.
+   */
+  leadProductSlugs?: readonly string[];
 };
 
 export const COLLECTIONS: readonly Collection[] = [
@@ -21,12 +27,14 @@ export const COLLECTIONS: readonly Collection[] = [
     name: "Crochet Fashion",
     tagline: "Sweaters and hats, handmade to wear with intent.",
     categorySlugs: ["adult-sweaters", "hats"],
+    leadProductSlugs: ["adult-sweater", "adult-ruffle-bucket-hat", "adult-beanie-hat"],
   },
   {
     slug: "bags-accessories",
     name: "Bags & Accessories",
     tagline: "Everyday bags and finishing touches, stitched by hand.",
     categorySlugs: ["bags", "scrunchies"],
+    leadProductSlugs: ["casual-handbag-with-accessories", "laptop-bag"],
   },
   {
     slug: "baby-kids",
