@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { buildWhatsAppLink, buildProductWhatsAppLink, buildOrderMessage } from "./whatsapp";
+import {
+  buildWhatsAppLink,
+  buildProductWhatsAppLink,
+  buildOrderMessage,
+  buildCustomOrderMessage,
+} from "./whatsapp";
 
 describe("buildWhatsAppLink", () => {
   it("builds a wa.me link with the default message when none given", () => {
@@ -47,6 +52,27 @@ describe("buildOrderMessage", () => {
     expect(message).toBe(
       "Hi MelCrochet! I'd like to order the Scrunchie.\n" +
         "https://melcrochet-creations.vercel.app/products/scrunchie"
+    );
+  });
+});
+
+describe("buildCustomOrderMessage", () => {
+  it("falls back to a generic request when nothing is filled in", () => {
+    expect(buildCustomOrderMessage()).toBe("Hi MelCrochet! I'd like to request a custom piece.");
+  });
+
+  it("includes only the answered fields, trimmed, in a fixed order", () => {
+    const message = buildCustomOrderMessage({
+      piece: " Throw Blanket ",
+      colours: "Cream and brown",
+      size: "",
+      neededBy: "15 December",
+      details: "  ",
+    });
+    expect(message).toBe(
+      "Hi MelCrochet! I'd like to request a custom Throw Blanket.\n" +
+        "Colours: Cream and brown\n" +
+        "Needed by: 15 December"
     );
   });
 });

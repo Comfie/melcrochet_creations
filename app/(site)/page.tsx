@@ -1,151 +1,130 @@
-import Image from "next/image";
-import Link from "next/link";
-import { getCategoriesWithImages, getProducts, getTestimonials } from "@/lib/queries";
-import { buildWhatsAppLink } from "@/lib/whatsapp";
-import WhatsAppButton from "@/components/WhatsAppButton";
-import CategoryTile from "@/components/CategoryTile";
-import ProductCard from "@/components/ProductCard";
-import TestimonialsCarousel from "@/components/TestimonialsCarousel";
-import StitchDivider from "@/components/StitchDivider";
+import { getCategories, getProducts, getPublishedBlogPosts, getTestimonials } from "@/lib/queries";
+import { COLLECTIONS } from "@/lib/collections";
+import { diversePhotographed, photographedIn, toCardProduct } from "@/lib/catalogue";
 import { LocalBusinessJsonLd } from "@/components/seo/JsonLd";
+import Hero from "@/components/home/Hero";
+import Marquee from "@/components/home/Marquee";
+import CollectionsShowcase from "@/components/home/CollectionsShowcase";
+import SignaturePieces from "@/components/home/SignaturePieces";
+import ArtOfMaking from "@/components/home/ArtOfMaking";
+import FounderFeature from "@/components/home/FounderFeature";
+import BespokeFeature from "@/components/home/BespokeFeature";
+import StudioGallery from "@/components/home/StudioGallery";
+import TestimonialsCarousel from "@/components/TestimonialsCarousel";
+import BlogCard from "@/components/BlogCard";
+import SectionHeading from "@/components/ui/SectionHeading";
+import { TextLink } from "@/components/ui/Button";
 
 export const revalidate = 60;
 
 export default async function Home() {
-  // Sequential, not Promise.all: see the comment in getCategoriesWithImages
-  // for why this page avoids opening several Postgres connections at once.
-  const categories = await getCategoriesWithImages();
-  const featured = await getProducts({ featured: true });
+  // Sequential, not Promise.all: this app's DATABASE_URL is a direct
+  // (non-pooled) Railway connection, and opening several Postgres
+  // connections at once during Vercel's build has dropped connections
+  // (P1017). One catalogue query feeds every product-driven section.
+  const categories = await getCategories();
+  const products = await getProducts();
   const testimonials = await getTestimonials();
+  const posts = await getPublishedBlogPosts();
+
+  const categoryName = new Map(categories.map((c) => [c.slug, c.name]));
+  const photographed = products.filter((p) => p.imageUrl);
+  const asImage = (p: { imageUrl: string | null; name: string; slug: string }) => ({
+    url: p.imageUrl as string,
+    name: p.name,
+    slug: p.slug,
+  });
+
+  const featured = products.filter((p) => p.featured);
+  const signature = (featured.length > 0 ? featured : photographed).slice(0, 8).map(toCardProduct);
+
+  const heroInset = featured.find((p) => p.imageUrl) ?? photographed[0];
+
+  const collections = COLLECTIONS.map((c) => ({
+    slug: c.slug,
+    name: c.name,
+    tagline: c.tagline,
+    categories: c.categorySlugs.flatMap((slug) => categoryName.get(slug) ?? []),
+    imageUrl: photographedIn(products, c.categorySlugs)[0]?.imageUrl ?? null,
+  }));
+
+  // Craft collage: a home piece and a fashion/accessory piece, when photographed.
+  const craftImages = [
+    photographedIn(products, ["throw-blankets", "baby-blankets", "baskets"])[1] ??
+      photographedIn(products, ["throw-blankets", "baby-blankets", "baskets"])[0],
+    photographedIn(products, ["scrunchies", "bags", "hats"])[0],
+  ]
+    .filter((p): p is (typeof products)[number] => Boolean(p))
+    .map(asImage);
+
+  const bespoke =
+    photographedIn(products, ["custom-orders", "gift-sets"])[0] ??
+    photographedIn(products, ["kids-dresses", "adult-sweaters"])[0];
+
+  const studio = diversePhotographed(products, 6).map(asImage);
 
   return (
     <>
       <LocalBusinessJsonLd />
 
-      {/* Hero */}
-      <section className="relative flex min-h-[70vh] items-end overflow-hidden bg-ink text-cream">
-        <Image
-          src="/landing-page-hero.jpg"
-          alt="MelCrochet handmade blankets, hats, and scrunchies displayed at a market stall"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
-        />
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/55 to-ink/35"
-        />
-        <div className="relative mx-auto flex w-full max-w-6xl flex-col items-start gap-6 px-5 py-20 sm:py-28">
-          <p className="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-gold">
-            Handmade in South Africa
+      <Hero inset={heroInset ? { url: heroInset.imageUrl as string, name: heroInset.name } : null} />
+      <Marquee items={categories.map((c) => c.name)} />
+
+      {/* Brand statement */}
+      <section aria-label="About MelCrochet" className="bg-cream">
+        <div className="shell grid gap-10 py-24 sm:py-32 lg:grid-cols-12">
+          <p className="label text-gold-deep lg:col-span-3">Handmade &middot; South Africa</p>
+          <p className="reveal font-display text-[clamp(1.75rem,1.2rem+2.2vw,3.5rem)] font-light leading-[1.15] lg:col-span-9">
+            MelCrochet Gifted Hands makes contemporary crochet — fashion,
+            blankets, bags and gifts — <span className="italic text-brown">slowly, carefully and entirely by hand.</span>{" "}
+            Each piece is made to order, which means it is made for you.
           </p>
-          <h1 className="text-hero max-w-2xl">
-            Providing Warmth, Comfort &amp; Timeless Handmade Creations
-          </h1>
-          <p className="max-w-xl font-sans text-cream/80">
-            Every MelCrochet piece is made by hand, with patience and care —
-            blankets, bags, hats and gifts designed to last.
-          </p>
-          <div className="flex flex-wrap items-center gap-3">
-            <WhatsAppButton href={buildWhatsAppLink()} label="Chat with us on WhatsApp" />
-            <Link
-              href="/products"
-              className="inline-flex items-center rounded-full border border-cream/40 px-5 py-2.5 font-sans text-sm font-semibold text-cream transition-colors hover:border-cream hover:bg-cream/10"
-            >
-              Browse products
-            </Link>
-          </div>
         </div>
       </section>
 
-      <StitchDivider className="text-ink" />
+      <CollectionsShowcase collections={collections} />
+      <SignaturePieces products={signature} />
+      <ArtOfMaking images={craftImages} />
+      <FounderFeature />
+      <BespokeFeature image={bespoke ? asImage(bespoke) : null} />
 
-      {/* Category grid */}
-      <section className="bg-cream">
-        <div className="mx-auto max-w-6xl px-5 py-20">
-          <h2 className="text-section">Shop by Category</h2>
-          <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-            {categories.map((category) => (
-              <CategoryTile
-                key={category.id}
-                name={category.name}
-                slug={category.slug}
-                blurb={category.blurb}
-                imageUrl={category.imageUrl}
+      {testimonials.length > 0 && (
+        <section aria-labelledby="testimonials-title" className="bg-cream py-24 sm:py-32">
+          <div className="shell">
+            <h2 id="testimonials-title" className="label text-center text-gold-deep">
+              Kind Words
+            </h2>
+            <div className="mt-10">
+              <TestimonialsCarousel testimonials={testimonials} />
+            </div>
+          </div>
+        </section>
+      )}
+
+      {posts.length > 0 && (
+        <section aria-labelledby="journal-title" className="border-t border-ink/10 bg-cream py-24 sm:py-32">
+          <div className="shell">
+            <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+              <SectionHeading
+                id="journal-title"
+                index="06"
+                eyebrow="The Journal"
+                title={<>Stories from <span className="italic">the workbench.</span></>}
               />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Featured pieces */}
-      {featured.length > 0 && (
-        <section className="bg-ink text-cream">
-          <div className="mx-auto max-w-6xl px-5 py-20">
-            <h2 className="text-section">Featured Pieces</h2>
-            <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {featured.slice(0, 6).map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={{
-                    id: product.id,
-                    slug: product.slug,
-                    name: product.name,
-                    priceType: product.priceType,
-                    price: product.price,
-                    currency: product.currency,
-                    imageUrl: product.imageUrl,
-                    leadTime: product.leadTime,
-                  }}
-                />
+              <TextLink href="/blog" className="shrink-0 text-ink">
+                Read the journal
+              </TextLink>
+            </div>
+            <div className="mt-14 grid gap-12 sm:grid-cols-2 lg:grid-cols-3 lg:gap-10">
+              {posts.slice(0, 3).map((post, i) => (
+                <BlogCard key={post.id} post={post} index={i + 1} />
               ))}
             </div>
           </div>
         </section>
       )}
 
-      {/* About teaser */}
-      <section className="bg-cream">
-        <div className="mx-auto grid max-w-6xl gap-10 px-5 py-20 sm:grid-cols-2 sm:items-center">
-          <div>
-            <h2 className="text-section">Meet the Maker</h2>
-            <p className="mt-4 font-sans text-ink/70">
-              MelCrochet Gifted Hands is led by founder Melissa Ruvimbo Buchirai,
-              whose passion for crochet has grown into a business built on gifted
-              hands, patient craft, and the desire to make handmade items customers
-              can treasure.
-            </p>
-            <Link
-              href="/about"
-              className="mt-6 inline-block font-sans text-sm font-semibold uppercase tracking-wide text-brown hover:text-ink"
-            >
-              Read our story &rarr;
-            </Link>
-          </div>
-          <div className="relative aspect-[3/4] w-full overflow-hidden border border-taupe/30">
-            <Image
-              src="/melissa.jpg"
-              alt="Melissa Ruvimbo Buchirai, founder of MelCrochet Gifted Hands, wrapped in a handmade crochet blanket"
-              fill
-              sizes="(max-width: 640px) 100vw, 50vw"
-              className="object-cover"
-            />
-          </div>
-        </div>
-      </section>
-
-      <StitchDivider className="text-taupe" />
-
-      {/* Testimonials */}
-      <section className="bg-cream">
-        <div className="mx-auto max-w-6xl px-5 py-20">
-          <h2 className="text-section text-center">What Customers Say</h2>
-          <div className="mt-10">
-            <TestimonialsCarousel testimonials={testimonials} />
-          </div>
-        </div>
-      </section>
+      <StudioGallery items={studio} />
     </>
   );
 }

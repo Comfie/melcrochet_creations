@@ -10,6 +10,7 @@ import {
   getPublishedBlogPosts,
   getBlogPostBySlug,
   getCategoriesWithImages,
+  getRelatedProducts,
 } from "./queries";
 
 describe("getCategories", () => {
@@ -53,6 +54,36 @@ describe("getProducts", () => {
     const featured = await getProducts({ featured: true });
     for (const p of featured) {
       expect(p.featured).toBe(true);
+    }
+  });
+
+  it("filters by any of several category slugs (collections)", async () => {
+    const products = await getProducts({ categorySlugs: ["hats", "baskets"] });
+    expect(products.length).toBeGreaterThan(0);
+    for (const p of products) {
+      expect(["hats", "baskets"]).toContain(p.category.slug);
+    }
+  });
+
+  it("searches name, description and category case-insensitively", async () => {
+    const products = await getProducts({ search: "  THROW blanket " });
+    expect(products.length).toBeGreaterThan(0);
+    for (const p of products) {
+      const haystack = `${p.name} ${p.description} ${p.category.name}`.toLowerCase();
+      expect(haystack).toContain("throw blanket");
+    }
+  });
+});
+
+describe("getRelatedProducts", () => {
+  it("excludes the product itself and respects the limit", async () => {
+    const product = await getProductBySlug("king-throw-blanket");
+    expect(product).not.toBeNull();
+    const related = await getRelatedProducts(product!, ["throw-blankets", "baskets"], 4);
+    expect(related.length).toBeLessThanOrEqual(4);
+    expect(related.map((p) => p.id)).not.toContain(product!.id);
+    for (const p of related) {
+      expect(["throw-blankets", "baskets"]).toContain(p.category.slug);
     }
   });
 });

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { Compass, Eye, Sparkles, Palette, Star, ShieldCheck, Heart, Briefcase } from "lucide-react";
-import StitchDivider from "@/components/StitchDivider";
+import { ButtonLink } from "@/components/ui/Button";
+import { FOUNDER_PHOTO_ALT } from "@/components/home/FounderFeature";
 
 export const metadata: Metadata = {
   title: "About MelCrochet Gifted Hands",
@@ -10,111 +10,173 @@ export const metadata: Metadata = {
 };
 
 const VALUES = [
-  { name: "Quality", description: "Every product should be neat, durable and carefully finished.", icon: Sparkles },
-  { name: "Creativity", description: "Designs should feel beautiful, fresh and personal.", icon: Palette },
-  { name: "Excellence", description: "The business should improve its process with every order.", icon: Star },
-  { name: "Integrity", description: "Customers should receive honest updates and clear policies.", icon: ShieldCheck },
-  { name: "Customer Satisfaction", description: "The experience should be warm, helpful and reliable.", icon: Heart },
-  { name: "Professionalism", description: "MelCrochet should operate with records, systems and standards.", icon: Briefcase },
+  { name: "Quality", description: "Every product should be neat, durable and carefully finished." },
+  { name: "Creativity", description: "Designs should feel beautiful, fresh and personal." },
+  { name: "Excellence", description: "The business should improve its process with every order." },
+  { name: "Integrity", description: "Customers should receive honest updates and clear policies." },
+  { name: "Customer Satisfaction", description: "The experience should be warm, helpful and reliable." },
+  { name: "Professionalism", description: "MelCrochet should operate with records, systems and standards." },
 ];
+
+function Chapter({ numeral, title, tone = "light" }: { numeral: string; title: string; tone?: "light" | "dark" }) {
+  return (
+    <p className={`label flex items-center gap-3 ${tone === "dark" ? "text-gold" : "text-gold-deep"}`}>
+      <span>Chapter {numeral}</span>
+      <span aria-hidden="true" className="h-px w-8 bg-current opacity-60" />
+      <span>{title}</span>
+    </p>
+  );
+}
 
 export default function AboutPage() {
   return (
     <>
-      <section className="relative flex min-h-[60vh] items-end overflow-hidden bg-ink text-cream">
-        <Image
-          src="/melissa.jpg"
-          alt="Melissa Ruvimbo Buchirai, founder of MelCrochet Gifted Hands, wrapped in a handmade crochet blanket"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
-        />
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/55 to-ink/35"
-        />
-        <div className="relative mx-auto w-full max-w-6xl px-5 py-20">
-          <p className="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-gold">
-            Our Story
-          </p>
-          <h1 className="mt-3 text-hero max-w-2xl">Meet the Maker</h1>
+      {/* Opening spread */}
+      <section className="overflow-hidden bg-cream">
+        <div className="shell grid gap-12 pb-20 pt-14 sm:pt-20 lg:grid-cols-12 lg:gap-16 lg:pb-28">
+          <div className="flex flex-col justify-between lg:col-span-7">
+            <div>
+              <p className="enter label text-gold-deep">Our Story</p>
+              <h1 className="enter mt-6 text-hero" style={{ "--i": 1 } as React.CSSProperties}>
+                Gifted hands,
+                <br />
+                <span className="italic text-brown">patient craft.</span>
+              </h1>
+            </div>
+            <p
+              className="enter mt-12 max-w-xl font-display text-lede font-light"
+              style={{ "--i": 2 } as React.CSSProperties}
+            >
+              Welcome to MelCrochet Gifted Hands — a handmade crochet brand created
+              with passion, patience and care.
+            </p>
+          </div>
+          <figure className="lg:col-span-5">
+            <div className="enter relative aspect-[4/5] overflow-hidden" style={{ "--i": 2 } as React.CSSProperties}>
+              <Image
+                src="/melissa.jpg"
+                alt={FOUNDER_PHOTO_ALT}
+                fill
+                preload
+                sizes="(max-width: 1024px) 100vw, 42vw"
+                className="object-cover object-[50%_30%]"
+              />
+            </div>
+            <figcaption className="label mt-4 text-ink/65">Melissa Ruvimbo Buchirai, Founder</figcaption>
+          </figure>
         </div>
       </section>
 
-      <section className="bg-cream">
-        <div className="mx-auto grid max-w-6xl gap-10 px-5 py-20 sm:grid-cols-2 sm:items-center">
-          <div className="relative aspect-[3/4] w-full overflow-hidden border border-taupe/30 order-2 sm:order-1">
-            <Image
-              src="/melissa.jpg"
-              alt="Melissa Ruvimbo Buchirai, founder of MelCrochet Gifted Hands, wrapped in a handmade crochet blanket"
-              fill
-              sizes="(max-width: 640px) 100vw, 50vw"
-              className="object-cover"
-            />
+      {/* I — The Maker */}
+      <section className="border-t border-ink/10 bg-cream py-24 sm:py-32">
+        <div className="shell grid gap-12 lg:grid-cols-12">
+          <div className="lg:col-span-4">
+            <Chapter numeral="I" title="The Maker" />
+            <h2 className="mt-6 text-section">Melissa Ruvimbo Buchirai</h2>
           </div>
-          <div className="order-1 sm:order-2">
-            <h2 className="text-section">Melissa Ruvimbo Buchirai</h2>
-            <p className="mt-4 font-sans text-ink/70">
+          <div className="reveal grid gap-8 font-sans text-[1.0625rem] leading-relaxed text-ink/80 sm:grid-cols-2 lg:col-span-7 lg:col-start-6">
+            <p>
               MelCrochet is led by founder Melissa Ruvimbo Buchirai, whose passion
               for crochet has grown into a business vision. The brand is built
               around gifted hands, patient craft and the desire to make handmade
               items that customers can treasure.
             </p>
-            <p className="mt-4 font-sans text-ink/70">
-              Welcome to MelCrochet Gifted Hands — a handmade crochet brand
-              created with passion, patience and care. Every item is more than a
-              product; it&apos;s a carefully crafted piece designed to bring
-              warmth, beauty and comfort into everyday life.
+            <p>
+              Every item is more than a product; it&apos;s a carefully crafted piece
+              designed to bring warmth, beauty and comfort into everyday life.
             </p>
           </div>
         </div>
       </section>
 
-      <StitchDivider className="text-taupe" />
-
-      <section className="bg-cream">
-        <div className="mx-auto max-w-6xl px-5 py-20">
-          <div className="grid gap-8 sm:grid-cols-2">
-            <div className="border border-taupe/30 p-8">
-              <Compass className="h-6 w-6 text-brown" aria-hidden="true" />
-              <p className="mt-3 font-sans text-sm font-semibold uppercase tracking-wide text-brown">
-                Mission
+      {/* II — The Craft */}
+      <section className="bg-sand py-24 sm:py-32">
+        <div className="shell grid gap-12 lg:grid-cols-12 lg:items-center lg:gap-16">
+          <div className="reveal-img relative aspect-square overflow-hidden lg:col-span-6">
+            <Image
+              src="/melissa.jpg"
+              alt="Close-up of chunky hand-crocheted loops in cream, caramel and chocolate brown"
+              fill
+              sizes="(max-width: 640px) 240vw, 120vw"
+              className="origin-[40%_85%] scale-[2.4] object-cover object-[40%_85%]"
+            />
+          </div>
+          <div className="lg:col-span-5 lg:col-start-8">
+            <Chapter numeral="II" title="The Craft" />
+            <h2 className="mt-6 text-section">
+              Made slowly, <span className="italic">on purpose.</span>
+            </h2>
+            <div className="mt-8 space-y-5 font-sans leading-relaxed text-ink/75">
+              <p>
+                Every MelCrochet piece is made by hand, one stitch at a time — the
+                blankets, bags, sweaters, hats and gifts alike.
               </p>
-              <p className="mt-3 font-display text-xl">
-                To create premium handmade crochet products that combine comfort,
-                beauty and quality while providing exceptional customer service.
-              </p>
-            </div>
-            <div className="border border-taupe/30 p-8">
-              <Eye className="h-6 w-6 text-brown" aria-hidden="true" />
-              <p className="mt-3 font-sans text-sm font-semibold uppercase tracking-wide text-brown">
-                Vision
-              </p>
-              <p className="mt-3 font-display text-xl">
-                To become one of Africa&apos;s leading handmade crochet brands,
-                supplying homes, retailers and international markets with
-                luxurious handcrafted products.
+              <p>
+                Because each piece is made to order, it can be made in the
+                colours and sizes you choose. Neat stitches and careful finishing
+                mean it is made to be used, loved and kept.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="bg-ink text-cream">
-        <div className="mx-auto max-w-6xl px-5 py-20">
-          <h2 className="text-section">Our Values</h2>
-          <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {VALUES.map((value) => (
-              <div
-                key={value.name}
-                className="border border-cream/10 p-6 transition-colors hover:border-gold/40"
-              >
-                <value.icon className="h-6 w-6 text-gold" aria-hidden="true" />
-                <p className="mt-3 font-display text-lg text-gold">{value.name}</p>
-                <p className="mt-2 font-sans text-sm text-cream/70">{value.description}</p>
-              </div>
+      {/* III — Mission & Vision */}
+      <section className="bg-ink py-24 text-cream sm:py-32">
+        <div className="shell">
+          <Chapter numeral="III" title="Mission & Vision" tone="dark" />
+          <div className="mt-14 grid gap-16 lg:grid-cols-2 lg:gap-20">
+            <figure className="reveal">
+              <figcaption className="label text-cream/60">Our Mission</figcaption>
+              <blockquote className="mt-6 font-display text-[clamp(1.75rem,1.3rem+1.6vw,2.75rem)] font-light leading-[1.2]">
+                To create premium handmade crochet products that combine comfort,
+                beauty and quality while providing exceptional customer service.
+              </blockquote>
+            </figure>
+            <figure className="reveal">
+              <figcaption className="label text-cream/60">Our Vision</figcaption>
+              <blockquote className="mt-6 font-display text-[clamp(1.75rem,1.3rem+1.6vw,2.75rem)] font-light italic leading-[1.2] text-gold">
+                To become one of Africa&apos;s leading handmade crochet brands,
+                supplying homes, retailers and international markets with
+                luxurious handcrafted products.
+              </blockquote>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      {/* IV — Values */}
+      <section className="bg-cream py-24 sm:py-32">
+        <div className="shell">
+          <Chapter numeral="IV" title="Our Values" />
+          <h2 className="mt-6 max-w-2xl text-section">
+            What every piece <span className="italic">stands for.</span>
+          </h2>
+          <ol className="mt-16 grid border-t border-ink/15 sm:grid-cols-2 lg:grid-cols-3">
+            {VALUES.map((value, i) => (
+              <li key={value.name} className="reveal border-b border-ink/15 py-10 sm:pr-10">
+                <span className="font-display text-4xl italic text-gold-deep">{String(i + 1).padStart(2, "0")}</span>
+                <h3 className="mt-5 font-display text-2xl">{value.name}</h3>
+                <p className="mt-2 max-w-xs font-sans text-sm leading-relaxed text-ink/70">{value.description}</p>
+              </li>
             ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* Closing */}
+      <section className="bg-brown py-24 text-cream sm:py-32">
+        <div className="shell flex flex-col items-start gap-10 lg:flex-row lg:items-end lg:justify-between">
+          <h2 className="max-w-3xl text-display">
+            Find the piece that&apos;s <span className="italic text-gold">yours.</span>
+          </h2>
+          <div className="flex flex-col gap-4 sm:flex-row">
+            <ButtonLink href="/collections" variant="gold" size="lg">
+              Explore the Collection
+            </ButtonLink>
+            <ButtonLink href="/custom-orders" variant="outline-light" size="lg">
+              Request a Custom Piece
+            </ButtonLink>
           </div>
         </div>
       </section>

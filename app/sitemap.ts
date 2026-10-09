@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { SITE } from "@/lib/site";
+import { COLLECTIONS } from "@/lib/collections";
 import { getProducts, getPublishedBlogPosts, getCategories } from "@/lib/queries";
 
 export const revalidate = 3600;
@@ -15,9 +16,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     { url: base, changeFrequency: "weekly", priority: 1 },
     { url: `${base}/products`, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${base}/collections`, changeFrequency: "weekly", priority: 0.8 },
+    { url: `${base}/custom-orders`, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${base}/blog`, changeFrequency: "weekly", priority: 0.6 },
     { url: `${base}/about`, changeFrequency: "monthly", priority: 0.5 },
     { url: `${base}/contact`, changeFrequency: "monthly", priority: 0.5 },
     { url: `${base}/faq`, changeFrequency: "monthly", priority: 0.6 },
+
+    ...COLLECTIONS.map((c) => ({
+      url: `${base}/products?collection=${c.slug}`,
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    })),
 
     ...categories.map((c) => ({
       url: `${base}/products?category=${c.slug}`,

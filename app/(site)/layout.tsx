@@ -7,9 +7,9 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
   return (
     <>
       <Nav />
-      <main>{children}</main>
+      <main id="main">{children}</main>
       <Footer />
-      <WhatsAppButton href={buildWhatsAppLink()} variant="floating" />
+      <WhatsAppButton href={buildWhatsAppLink()} variant="floating" label="Chat with MelCrochet on WhatsApp" />
     </>
   );
 }

@@ -4,10 +4,15 @@
  * secure_url strings from the upload API (see lib/cloudinary.ts), so this
  * only needs to inject a transformation segment after "/upload/".
  */
-type Preset = "card" | "thumb" | "detail" | "og" | "blur";
+type Preset = "card" | "portrait" | "gallery" | "wide" | "thumb" | "detail" | "og" | "blur";
 
 const PRESETS: Record<Preset, string> = {
   card: "f_auto,q_auto,c_fill,ar_1:1,w_600",
+  // Product photography is shot portrait on phones (3:4). Portrait crops keep
+  // the whole piece in frame where 1:1 crops were cutting it off.
+  portrait: "f_auto,q_auto,c_fill,g_auto,ar_3:4,w_900",
+  gallery: "f_auto,q_auto,c_fill,g_auto,ar_4:5,w_1400",
+  wide: "f_auto,q_auto,c_fill,g_auto,ar_16:10,w_1600",
   thumb: "f_auto,q_auto,c_fill,ar_1:1,w_150",
   detail: "f_auto,q_auto,w_1200",
   og: "f_auto,q_auto,c_fill,w_1200,h_630",
@@ -22,6 +27,9 @@ export function cld(url: string, preset: Preset): string {
 export const IMG_SIZES = {
   hero: "100vw",
   card: "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 300px",
+  portrait: "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw",
+  feature: "(max-width: 768px) 100vw, 50vw",
+  gallery: "(max-width: 1024px) 100vw, 58vw",
   detail: "(max-width: 768px) 100vw, 600px",
   thumb: "80px",
 } as const;
