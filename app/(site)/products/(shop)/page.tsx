@@ -2,13 +2,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Form from "next/form";
 import { Search } from "lucide-react";
-import { getCategories, getCategoryBySlug, getProducts } from "@/lib/queries";
+import { getCategories, getCategoriesWithProductCounts, getProducts } from "@/lib/queries";
 import { COLLECTIONS, collectionForCategory, getCollectionBySlug } from "@/lib/collections";
 import { toCardProduct } from "@/lib/catalogue";
 import { buildCustomOrderMessage, buildWhatsAppLink } from "@/lib/whatsapp";
 import CategoryFilter from "@/components/CategoryFilter";
 import ProductCard from "@/components/ProductCard";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import { BreadcrumbJsonLd, type BreadcrumbItem } from "@/components/seo/JsonLd";
+import { categorySeo, pageMetadata } from "@/lib/seo";
+import { ANALYTICS_EVENTS, analyticsAttributes } from "@/lib/analytics";
 
 export const revalidate = 60;
 
@@ -16,42 +19,52 @@ type Props = {
   searchParams: Promise<{ category?: string; collection?: string; q?: string }>;
 };
 
+const SHOP_SEO = {
+  title: "Shop Handmade Crochet Products in South Africa",
+  description:
+    "Browse handmade crochet fashion, blankets, bags, hats, baskets and gifts — made to order in South Africa. Order via WhatsApp.",
+} as const;
+
+/**
+ * Category and collection views are the shop's landing pages, so each gets
+ * its own keyword-mapped title and a self-referencing canonical. Searches,
+ * unknown slugs and empty categories are kept out of the index (noindex,
+ * follow) so thin or junk URLs never compete with real pages.
+ */
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const { category, collection, q } = await searchParams;
 
-  if (q) {
+  if (q?.trim()) {
     return {
-      title: `Search: ${q}`,
+      title: `Search: ${q.trim()}`,
       robots: { index: false, follow: true },
-      alternates: { canonical: "/products" },
     };
   }
 
   if (category) {
-    const categoryRecord = await getCategoryBySlug(category);
-    const label = categoryRecord?.name ?? category;
-    return {
-      title: `Handmade ${label}`,
-      description: `Shop handmade ${label.toLowerCase()} from MelCrochet Gifted Hands — made to order in South Africa. Order via WhatsApp.`,
-      alternates: { canonical: `/products?category=${category}` },
-    };
+    const record = (await getCategoriesWithProductCounts()).find((c) => c.slug === category);
+    if (!record) {
+      return pageMetadata({ ...SHOP_SEO, path: "/products", noindex: true });
+    }
+    const seo = categorySeo(record);
+    return pageMetadata({
+      title: seo.title,
+      description: seo.description,
+      path: `/products?category=${record.slug}`,
+      noindex: record._count.products === 0,
+    });
   }
 
   const collectionRecord = getCollectionBySlug(collection);
   if (collectionRecord) {
-    return {
-      title: `${collectionRecord.name} — Handmade Crochet`,
-      description: `${collectionRecord.tagline} Made to order by MelCrochet Gifted Hands in South Africa. Order via WhatsApp.`,
-      alternates: { canonical: `/products?collection=${collectionRecord.slug}` },
-    };
+    return pageMetadata({
+      title: collectionRecord.seo.title,
+      description: collectionRecord.seo.description,
+      path: `/products?collection=${collectionRecord.slug}`,
+    });
   }
 
-  return {
-    title: "Shop Handmade Crochet Products",
-    description:
-      "Browse handmade crochet fashion, blankets, bags, hats, baskets and gifts — made to order in South Africa. Order via WhatsApp.",
-    alternates: { canonical: "/products" },
-  };
+  return pageMetadata({ ...SHOP_SEO, path: "/products" });
 }
 
 const INTERSTITIAL_AFTER = 7;
@@ -87,6 +100,17 @@ export default async function ProductsPage({ searchParams }: Props) {
   const cards = products.map(toCardProduct);
   const showInterstitial = !search && cards.length > INTERSTITIAL_AFTER;
 
+  const breadcrumbs: BreadcrumbItem[] = [
+    { name: "Home", path: "/" },
+    { name: "Shop", path: "/products" },
+    ...(activeCollection && !search
+      ? [{ name: activeCollection.name, path: `/products?collection=${activeCollection.slug}` }]
+      : []),
+    ...(activeCategory && !search
+      ? [{ name: activeCategory.name, path: `/products?category=${activeCategory.slug}` }]
+      : []),
+  ];
+
   const tabClass = (active: boolean) =>
     `label shrink-0 border-b py-4 transition-colors ${
       active ? "border-ink text-ink" : "border-transparent text-ink/65 hover:text-ink"
@@ -94,6 +118,8 @@ export default async function ProductsPage({ searchParams }: Props) {
 
   return (
     <>
+      {!search && <BreadcrumbJsonLd items={breadcrumbs} />}
+
       {/* Editorial header */}
       <section className="bg-cream">
         <div className="shell pb-10 pt-14 sm:pt-20">
@@ -190,6 +216,9 @@ export default async function ProductsPage({ searchParams }: Props) {
             </p>
           )}
 
+          {/* Product cards are h3s; this keeps the outline h1 → h2 → h3 without changing the design. */}
+          <h2 className="sr-only">{search ? "Search results" : `${title} — handmade crochet pieces`}</h2>
+
           {cards.length === 0 ? (
             <div className="mx-auto max-w-xl py-24 text-center">
               <p className="font-display text-section">
@@ -202,6 +231,10 @@ export default async function ProductsPage({ searchParams }: Props) {
                 href={buildWhatsAppLink(buildCustomOrderMessage({ piece: search ?? activeCategory?.name ?? null }))}
                 label="Ask about a custom piece"
                 className="mt-8"
+                dataAttributes={analyticsAttributes(ANALYTICS_EVENTS.customOrderEnquiry, {
+                  piece: search ? "search" : activeCategory?.name ?? "unspecified",
+                  link_location: search ? "search_no_results" : "empty_category",
+                })}
               />
             </div>
           ) : (

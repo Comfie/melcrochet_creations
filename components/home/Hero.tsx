@@ -24,6 +24,7 @@ export default function Hero({
               alt="Chunky handmade MelCrochet throw blankets in dusty pink, with hand-crocheted hats and bags beside them"
               fill
               preload
+              fetchPriority="high"
               sizes="(max-width: 1024px) 100vw, 50vw"
               className="animate-fade object-cover object-[30%_60%] lg:object-[28%_55%]"
             />

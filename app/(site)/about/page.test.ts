@@ -3,7 +3,7 @@ import { metadata } from "./page";
 
 describe("about page metadata", () => {
   it("has a unique title and description", () => {
-    expect(metadata.title).toBe("About MelCrochet Gifted Hands");
+    expect(metadata.title).toBe("Our Story — Founder Melissa Ruvimbo Buchirai");
     expect(metadata.description).toContain("Melissa");
   });
 });

@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { Plus } from "lucide-react";
 import { FaqJsonLd } from "@/components/seo/JsonLd";
 import { FAQS, POLICY_HIGHLIGHTS } from "@/lib/policies";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import WhatsAppButton from "@/components/WhatsAppButton";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Delivery, Payment & FAQ",
   description:
     "Delivery options, payment methods, lead times, care instructions and our returns policy for MelCrochet Gifted Hands handmade crochet orders.",
-};
+  path: "/faq",
+});
 
 export default function FaqPage() {
   return (

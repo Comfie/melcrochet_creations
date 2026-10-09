@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { ArrowUpRight, Mail, MapPin, MessageCircle } from "lucide-react";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import { SITE } from "@/lib/site";
@@ -6,11 +7,12 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import EnquiryForm from "@/components/EnquiryForm";
 import { FacebookIcon, InstagramIcon } from "@/components/SocialIcons";
 
-export const metadata: Metadata = {
-  title: "Contact Us",
+export const metadata: Metadata = pageMetadata({
+  title: "Contact Us & WhatsApp Orders",
   description:
-    "Message MelCrochet Gifted Hands on WhatsApp or by email to order handmade crochet blankets, bags, hats and gifts, or ask about custom orders.",
-};
+    "Message MelCrochet Gifted Hands on WhatsApp or by email to order handmade crochet blankets, bags, hats and gifts, or to ask about a custom order.",
+  path: "/contact",
+});
 
 const CHANNELS = [
   {

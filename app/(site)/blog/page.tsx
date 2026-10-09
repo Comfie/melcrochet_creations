@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import Image from "next/image";
 import { getPublishedBlogPosts } from "@/lib/queries";
@@ -9,12 +10,12 @@ import ImagePlaceholder from "@/components/ImagePlaceholder";
 
 export const revalidate = 60;
 
-export const metadata: Metadata = {
-  title: "Journal",
+export const metadata: Metadata = pageMetadata({
+  title: "Journal — Crochet Stories, Care & Styling",
   description:
-    "The MelCrochet journal — crochet care, styling, gifting and behind-the-scenes stories from MelCrochet Gifted Hands.",
-  alternates: { canonical: "/blog" },
-};
+    "The MelCrochet journal — handmade crochet stories, care, styling, gifting and behind-the-scenes videos from MelCrochet Gifted Hands in South Africa.",
+  path: "/blog",
+});
 
 export default async function BlogIndexPage() {
   const posts = await getPublishedBlogPosts();

@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Image from "next/image";
 import { ButtonLink } from "@/components/ui/Button";
 import Logo from "@/components/Logo";
 import { FOUNDER_PHOTO_ALT } from "@/components/home/FounderFeature";
 
-export const metadata: Metadata = {
-  title: "About MelCrochet Gifted Hands",
+export const metadata: Metadata = pageMetadata({
+  title: "Our Story — Founder Melissa Ruvimbo Buchirai",
   description:
     "Meet Melissa Ruvimbo Buchirai, founder of MelCrochet Gifted Hands — handmade crochet blankets, bags and gifts crafted with patience and care in South Africa.",
-};
+  path: "/about",
+});
 
 const VALUES = [
   { name: "Quality", description: "Every product should be neat, durable and carefully finished." },

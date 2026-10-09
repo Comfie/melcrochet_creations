@@ -25,7 +25,7 @@ function FooterHeading({ children }: { children: React.ReactNode }) {
 
 export default function Footer() {
   return (
-    <footer className="bg-ink text-cream">
+    <footer className="bg-ink text-cream" data-ga-location="footer">
       {/* Oversized sign-off */}
       <div className="shell border-b border-cream/10 py-16 sm:py-24">
         <div className="grid gap-10 lg:grid-cols-12 lg:items-end">

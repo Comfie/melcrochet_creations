@@ -47,7 +47,7 @@ app/api/          — route handlers (admin CRUD, uploads, enquiries)
 app/admin/        — protected admin panel pages
 components/       — React components (Server Components by default)
 lib/              — shared utilities (prisma.ts, auth.ts, cloudinary.ts, queries.ts, slug.ts, api-response.ts,
-                    collections.ts, policies.ts, catalogue.ts)
+                    collections.ts, policies.ts, catalogue.ts, seo.ts, analytics.ts)
 prisma/           — schema, migrations, seed data
 prisma.config.ts  — Prisma 7 CLI datasource config (repo root)
 docs/             — specs, plans, and project documentation (do NOT delete)
@@ -68,6 +68,7 @@ Five Prisma models — `Category`, `Product` (with `PriceType` enum: FIXED|QUOTE
 - DB seed: `npm run db:seed`
 - DB studio: `npm run db:studio`
 - DB reset: `npm run db:reset`
+- SEO crawl check: `npm run seo:check -- <base-url>` (defaults to http://localhost:3000)
 
 ## Verification
 
@@ -89,6 +90,10 @@ After every change, run in this order:
 - Slugs generated via `lib/slug.ts` `slugify()` helper
 - Collections (customer-facing groups of categories) are static config in `lib/collections.ts` — map any new category there
 - Policy copy (lead time, payment, delivery, care, returns) lives only in `lib/policies.ts`
+- SEO: every indexable page builds metadata with `pageMetadata()` from `lib/seo.ts` (canonical, Open Graph, Twitter in one place — never set `openGraph` by hand, Next merges it shallowly). Category search copy is `CATEGORY_SEO` in `lib/seo.ts`; collection copy is `seo` in `lib/collections.ts`. JSON-LD components live in `components/seo/JsonLd.tsx` — verified facts only (no invented ratings, reviews, SKUs, stock or addresses)
+- Don't put `notFound()` behind a `loading.tsx`/Suspense boundary — it can then only stream a soft 404 (HTTP 200). `/products/[slug]` is deliberately outside the `(shop)` group's `loading.tsx`
+- Analytics: GA4 is off unless `NEXT_PUBLIC_GA_MEASUREMENT_ID` is set. Track lead actions with `analyticsAttributes()` (server components) or `trackEvent()` (client) from `lib/analytics.ts`; never send names, messages or other form contents
+- SEO regression check: `npm run build && npm start`, then `npm run seo:check` (or `npm run seo:check -- https://melcrochet.co.za`)
 - Use `next/image` `preload` (not the deprecated `priority`); use the `shell` utility for page gutters and `label` for uppercase eyebrows
 - Use Zod schemas for all API input validation (co-located in `app/api/[resource]/schema.ts`)
 - Import alias: `@/*` maps to repo root
@@ -101,6 +106,8 @@ After every change, run in this order:
 - `JWT_SECRET` — for admin auth token signing
 - `ADMIN_USERNAME` / `ADMIN_PASSWORD_HASH` — admin credentials
 - `CLOUDINARY_URL` (or `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`)
+- `NEXT_PUBLIC_GA_MEASUREMENT_ID` — optional GA4 Measurement ID (Production only)
+- `GOOGLE_SITE_VERIFICATION` — optional Search Console HTML-tag token
 
 ## Don't
 
@@ -119,5 +126,6 @@ After every change, run in this order:
 
 - Full spec: `docs/superpowers/specs/2026-07-09-melcrochet-website-design.md`
 - Redesign spec: `docs/superpowers/specs/2026-10-09-fashion-editorial-redesign.md`
+- SEO foundation (audit, keyword map, Search Console/GA4 setup, monitoring): `docs/superpowers/specs/2026-10-09-seo-foundation.md`
 - Foundation plan: `docs/superpowers/plans/2026-07-09-01-foundation.md`
 - API layer plan: `docs/superpowers/plans/2026-07-09-02-api-layer.md`

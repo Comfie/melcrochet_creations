@@ -8,6 +8,14 @@ export function getCategoryBySlug(slug: string) {
   return prisma.category.findUnique({ where: { slug } });
 }
 
+/** Categories with the number of active products in each — for SEO decisions (sitemap, noindex). */
+export function getCategoriesWithProductCounts() {
+  return prisma.category.findMany({
+    orderBy: { sortOrder: "asc" },
+    include: { _count: { select: { products: { where: { isActive: true } } } } },
+  });
+}
+
 export function getProducts(options?: {
   categorySlug?: string;
   /** Any-of filter, used for collections (groups of categories). */

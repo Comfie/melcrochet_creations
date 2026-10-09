@@ -19,6 +19,8 @@ export type Collection = {
    * product happens to sort first. Falls back to catalogue order.
    */
   leadProductSlugs?: readonly string[];
+  /** Search-facing title and meta description (never rendered on the page). */
+  seo: { title: string; description: string };
 };
 
 export const COLLECTIONS: readonly Collection[] = [
@@ -28,6 +30,11 @@ export const COLLECTIONS: readonly Collection[] = [
     tagline: "Sweaters and hats, handmade to wear with intent.",
     categorySlugs: ["adult-sweaters", "hats"],
     leadProductSlugs: ["adult-sweater", "adult-ruffle-bucket-hat", "adult-beanie-hat"],
+    seo: {
+      title: "Crochet Fashion — Sweaters & Hats, Handmade",
+      description:
+        "Contemporary crochet fashion from South Africa — handmade sweaters, beanies and bucket hats, made to order in your colours. Order via WhatsApp.",
+    },
   },
   {
     slug: "bags-accessories",
@@ -35,24 +42,44 @@ export const COLLECTIONS: readonly Collection[] = [
     tagline: "Everyday bags and finishing touches, stitched by hand.",
     categorySlugs: ["bags", "scrunchies"],
     leadProductSlugs: ["casual-handbag-with-accessories", "laptop-bag"],
+    seo: {
+      title: "Crochet Bags & Accessories, South Africa",
+      description:
+        "Handmade crochet bags, scrunchies and accessories for everyday style and gifting, made to order in South Africa. Order via WhatsApp.",
+    },
   },
   {
     slug: "baby-kids",
     name: "Baby & Kids",
     tagline: "Soft blankets, sweaters and occasion dresses for little ones.",
     categorySlugs: ["baby-blankets", "baby-sweaters", "kids-sweaters", "kids-dresses"],
+    seo: {
+      title: "Crochet Baby & Kids Clothing and Blankets",
+      description:
+        "Soft crochet baby blankets, baby and kids sweaters and party dresses, handmade to order in South Africa. Order via WhatsApp.",
+    },
   },
   {
     slug: "home-living",
     name: "Home & Living",
     tagline: "Statement throws and sturdy baskets for the spaces you love.",
     categorySlugs: ["throw-blankets", "baskets"],
+    seo: {
+      title: "Crochet Blankets & Baskets for the Home",
+      description:
+        "Handmade crochet throw blankets and storage baskets for the home, made to order in South Africa in lap to king sizes. Order via WhatsApp.",
+    },
   },
   {
     slug: "gifts-custom",
     name: "Gifts & Custom Creations",
     tagline: "Curated gift sets and pieces made entirely to your brief.",
     categorySlugs: ["gift-sets", "custom-orders"],
+    seo: {
+      title: "Handmade Crochet Gifts & Custom Orders",
+      description:
+        "Handmade crochet gifts and gift sets, plus custom pieces made to your brief in South Africa. Start your request on WhatsApp.",
+    },
   },
 ] as const;
 

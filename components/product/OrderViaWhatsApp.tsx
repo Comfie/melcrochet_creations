@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { buildOrderMessage, buildWhatsAppLink } from "@/lib/whatsapp";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import { ANALYTICS_EVENTS, analyticsAttributes, type AnalyticsParams } from "@/lib/analytics";
 
 /**
  * Colour name → hex for swatch rendering. Names not in the map render as
@@ -32,12 +33,14 @@ interface Props {
   colours: string[];
   sizes: string[];
   className?: string;
+  /** Product context for the whatsapp_order_click analytics event. */
+  analyticsParams?: AnalyticsParams;
 }
 
 const OPTION_BASE =
   "relative flex min-h-11 cursor-pointer items-center gap-2 border px-4 font-sans text-sm transition-colors duration-300 focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-ink";
 
-export function OrderViaWhatsApp({ productName, productUrl, colours, sizes, className }: Props) {
+export function OrderViaWhatsApp({ productName, productUrl, colours, sizes, className, analyticsParams }: Props) {
   const [colour, setColour] = useState<string | null>(null);
   // Pre-select when there's exactly one size — no decision to make, but
   // still included in the WhatsApp message.
@@ -124,7 +127,18 @@ export function OrderViaWhatsApp({ productName, productUrl, colours, sizes, clas
         </fieldset>
       )}
 
-      <WhatsAppButton href={href} label="Order via WhatsApp" size="lg" className="w-full" />
+      <WhatsAppButton
+        href={href}
+        label="Order via WhatsApp"
+        size="lg"
+        className="w-full"
+        dataAttributes={analyticsAttributes(ANALYTICS_EVENTS.whatsappOrderClick, {
+          ...analyticsParams,
+          colour,
+          size,
+          link_location: "product_page",
+        })}
+      />
 
       {/* Gentle nudge, not a blocker — customers can still order without selecting. */}
       {colours.length > 0 && !colour && (

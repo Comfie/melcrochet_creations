@@ -9,28 +9,34 @@ import { formatDate } from "@/lib/format-date";
 import BlogCard from "@/components/BlogCard";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
 import { ButtonLink } from "@/components/ui/Button";
+import { BlogPostingJsonLd, BreadcrumbJsonLd } from "@/components/seo/JsonLd";
+import { markdownToPlainText, pageMetadata, truncateText } from "@/lib/seo";
 
 export const revalidate = 60;
 
 type Props = { params: Promise<{ slug: string }> };
 
+function postDescription(post: { excerpt: string | null; content: string }): string {
+  return truncateText(post.excerpt?.trim() || markdownToPlainText(post.content));
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const post = await getBlogPostBySlug(slug);
-  if (!post) return { title: "Post not found" };
+  if (!post) return { title: "Post not found", robots: { index: false, follow: true } };
 
-  return {
+  return pageMetadata({
     title: post.title,
-    description: post.excerpt ?? undefined,
-    alternates: { canonical: `/blog/${slug}` },
-    openGraph: {
-      title: post.title,
-      description: post.excerpt ?? undefined,
-      type: "article",
-      url: `/blog/${slug}`,
-      images: post.coverImageUrl ? [{ url: post.coverImageUrl }] : undefined,
+    description: postDescription(post),
+    path: `/blog/${post.slug}`,
+    images: post.coverImageUrl
+      ? [{ url: cld(post.coverImageUrl, "og"), width: 1200, height: 630, alt: post.title }]
+      : undefined,
+    article: {
+      publishedTime: post.publishedAt ? new Date(post.publishedAt).toISOString() : undefined,
+      modifiedTime: new Date(post.updatedAt).toISOString(),
     },
-  };
+  });
 }
 
 export default async function BlogPostPage({ params }: Props) {
@@ -45,6 +51,21 @@ export default async function BlogPostPage({ params }: Props) {
 
   return (
     <>
+      <BlogPostingJsonLd
+        title={post.title}
+        description={postDescription(post)}
+        slug={post.slug}
+        image={post.coverImageUrl ? cld(post.coverImageUrl, "wide") : null}
+        datePublished={post.publishedAt ? new Date(post.publishedAt) : null}
+        dateModified={new Date(post.updatedAt)}
+      />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", path: "/" },
+          { name: "Journal", path: "/blog" },
+          { name: post.title, path: `/blog/${post.slug}` },
+        ]}
+      />
       <article className="bg-cream">
         <header className="shell pb-12 pt-14 text-center sm:pt-20">
           <nav aria-label="Breadcrumb" className="label text-ink/65">
@@ -88,7 +109,8 @@ export default async function BlogPostPage({ params }: Props) {
           )}
 
           <div className="dropcap prose prose-neutral max-w-none font-sans text-[1.0625rem] leading-[1.8] prose-headings:font-display prose-headings:font-normal prose-h2:text-4xl prose-h3:text-2xl prose-a:text-brown prose-blockquote:border-gold-deep prose-blockquote:font-display prose-blockquote:text-2xl prose-blockquote:font-light prose-strong:text-ink prose-img:w-full">
-            <Markdown>{post.content}</Markdown>
+            {/* The post title is the page's only h1 — demote any "# heading" in the body. */}
+            <Markdown components={{ h1: "h2" }}>{post.content}</Markdown>
           </div>
 
           <div className="mt-16 flex flex-col gap-4 border-t border-ink/15 pt-10 sm:flex-row sm:items-center sm:justify-between">

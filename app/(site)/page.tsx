@@ -1,7 +1,10 @@
 import { getCategories, getProducts, getPublishedBlogPosts, getTestimonials } from "@/lib/queries";
 import { COLLECTIONS } from "@/lib/collections";
 import { collectionLead, diversePhotographed, photographedIn, toCardProduct } from "@/lib/catalogue";
-import { LocalBusinessJsonLd } from "@/components/seo/JsonLd";
+import type { Metadata } from "next";
+import { OrganizationJsonLd, WebSiteJsonLd } from "@/components/seo/JsonLd";
+import { pageMetadata } from "@/lib/seo";
+import { SITE } from "@/lib/site";
 import Hero from "@/components/home/Hero";
 import Marquee from "@/components/home/Marquee";
 import CollectionsShowcase from "@/components/home/CollectionsShowcase";
@@ -16,6 +19,14 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import { TextLink } from "@/components/ui/Button";
 
 export const revalidate = 60;
+
+export const metadata: Metadata = pageMetadata({
+  title: `${SITE.name} | Handmade Crochet in South Africa`,
+  absoluteTitle: true,
+  description:
+    "Contemporary handmade crochet fashion, blankets, bags and gifts, made to order in South Africa by MelCrochet Gifted Hands. Order via WhatsApp.",
+  path: "/",
+});
 
 export default async function Home() {
   // Sequential, not Promise.all: this app's DATABASE_URL is a direct
@@ -65,7 +76,8 @@ export default async function Home() {
 
   return (
     <>
-      <LocalBusinessJsonLd />
+      <OrganizationJsonLd />
+      <WebSiteJsonLd />
 
       <Hero inset={heroInset ? { url: heroInset.imageUrl as string, name: heroInset.name } : null} />
       <Marquee items={categories.map((c) => c.name)} />

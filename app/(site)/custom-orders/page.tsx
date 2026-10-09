@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Image from "next/image";
 import { Plus } from "lucide-react";
 import { getCategories, getProducts } from "@/lib/queries";
@@ -10,15 +11,16 @@ import CustomOrderBuilder from "@/components/custom/CustomOrderBuilder";
 import ProductCard from "@/components/ProductCard";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import SectionHeading from "@/components/ui/SectionHeading";
+import { ANALYTICS_EVENTS, analyticsAttributes } from "@/lib/analytics";
 
 export const revalidate = 60;
 
-export const metadata: Metadata = {
-  title: "Custom Orders",
+export const metadata: Metadata = pageMetadata({
+  title: "Custom Crochet Orders in South Africa",
   description:
-    "Request a custom crochet piece from MelCrochet Gifted Hands — your colours, sizes and designs, handmade to order in South Africa. Start your request on WhatsApp.",
-  alternates: { canonical: "/custom-orders" },
-};
+    "Request a custom crochet piece from MelCrochet Gifted Hands — your colours, sizes and designs, handmade to order in South Africa. Start on WhatsApp.",
+  path: "/custom-orders",
+});
 
 const PERSONALISE = [
   { title: "Colours", body: "Choose the shades that suit your home, your wardrobe or the person you're gifting." },
@@ -73,6 +75,9 @@ export default async function CustomOrdersPage() {
                 label="Request a Custom Piece"
                 tone="gold"
                 size="lg"
+                dataAttributes={analyticsAttributes(ANALYTICS_EVENTS.customOrderEnquiry, {
+                  link_location: "custom_orders_hero",
+                })}
               />
             </div>
           </div>

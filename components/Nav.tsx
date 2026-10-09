@@ -89,7 +89,7 @@ export default function Nav() {
       </a>
 
       {/* Announcement bar — factual service promise only. */}
-      <div className="bg-ink text-cream/80">
+      <div className="bg-ink text-cream/80" data-ga-location="announcement_bar">
         <p className="shell label flex h-9 items-center justify-center gap-2 text-center text-[0.625rem]">
           <span>Handmade to order in South Africa</span>
           <span aria-hidden="true" className="hidden text-gold sm:inline">&middot;</span>
@@ -104,7 +104,7 @@ export default function Nav() {
         </p>
       </div>
 
-      <header className="sticky top-0 z-50 border-b border-ink/10 bg-cream/92 backdrop-blur-md supports-[backdrop-filter]:bg-cream/85">
+      <header data-ga-location="header" className="sticky top-0 z-50 border-b border-ink/10 bg-cream/92 backdrop-blur-md supports-[backdrop-filter]:bg-cream/85">
         <div className="shell grid h-[4.5rem] grid-cols-[1fr_auto_1fr] items-center gap-4 lg:h-20">
           {/* Left */}
           <div className="flex items-center">
@@ -196,6 +196,7 @@ export default function Nav() {
       {/* Full-screen mobile menu */}
       <div
         id="mobile-menu"
+        data-ga-location="mobile_menu"
         role="dialog"
         aria-modal="true"
         aria-label="Menu"

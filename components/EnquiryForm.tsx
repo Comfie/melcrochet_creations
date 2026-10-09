@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { buttonClasses } from "@/components/ui/Button";
+import { ANALYTICS_EVENTS, trackEvent } from "@/lib/analytics";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -51,6 +52,8 @@ export default function EnquiryForm() {
 
       setStatus("success");
       form.reset();
+      // No form contents are sent to analytics — only that a message went through.
+      trackEvent(ANALYTICS_EVENTS.contactFormSubmit, { form_location: "contact_page" });
     } catch {
       setStatus("error");
       setErrorMessage("Network error — please check your connection and try again.");

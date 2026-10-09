@@ -55,6 +55,7 @@ export function ProductGallery({ images }: { images: GalleryImage[] }) {
             fill
             sizes={IMG_SIZES.gallery}
             preload={activeIndex === 0}
+            fetchPriority={activeIndex === 0 ? "high" : undefined}
             className="animate-fade object-cover transition-transform duration-[1200ms] ease-[var(--ease-editorial)] group-hover:scale-[1.03]"
           />
           <span

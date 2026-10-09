@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Image from "next/image";
 import { getCategories, getProducts } from "@/lib/queries";
 import { COLLECTIONS } from "@/lib/collections";
@@ -9,12 +10,12 @@ import { ButtonLink } from "@/components/ui/Button";
 
 export const revalidate = 60;
 
-export const metadata: Metadata = {
-  title: "Collections",
+export const metadata: Metadata = pageMetadata({
+  title: "Handmade Crochet Collections",
   description:
-    "Explore MelCrochet's handmade collections — crochet fashion, bags and accessories, baby and kids, home and living, and custom gifts. Made to order in South Africa.",
-  alternates: { canonical: "/collections" },
-};
+    "Explore MelCrochet’s handmade crochet collections — fashion, bags and accessories, baby and kids, home and living, and gifts. Made to order in South Africa.",
+  path: "/collections",
+});
 
 export default async function CollectionsPage() {
   // Sequential: one Postgres connection at a time (see app/(site)/page.tsx).

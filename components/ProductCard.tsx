@@ -4,6 +4,7 @@ import ImagePlaceholder from "@/components/ImagePlaceholder";
 import { buildProductWhatsAppLink } from "@/lib/whatsapp";
 import { formatPrice } from "@/lib/format-price";
 import { cld, IMG_SIZES } from "@/lib/cloudinary-url";
+import { ANALYTICS_EVENTS, analyticsAttributes } from "@/lib/analytics";
 
 type Product = {
   id: string;
@@ -86,6 +87,14 @@ export default function ProductCard({
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`Enquire about the ${product.name} on WhatsApp`}
+            {...analyticsAttributes(ANALYTICS_EVENTS.whatsappOrderClick, {
+              item_id: product.slug,
+              item_name: product.name,
+              item_category: product.categoryName,
+              price: product.priceType === "FIXED" && product.price !== null ? Number(product.price) : null,
+              currency: product.currency,
+              link_location: "product_card",
+            })}
             className="label text-[0.625rem] text-ink/65 underline decoration-ink/30 underline-offset-4 transition-colors hover:text-ink hover:decoration-ink"
           >
             Enquire

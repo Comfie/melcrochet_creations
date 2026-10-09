@@ -10,51 +10,33 @@ import { parseVariantList } from "@/lib/product-variants";
 import { collectionForCategory } from "@/lib/collections";
 import { toCardProduct } from "@/lib/catalogue";
 import { POLICY } from "@/lib/policies";
-import { ProductJsonLd } from "@/components/seo/JsonLd";
+import { BreadcrumbJsonLd, ProductJsonLd } from "@/components/seo/JsonLd";
+import { pageMetadata, productMetaDescription, productTitle } from "@/lib/seo";
 import { ProductGallery } from "@/components/product/ProductGallery";
 import { OrderViaWhatsApp } from "@/components/product/OrderViaWhatsApp";
 import ProductDetails from "@/components/product/ProductDetails";
 import ProductCard from "@/components/ProductCard";
 import { TextLink } from "@/components/ui/Button";
+import TrackEvent from "@/components/analytics/TrackEvent";
+import { ANALYTICS_EVENTS, analyticsItem } from "@/lib/analytics";
 
 export const revalidate = 60;
 
 type Props = { params: Promise<{ slug: string }> };
 
-function truncate(text: string, max: number): string {
-  return text.length <= max ? text : text.slice(0, max - 1).trimEnd() + "…";
-}
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const product = await getProductBySlug(slug);
-  if (!product) return { title: "Product not found" };
+  if (!product) return { title: "Product not found", robots: { index: false, follow: true } };
 
-  const price = formatPrice(product.priceType, product.price, product.currency);
-  const title = `${product.name} – ${price}`;
-  const description =
-    truncate(product.description, 155) ||
-    `${product.name}, handmade to order by ${SITE.shortName}. Order via WhatsApp.`;
-  const ogImage = product.imageUrl ? cld(product.imageUrl, "og") : undefined;
-
-  return {
-    title,
-    description,
-    alternates: { canonical: `/products/${slug}` },
-    openGraph: {
-      title: `${title} | ${SITE.shortName}`,
-      description,
-      type: "website",
-      url: `/products/${slug}`,
-      siteName: SITE.name,
-      images: ogImage ? [{ url: ogImage, width: 1200, height: 630, alt: product.name }] : undefined,
-    },
-    twitter: {
-      card: ogImage ? "summary_large_image" : "summary",
-      title: `${title} | ${SITE.shortName}`,
-      description,
-    },
-  };
+  return pageMetadata({
+    title: productTitle(product),
+    description: productMetaDescription(product),
+    path: `/products/${product.slug}`,
+    images: product.imageUrl
+      ? [{ url: cld(product.imageUrl, "og"), width: 1200, height: 630, alt: product.name }]
+      : undefined,
+  });
 }
 
 export default async function ProductDetailPage({ params }: Props) {
@@ -79,6 +61,12 @@ export default async function ProductDetailPage({ params }: Props) {
   const price =
     product.priceType === "FIXED" && product.price !== null ? Number(product.price) : null;
   const displayPrice = formatPrice(product.priceType, product.price, product.currency);
+  const item = analyticsItem({
+    slug: product.slug,
+    name: product.name,
+    categoryName: product.category.name,
+    price,
+  });
 
   const details = [
     {
@@ -131,6 +119,20 @@ export default async function ProductDetailPage({ params }: Props) {
         images={galleryImages.map((img) => cld(img.url, "detail"))}
         priceType={product.priceType}
         price={price}
+        categoryName={product.category.name}
+      />
+      <TrackEvent
+        name={ANALYTICS_EVENTS.viewItem}
+        params={{ currency: "ZAR", value: price, items: [item] }}
+      />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", path: "/" },
+          { name: "Shop", path: "/products" },
+          ...(collection ? [{ name: collection.name, path: `/products?collection=${collection.slug}` }] : []),
+          { name: product.category.name, path: `/products?category=${product.category.slug}` },
+          { name: product.name, path: `/products/${product.slug}` },
+        ]}
       />
 
       <div className="shell pb-24 pt-8 sm:pt-12">
@@ -182,6 +184,7 @@ export default async function ProductDetailPage({ params }: Props) {
               <OrderViaWhatsApp
                 productName={product.name}
                 productUrl={productUrl}
+                analyticsParams={{ ...item, currency: "ZAR" }}
                 colours={colours}
                 sizes={sizes}
                 className="mt-10"

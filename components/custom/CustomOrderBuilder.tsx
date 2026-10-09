@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { buildCustomOrderMessage, buildWhatsAppLink } from "@/lib/whatsapp";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import { ANALYTICS_EVENTS, analyticsAttributes, trackEvent } from "@/lib/analytics";
 
 const LABEL = "label text-ink/75";
 const FIELD =
@@ -18,6 +19,8 @@ export default function CustomOrderBuilder({ pieces }: { pieces: string[] }) {
 
   const message = useMemo(() => buildCustomOrderMessage(form), [form]);
   const href = buildWhatsAppLink(message);
+  // Only the chosen piece type is sent — never the customer's free-text details.
+  const tracking = { piece: form.piece || "unspecified", link_location: "custom_order_builder" };
 
   const update =
     (key: keyof typeof form) =>
@@ -30,6 +33,7 @@ export default function CustomOrderBuilder({ pieces }: { pieces: string[] }) {
         className="grid gap-8 sm:grid-cols-2 lg:col-span-7"
         onSubmit={(e) => {
           e.preventDefault();
+          trackEvent(ANALYTICS_EVENTS.customOrderEnquiry, tracking);
           window.open(href, "_blank", "noopener,noreferrer");
         }}
       >
@@ -110,7 +114,13 @@ export default function CustomOrderBuilder({ pieces }: { pieces: string[] }) {
           >
             {message}
           </pre>
-          <WhatsAppButton href={href} label="Send on WhatsApp" size="lg" className="mt-8 w-full" />
+          <WhatsAppButton
+            href={href}
+            label="Send on WhatsApp"
+            size="lg"
+            className="mt-8 w-full"
+            dataAttributes={analyticsAttributes(ANALYTICS_EVENTS.customOrderEnquiry, tracking)}
+          />
           <p className="mt-4 font-sans text-xs leading-relaxed text-ink/65">
             You can edit the message in WhatsApp before sending. Requests are
             subject to confirmation of feasibility, price and lead time.
