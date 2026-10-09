@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
+  collectionLead,
   diversePhotographed,
   photographedIn,
   secondaryImage,
@@ -86,5 +87,29 @@ describe("singularPiece", () => {
     expect(singularPiece("Kids Dresses")).toBe("kids dress");
     expect(singularPiece("Scrunchies")).toBe("scrunchie");
     expect(singularPiece("Gift Sets")).toBe("gift set");
+  });
+});
+
+describe("collectionLead", () => {
+  const list = [
+    product({ id: "kids-beanie-hat" }),
+    product({ id: "adult-beanie-hat", imageUrl: null }),
+    product({ id: "adult-ruffle-bucket-hat" }),
+  ];
+
+  it("prefers the first photographed preferred product", () => {
+    const lead = collectionLead(list, {
+      categorySlugs: ["hats"],
+      leadProductSlugs: ["adult-beanie-hat", "adult-ruffle-bucket-hat"],
+    });
+    expect(lead?.id).toBe("adult-ruffle-bucket-hat");
+  });
+
+  it("falls back to catalogue order without preferences", () => {
+    expect(collectionLead(list, { categorySlugs: ["hats"] })?.id).toBe("kids-beanie-hat");
+  });
+
+  it("returns null when nothing in the collection is photographed", () => {
+    expect(collectionLead(list, { categorySlugs: ["bags"] })).toBeNull();
   });
 });

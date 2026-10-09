@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { getCategories, getProducts } from "@/lib/queries";
 import { COLLECTIONS } from "@/lib/collections";
-import { photographedIn } from "@/lib/catalogue";
+import { collectionLead } from "@/lib/catalogue";
 import { cld } from "@/lib/cloudinary-url";
 import CategoryTile from "@/components/CategoryTile";
 import { ButtonLink } from "@/components/ui/Button";
@@ -45,7 +45,7 @@ export default async function CollectionsPage() {
       </section>
 
       {COLLECTIONS.map((collection, i) => {
-        const lead = photographedIn(products, collection.categorySlugs)[0];
+        const lead = collectionLead(products, collection);
         const tiles = collection.categorySlugs.flatMap((slug) => {
           const category = categories.find((c) => c.slug === slug);
           if (!category) return [];

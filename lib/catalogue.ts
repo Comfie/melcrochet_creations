@@ -81,3 +81,19 @@ export function singularPiece(categoryName: string): string {
   if (lower.endsWith("s") && !lower.endsWith("ss")) return lower.slice(0, -1);
   return lower;
 }
+
+/**
+ * The photographed product that leads a collection: its preferred products
+ * first (in the order given), then the first photographed product in its
+ * categories.
+ */
+export function collectionLead<T extends CatalogueProduct>(
+  products: readonly T[],
+  collection: { categorySlugs: readonly string[]; leadProductSlugs?: readonly string[] }
+): T | null {
+  for (const slug of collection.leadProductSlugs ?? []) {
+    const match = products.find((p) => p.slug === slug && p.imageUrl);
+    if (match) return match;
+  }
+  return photographedIn(products, collection.categorySlugs)[0] ?? null;
+}

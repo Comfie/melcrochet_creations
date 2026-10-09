@@ -1,6 +1,6 @@
 import { getCategories, getProducts, getPublishedBlogPosts, getTestimonials } from "@/lib/queries";
 import { COLLECTIONS } from "@/lib/collections";
-import { diversePhotographed, photographedIn, toCardProduct } from "@/lib/catalogue";
+import { collectionLead, diversePhotographed, photographedIn, toCardProduct } from "@/lib/catalogue";
 import { LocalBusinessJsonLd } from "@/components/seo/JsonLd";
 import Hero from "@/components/home/Hero";
 import Marquee from "@/components/home/Marquee";
@@ -45,7 +45,7 @@ export default async function Home() {
     name: c.name,
     tagline: c.tagline,
     categories: c.categorySlugs.flatMap((slug) => categoryName.get(slug) ?? []),
-    imageUrl: photographedIn(products, c.categorySlugs)[0]?.imageUrl ?? null,
+    imageUrl: collectionLead(products, c)?.imageUrl ?? null,
   }));
 
   // Craft collage: a home piece and a fashion/accessory piece, when photographed.
