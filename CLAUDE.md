@@ -32,7 +32,8 @@ MelCrochet Gifted Hands — A handmade crochet business portfolio and product sh
 - **Domain:** https://melcrochet.co.za (`SITE.url` in `lib/site.ts`)
 - **Currency:** ZAR — prices render as `R450`
 - **WhatsApp:** 067 059 0600 (`https://wa.me/27670590600`)
-- **Instagram:** @melz.crotchet.creations (⚠️ site URL uses `melz_crotchet_creations` — confirm; see `lib/site.ts`)
+- **Instagram:** @melcrochet_giftedhands (`https://www.instagram.com/melcrochet_giftedhands`)
+- **YouTube:** @melcrochets-85 (`https://www.youtube.com/@melcrochets-85`)
 - **Tagline:** "Providing Warmth, Comfort & Timeless Handmade Creations"
 
 ## Categories (12, exact names)

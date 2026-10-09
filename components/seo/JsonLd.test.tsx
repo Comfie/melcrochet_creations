@@ -71,6 +71,13 @@ describe("LocalBusinessJsonLd", () => {
     expect(data.name).toBe("MelCrochet Gifted Hands");
     expect(data.telephone).toBe("+27670590600");
   });
+
+  it("links the official Instagram and YouTube accounts via sameAs", () => {
+    const html = renderToStaticMarkup(<LocalBusinessJsonLd />);
+    const data = extractJson(html) as { sameAs: string[] };
+    expect(data.sameAs).toContain("https://www.instagram.com/melcrochet_giftedhands");
+    expect(data.sameAs).toContain("https://www.youtube.com/@melcrochets-85");
+  });
 });
 
 describe("FaqJsonLd", () => {

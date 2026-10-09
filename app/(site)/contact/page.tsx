@@ -4,7 +4,7 @@ import { buildWhatsAppLink } from "@/lib/whatsapp";
 import { SITE } from "@/lib/site";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import EnquiryForm from "@/components/EnquiryForm";
-import { FacebookIcon, InstagramIcon } from "@/components/SocialIcons";
+import { FacebookIcon, InstagramIcon, YouTubeIcon } from "@/components/SocialIcons";
 
 export const metadata: Metadata = {
   title: "Contact Us",
@@ -28,6 +28,14 @@ const CHANNELS = [
     note: "New pieces and works in progress",
     href: SITE.instagram,
     icon: InstagramIcon,
+    external: true,
+  },
+  {
+    label: "YouTube",
+    value: SITE.youtubeHandle,
+    note: "Videos from the studio",
+    href: SITE.youtube,
+    icon: YouTubeIcon,
     external: true,
   },
   { label: "Facebook", value: "MelCrochet", note: "Follow along", href: SITE.facebook, icon: FacebookIcon, external: true },

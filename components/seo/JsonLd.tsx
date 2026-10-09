@@ -83,7 +83,7 @@ export function LocalBusinessJsonLd() {
           addressLocality: SITE.locality,
           addressCountry: "ZA",
         },
-        sameAs: [SITE.instagram, SITE.facebook],
+        sameAs: [SITE.instagram, SITE.youtube, SITE.facebook],
       }}
     />
   );
