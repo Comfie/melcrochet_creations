@@ -80,7 +80,7 @@ export function OrganizationJsonLd() {
           areaServed: "ZA",
           availableLanguage: "en",
         },
-        sameAs: [SITE.instagram, SITE.facebook],
+        sameAs: [SITE.instagram, SITE.youtube, SITE.facebook],
       }}
     />
   );

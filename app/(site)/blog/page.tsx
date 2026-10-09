@@ -7,6 +7,8 @@ import { cld } from "@/lib/cloudinary-url";
 import { formatDate } from "@/lib/format-date";
 import BlogCard from "@/components/BlogCard";
 import ImagePlaceholder from "@/components/ImagePlaceholder";
+import { YouTubeIcon } from "@/components/SocialIcons";
+import { SITE } from "@/lib/site";
 
 export const revalidate = 60;
 
@@ -29,10 +31,21 @@ export default async function BlogIndexPage() {
             <h1 className="text-mega lg:col-span-8">
               The <span className="italic">Journal</span>
             </h1>
-            <p className="max-w-sm font-sans leading-relaxed text-ink/70 lg:col-span-4">
-              Stories from the workbench — collections, craftsmanship, styling,
-              gifting and the occasional video from the MelCrochet studio.
-            </p>
+            <div className="lg:col-span-4">
+              <p className="max-w-sm font-sans leading-relaxed text-ink/70">
+                Stories from the workbench — collections, craftsmanship, styling,
+                gifting and the occasional video from the MelCrochet studio.
+              </p>
+              <a
+                href={SITE.youtube}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="label mt-6 inline-flex items-center gap-2 border-b border-ink pb-1 hover:text-brown"
+              >
+                <YouTubeIcon className="h-4 w-4" />
+                Watch on YouTube
+              </a>
+            </div>
           </div>
 
           {!lead && (

@@ -4,7 +4,7 @@ import Logo from "@/components/Logo";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import { COLLECTIONS } from "@/lib/collections";
 import { SITE } from "@/lib/site";
-import { FacebookIcon, InstagramIcon } from "@/components/SocialIcons";
+import { FacebookIcon, InstagramIcon, YouTubeIcon } from "@/components/SocialIcons";
 
 const CUSTOMER_LINKS = [
   { href: "/custom-orders", label: "Custom Orders" },
@@ -129,6 +129,15 @@ export default function Footer() {
               className="flex h-11 w-11 items-center justify-center border border-cream/20 transition-colors hover:border-gold hover:text-gold"
             >
               <FacebookIcon className="h-4 w-4" />
+            </a>
+            <a
+              href={SITE.youtube}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`YouTube ${SITE.youtubeHandle}`}
+              className="flex h-11 w-11 items-center justify-center border border-cream/20 transition-colors hover:border-gold hover:text-gold"
+            >
+              <YouTubeIcon className="h-4 w-4" />
             </a>
           </div>
         </div>

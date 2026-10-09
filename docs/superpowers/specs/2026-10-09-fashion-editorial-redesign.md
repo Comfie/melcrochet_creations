@@ -37,7 +37,7 @@ Verified against the live site's compiled CSS (`melcrochet.co.za`) and `app/glob
 - The 12 categories were shown as a flat list with no customer-friendly grouping.
 - There was no custom-order page, even though custom work is a core part of the business.
 - Policy text (lead times, payment, delivery) lived only on the FAQ page.
-- The Instagram handle is inconsistent: CLAUDE.md says `@melz.crotchet.creations`, the URL and footer use `melz_crotchet_creations`. **Action: confirm the real handle** (`lib/site.ts`).
+- The Instagram handle was inconsistent across CLAUDE.md and the site. **Resolved (2026-10-09):** the correct account is `@melcrochet_giftedhands`; the YouTube channel `@melcrochets-85` has been added alongside it (`lib/site.ts`).
 
 ---
 

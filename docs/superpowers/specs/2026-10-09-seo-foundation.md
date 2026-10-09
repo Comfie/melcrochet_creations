@@ -191,9 +191,9 @@ consolidating them.
 4. **Visible headings (needs design approval):** listing `<h1>`s are short
    ("Hats", "Baby & Kids"). "Crochet Hats" / "Crochet Baby & Kids" would add the
    core keyword. Not changed here because it alters approved copy.
-5. Confirm the Instagram handle (`lib/site.ts` ⚠️) and replace the Facebook
-   `share/` short link with the page's canonical profile URL — both feed
-   `Organization.sameAs`.
+5. ~~Confirm the Instagram handle and replace the Facebook short link.~~ Done:
+   Instagram @melcrochet_giftedhands, YouTube @melcrochets-85 and the Facebook
+   profile URL are in `lib/site.ts` and feed `Organization.sameAs`.
 6. **Google Business Profile:** create it as a *service-area business*
    (Johannesburg, address hidden). Only add a street address to the website or
    JSON-LD if customers can actually visit it.

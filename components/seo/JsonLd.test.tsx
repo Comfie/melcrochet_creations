@@ -96,6 +96,15 @@ describe("OrganizationJsonLd", () => {
     expect(address.addressCountry).toBe("ZA");
     expect(address).not.toHaveProperty("streetAddress");
   });
+
+  it("links the official Instagram, YouTube and Facebook profiles via sameAs", () => {
+    const data = extractJson(renderToStaticMarkup(<OrganizationJsonLd />)) as { sameAs: string[] };
+    expect(data.sameAs).toEqual([
+      "https://www.instagram.com/melcrochet_giftedhands",
+      "https://www.youtube.com/@melcrochets-85",
+      "https://www.facebook.com/profile.php?id=100064727240793",
+    ]);
+  });
 });
 
 describe("WebSiteJsonLd", () => {

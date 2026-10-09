@@ -16,10 +16,10 @@ export const SITE = {
   email: "buchiemel@gmail.com",
   whatsappNumber: "27670590600",
   whatsappDisplay: "067 059 0600",
-  instagram: "https://instagram.com/melz_crotchet_creations",
-  // ⚠️ CLAUDE.md lists the handle as @melz.crotchet.creations while this URL
-  // uses underscores — confirm the real handle and keep both in sync.
-  instagramHandle: "@melz_crotchet_creations",
-  facebook: "https://www.facebook.com/share/1BUMGQo84u/",
+  instagram: "https://www.instagram.com/melcrochet_giftedhands",
+  instagramHandle: "@melcrochet_giftedhands",
+  youtube: "https://www.youtube.com/@melcrochets-85",
+  youtubeHandle: "@melcrochets-85",
+  facebook: "https://www.facebook.com/profile.php?id=100064727240793",
   locality: "Johannesburg",
 } as const;
