@@ -19,7 +19,14 @@ Verified against the live site's compiled CSS (`melcrochet.co.za`) and `app/glob
 | `taupe` — Warm Taupe | `#A78B71` | Hairlines, decorative strokes |
 | `brown` — Deep Brown | `#3B2D26` | Secondary dark ground, text accent |
 
-No logo file exists in the repo; the live site uses a text wordmark. The printed business card (visible in the market photo) shows a script "MelCrochet Gifted Hands" logo. **Action: supply the official logo as SVG** and swap it into `components/Logo.tsx`.
+**Logo:** the official MelCrochet logo pack (`MelCrochet-Logo-Files`) is installed in `public/brand/`. It contains horizontal, primary-stacked, wordmark, icon, badge and pattern artwork, each with a light-ground and a reversed (ink-ground) version, all drawn in the exact brand hex values.
+
+- `components/Logo.tsx` serves every variant.
+- The header uses the horizontal logo; the mobile menu uses its reversed version.
+- The footer uses the stacked reversed logo.
+- Our Story carries the badge as a seal on the founder portrait.
+- The pattern textures photo placeholders and the "Made for you" tiles.
+- The favicon, `icon.svg` and `apple-icon.png` come from the reversed small icon. The default `opengraph-image.png` is the stacked logo on cream.
 
 ### Weaknesses found
 
@@ -127,4 +134,5 @@ The current imagery is authentic but casual (phone shots, domestic backgrounds, 
 ## 5. Verification notes
 
 - Visual QA (375 / 768 / 1280 / 1600px, no horizontal overflow) covered the DB-free pages: About, FAQ, Contact and 404, plus the nav, the mobile menu and search.
-- DB-backed pages (Home, Shop, Product, Collections, Custom Orders, Journal) compile and type-check but need the live `DATABASE_URL` for a rendered review.
+- DB-backed pages (Home, Shop, Product, Collections, Custom Orders, Journal) compile and type-check but have not been reviewed rendered. The live Railway Postgres (`hayabusa.proxy.rlwy.net:16010`) is a raw-TCP connection, which the cloud session's network proxy does not carry. Review these pages on a Vercel preview deployment of this branch, or run `npm run dev` locally.
+- `SITE.url` is now `https://melcrochet.co.za`. Both the bare domain and `www.` currently serve the site with 200 responses, so add a www → bare-domain redirect in Vercel → Domains to avoid duplicate URLs.

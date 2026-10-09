@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { ButtonLink } from "@/components/ui/Button";
+import Logo from "@/components/Logo";
 import { FOUNDER_PHOTO_ALT } from "@/components/home/FounderFeature";
 
 export const metadata: Metadata = {
@@ -51,7 +52,11 @@ export default function AboutPage() {
               with passion, patience and care.
             </p>
           </div>
-          <figure className="lg:col-span-5">
+          <figure className="relative lg:col-span-5">
+            {/* Official MelCrochet badge as a seal over the portrait's corner. */}
+            <div className="absolute -bottom-6 left-0 z-10 hidden h-28 w-28 rounded-full bg-cream p-1.5 shadow-[0_12px_32px_-12px_rgba(21,21,21,0.35)] sm:block lg:-left-10">
+              <Logo variant="badge" decorative className="h-full w-full" />
+            </div>
             <div className="enter relative aspect-[4/5] overflow-hidden" style={{ "--i": 2 } as React.CSSProperties}>
               <Image
                 src="/melissa.jpg"
@@ -62,7 +67,7 @@ export default function AboutPage() {
                 className="object-cover object-[50%_30%]"
               />
             </div>
-            <figcaption className="label mt-4 text-ink/65">Melissa Ruvimbo Buchirai, Founder</figcaption>
+            <figcaption className="label mt-4 text-ink/65 sm:pl-32">Melissa Ruvimbo Buchirai, Founder</figcaption>
           </figure>
         </div>
       </section>

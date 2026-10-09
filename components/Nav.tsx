@@ -128,8 +128,8 @@ export default function Nav() {
           </div>
 
           {/* Centre */}
-          <Link href="/" aria-label={`${SITE.name} — home`} className="text-ink" onClick={closeAll}>
-            <Logo />
+          <Link href="/" aria-label={`${SITE.name} — home`} className="block" onClick={closeAll}>
+            <Logo variant="horizontal" decorative preload className="h-9 w-auto sm:h-11 lg:h-14" />
           </Link>
 
           {/* Right */}
@@ -215,7 +215,7 @@ export default function Nav() {
             >
               <X className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
             </button>
-            <Logo />
+            <Logo variant="horizontal" on="dark" decorative className="h-9 w-auto" />
             <span className="w-11" aria-hidden="true" />
           </div>
 

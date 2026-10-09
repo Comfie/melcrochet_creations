@@ -26,8 +26,10 @@ MelCrochet Gifted Hands — A handmade crochet business portfolio and product sh
 - **Colours (exact hex):** Luxury Black `#151515`, Warm Gold `#C8A24A`, Soft Cream `#F7F0E3`, Warm Taupe `#A78B71`, Deep Brown `#3B2D26`
 - **Typography:** Cormorant Garamond (Georgia fallback) for headings/display ≥ 20px, Manrope for body, navigation and product info
 - **Derived neutrals (contrast only):** Sand `#EDE3D1` (light banding), Gold Deep `#7D5F1F` (gold-family text on light grounds — brand gold fails AA on cream)
+- **Logo:** official SVGs in `public/brand/` — always render via `components/Logo.tsx` (`variant` horizontal|stacked|wordmark|icon|badge, `on` light|dark; reversed artwork has its own ink background, dark grounds only)
 - **Design system:** fashion-editorial — see `docs/superpowers/specs/2026-10-09-fashion-editorial-redesign.md`
 - **Tone:** Warm, elegant, handmade, trustworthy, professional
+- **Domain:** https://melcrochet.co.za (`SITE.url` in `lib/site.ts`)
 - **Currency:** ZAR — prices render as `R450`
 - **WhatsApp:** 067 059 0600 (`https://wa.me/27670590600`)
 - **Instagram:** @melz.crotchet.creations (⚠️ site URL uses `melz_crotchet_creations` — confirm; see `lib/site.ts`)

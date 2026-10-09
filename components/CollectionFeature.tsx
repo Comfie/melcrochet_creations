@@ -48,7 +48,10 @@ export default function CollectionFeature({
             <div aria-hidden="true" className="absolute inset-0 bg-ink/0 transition-colors duration-700 group-hover:bg-ink/10" />
           </>
         ) : (
-          <div aria-hidden="true" className="absolute inset-0 flex flex-col justify-between p-6 text-cream sm:p-8">
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 flex flex-col justify-between bg-[url(/brand/melcrochet-pattern.svg)] bg-[length:360px_auto] p-6 text-cream sm:p-8"
+          >
             <span className="label text-gold">{number}</span>
             <span className="font-display text-[clamp(2.25rem,1.5rem+3vw,4.5rem)] italic leading-[0.95] text-gold">
               Made

@@ -2,13 +2,14 @@
  * Single source of truth for absolute site URL and brand constants used by
  * metadata, JSON-LD, and the sitemap.
  *
- * ⚠️ Change `url` to the custom domain once it's live — everything else
- * (metadataBase, canonical URLs, JSON-LD, sitemap.xml) derives from this.
+ * `url` is the canonical production domain — metadataBase, canonical URLs,
+ * JSON-LD, sitemap.xml and the product links in WhatsApp messages all derive
+ * from it. The bare domain is canonical; www should redirect to it.
  */
 export const SITE = {
   name: "MelCrochet Gifted Hands",
   shortName: "MelCrochet",
-  url: "https://melcrochet-creations.vercel.app",
+  url: "https://melcrochet.co.za",
   description:
     "Contemporary handmade crochet fashion, blankets, bags and gifts, made to order in South Africa. Order via WhatsApp.",
   tagline: "Providing Warmth, Comfort & Timeless Handmade Creations",
