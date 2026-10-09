@@ -9,6 +9,6 @@ describe("robots", () => {
       allow: "/",
       disallow: ["/admin", "/api"],
     });
-    expect(result.sitemap).toBe("https://melcrochet-creations.vercel.app/sitemap.xml");
+    expect(result.sitemap).toBe("https://melcrochet.co.za/sitemap.xml");
   });
 });

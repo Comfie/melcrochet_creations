@@ -55,7 +55,7 @@ export default function Footer() {
       <div className="shell grid gap-12 py-16 sm:grid-cols-2 lg:grid-cols-12">
         <div className="lg:col-span-4">
           <Link href="/" aria-label={`${SITE.name} — home`} className="inline-block">
-            <Logo />
+            <Logo variant="stacked" on="dark" decorative className="h-28 w-auto sm:h-32" />
           </Link>
           <p className="mt-6 max-w-xs font-sans text-sm leading-relaxed text-cream/70">
             {SITE.name} — contemporary crochet fashion, home pieces and gifts, made to

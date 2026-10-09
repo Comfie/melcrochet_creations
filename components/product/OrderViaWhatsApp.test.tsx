@@ -9,7 +9,7 @@ afterEach(() => {
   cleanup();
 });
 
-const productUrl = "https://melcrochet-creations.vercel.app/products/lap-throw-blanket";
+const productUrl = "https://melcrochet.co.za/products/lap-throw-blanket";
 
 describe("OrderViaWhatsApp", () => {
   it("builds a WhatsApp link with just the product name when nothing is selected", () => {

@@ -30,7 +30,7 @@ describe("buildOrderMessage", () => {
   it("includes the product name, size, colour and URL when all are given", () => {
     const message = buildOrderMessage({
       productName: "Lap Throw Blanket",
-      productUrl: "https://melcrochet-creations.vercel.app/products/lap-throw-blanket",
+      productUrl: "https://melcrochet.co.za/products/lap-throw-blanket",
       colour: "Sage Green",
       size: "80x100cm",
     });
@@ -38,20 +38,20 @@ describe("buildOrderMessage", () => {
       "Hi MelCrochet! I'd like to order the Lap Throw Blanket.\n" +
         "Size: 80x100cm\n" +
         "Colour: Sage Green\n" +
-        "https://melcrochet-creations.vercel.app/products/lap-throw-blanket"
+        "https://melcrochet.co.za/products/lap-throw-blanket"
     );
   });
 
   it("omits size and colour lines when not selected", () => {
     const message = buildOrderMessage({
       productName: "Scrunchie",
-      productUrl: "https://melcrochet-creations.vercel.app/products/scrunchie",
+      productUrl: "https://melcrochet.co.za/products/scrunchie",
       colour: null,
       size: null,
     });
     expect(message).toBe(
       "Hi MelCrochet! I'd like to order the Scrunchie.\n" +
-        "https://melcrochet-creations.vercel.app/products/scrunchie"
+        "https://melcrochet.co.za/products/scrunchie"
     );
   });
 });

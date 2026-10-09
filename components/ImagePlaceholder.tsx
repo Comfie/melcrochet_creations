@@ -12,21 +12,11 @@ export default function ImagePlaceholder({
 }) {
   return (
     <div
-      className={`flex flex-col items-center justify-center gap-3 bg-sand text-brown ${className}`}
+      className={`flex flex-col items-center justify-center gap-3 bg-sand bg-[url(/brand/melcrochet-pattern.svg)] bg-[length:320px_auto] text-brown ${className}`}
       role="img"
       aria-label={label}
     >
-      <svg
-        viewBox="0 0 64 32"
-        className="h-6 w-12 text-taupe"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        aria-hidden="true"
-      >
-        <path d="M0 16 Q8 4 16 16 T32 16 T48 16 T64 16" />
-      </svg>
-      <span aria-hidden="true" className="label text-[0.5625rem] text-brown/80">
+      <span aria-hidden="true" className="label bg-sand px-3 py-1.5 text-[0.5625rem] text-brown">
         {label}
       </span>
     </div>

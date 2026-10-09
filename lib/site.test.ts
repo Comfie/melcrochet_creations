@@ -3,7 +3,7 @@ import { SITE } from "./site";
 
 describe("SITE", () => {
   it("exposes the production URL with no trailing slash", () => {
-    expect(SITE.url).toBe("https://melcrochet-creations.vercel.app");
+    expect(SITE.url).toBe("https://melcrochet.co.za");
   });
 
   it("exposes the WhatsApp number in international format with no plus sign", () => {

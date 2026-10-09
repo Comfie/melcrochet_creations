@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 220" width="210" height="220" role="img" aria-label="MelCrochet icon — two tone">
+  <title>MelCrochet icon — two tone</title>
+
+<g fill="none" stroke="#151515" stroke-width="7.0" stroke-linecap="round" stroke-linejoin="round">
+    <clipPath id="bci3"><circle cx="100" cy="126" r="60"/></clipPath>
+    <circle cx="100" cy="126" r="60"/>
+    <g clip-path="url(#bci3)" stroke-width="5.739999999999999">
+      <ellipse cx="100" cy="126" rx="27" ry="68" transform="rotate(-34 100 126)"/>
+      <ellipse cx="100" cy="126" rx="27" ry="68" transform="rotate(34 100 126)"/>
+    </g>
+    <path d="M150 158 C 174 172, 178 194, 163 200 C 152 204, 145 195, 152 189" stroke-width="6.3"/>
+    <g stroke="#C8A24A">
+      <path d="M70 178 L 148 46"/>
+      <path d="M148 46 C 154 34, 146 25, 136 29 C 128 32, 128 42, 136 45"/>
+    </g>
+  </g>
+</svg>
