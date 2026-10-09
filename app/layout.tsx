@@ -1,24 +1,28 @@
-import type { Metadata } from "next";
-import { Fraunces, Inter } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Cormorant_Garamond, Manrope } from "next/font/google";
 import "./globals.css";
 import { SITE } from "@/lib/site";
 
-const fraunces = Fraunces({
+// Editorial display serif — headlines, pull quotes, large numerals.
+const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
-  variable: "--font-fraunces",
+  weight: "variable",
+  style: ["normal", "italic"],
+  variable: "--font-cormorant",
   display: "swap",
 });
 
-const inter = Inter({
+// Contemporary sans — navigation, product information and body copy.
+const manrope = Manrope({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-manrope",
   display: "swap",
 });
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: {
-    default: `${SITE.name} | Handmade Crochet Blankets, Bags & Gifts in South Africa`,
+    default: `${SITE.name} | Handmade Crochet Fashion, Blankets & Gifts in South Africa`,
     template: `%s | ${SITE.shortName}`,
   },
   description: SITE.description,
@@ -29,11 +33,15 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  themeColor: "#151515",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${fraunces.variable} ${inter.variable}`}>
+    <html lang="en-ZA" className={`${cormorant.variable} ${manrope.variable}`}>
       <body>{children}</body>
     </html>
   );

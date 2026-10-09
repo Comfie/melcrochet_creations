@@ -1,8 +1,13 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { buttonClasses } from "@/components/ui/Button";
 
 type Status = "idle" | "submitting" | "success" | "error";
+
+const LABEL = "label text-ink/75";
+const FIELD =
+  "mt-2 w-full border-0 border-b border-ink/30 bg-transparent px-0 py-3 font-sans text-base text-ink transition-colors placeholder:text-ink/40 hover:border-ink/60 focus:border-ink focus:outline-none focus-visible:outline-none focus-visible:shadow-[0_1px_0_0_var(--color-ink)]";
 
 export default function EnquiryForm() {
   const [status, setStatus] = useState<Status>("idle");
@@ -54,14 +59,17 @@ export default function EnquiryForm() {
 
   if (status === "success") {
     return (
-      <p role="status" className="font-sans text-ink">
-        Thank you! Your message has been sent — we&apos;ll get back to you soon.
-      </p>
+      <div role="status" className="border-t border-ink pt-8">
+        <p className="font-display text-3xl">Thank you!</p>
+        <p className="mt-3 font-sans text-ink/75">
+          Your message has been sent — we&apos;ll get back to you soon.
+        </p>
+      </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
+    <form onSubmit={handleSubmit} className="relative flex flex-col gap-8" noValidate>
       {/* Honeypot — real visitors never see or reach this field */}
       <div className="absolute h-0 w-0 overflow-hidden" aria-hidden="true">
         <label htmlFor="website">Leave this field empty</label>
@@ -69,7 +77,7 @@ export default function EnquiryForm() {
       </div>
 
       <div>
-        <label htmlFor="name" className="font-sans text-sm font-medium">
+        <label htmlFor="name" className={LABEL}>
           Name
         </label>
         <input
@@ -77,36 +85,36 @@ export default function EnquiryForm() {
           name="name"
           type="text"
           required
-          className="mt-1 w-full border border-taupe/40 bg-cream px-4 py-2 font-sans focus-visible:border-gold"
+          className={FIELD}
         />
       </div>
 
       <div>
-        <label htmlFor="email" className="font-sans text-sm font-medium">
+        <label htmlFor="email" className={LABEL}>
           Email (optional)
         </label>
         <input
           id="email"
           name="email"
           type="email"
-          className="mt-1 w-full border border-taupe/40 bg-cream px-4 py-2 font-sans focus-visible:border-gold"
+          className={FIELD}
         />
       </div>
 
       <div>
-        <label htmlFor="phone" className="font-sans text-sm font-medium">
+        <label htmlFor="phone" className={LABEL}>
           Phone (optional)
         </label>
         <input
           id="phone"
           name="phone"
           type="tel"
-          className="mt-1 w-full border border-taupe/40 bg-cream px-4 py-2 font-sans focus-visible:border-gold"
+          className={FIELD}
         />
       </div>
 
       <div>
-        <label htmlFor="message" className="font-sans text-sm font-medium">
+        <label htmlFor="message" className={LABEL}>
           Message
         </label>
         <textarea
@@ -114,12 +122,12 @@ export default function EnquiryForm() {
           name="message"
           rows={5}
           required
-          className="mt-1 w-full border border-taupe/40 bg-cream px-4 py-2 font-sans focus-visible:border-gold"
+          className={FIELD}
         />
       </div>
 
       {status === "error" && errorMessage && (
-        <p role="alert" className="font-sans text-sm text-red-700">
+        <p role="alert" className="border-l-2 border-red-700 pl-4 font-sans text-sm text-red-800">
           {errorMessage}
         </p>
       )}
@@ -127,7 +135,7 @@ export default function EnquiryForm() {
       <button
         type="submit"
         disabled={status === "submitting"}
-        className="mt-2 inline-flex w-fit items-center rounded-full bg-ink px-6 py-2.5 font-sans text-sm font-semibold text-cream transition-opacity hover:opacity-90 disabled:opacity-50"
+        className={buttonClasses("ink", "lg", "w-full sm:w-fit disabled:opacity-50")}
       >
         {status === "submitting" ? "Sending..." : "Send Message"}
       </button>

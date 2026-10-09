@@ -13,7 +13,7 @@ MelCrochet Gifted Hands — A handmade crochet business portfolio and product sh
 - Prisma 7 with `@prisma/adapter-pg` driver adapter + `prisma.config.ts` (Prisma 7 moved the DB URL out of `schema.prisma`)
 - PostgreSQL (Railway-hosted — used for both local dev and production, no local Docker DB)
 - Tailwind CSS v4 (uses `@theme` directive in `globals.css`, not `tailwind.config.ts`)
-- `next/font` — Fraunces (display/headings) + Inter (body)
+- `next/font` — Cormorant Garamond (display/headings) + Manrope (body)
 - Cloudinary for image storage (Vercel filesystem is ephemeral)
 - JWT-based admin auth (cookie: `HttpOnly; Secure; SameSite=Lax; Path=/`)
 - Zod for API validation
@@ -24,11 +24,13 @@ MelCrochet Gifted Hands — A handmade crochet business portfolio and product sh
 
 - **Business name:** MelCrochet Gifted Hands (always written exactly this way)
 - **Colours (exact hex):** Luxury Black `#151515`, Warm Gold `#C8A24A`, Soft Cream `#F7F0E3`, Warm Taupe `#A78B71`, Deep Brown `#3B2D26`
-- **Typography:** Fraunces (Georgia fallback) for headings, Inter for body
+- **Typography:** Cormorant Garamond (Georgia fallback) for headings/display ≥ 20px, Manrope for body, navigation and product info
+- **Derived neutrals (contrast only):** Sand `#EDE3D1` (light banding), Gold Deep `#7D5F1F` (gold-family text on light grounds — brand gold fails AA on cream)
+- **Design system:** fashion-editorial — see `docs/superpowers/specs/2026-10-09-fashion-editorial-redesign.md`
 - **Tone:** Warm, elegant, handmade, trustworthy, professional
 - **Currency:** ZAR — prices render as `R450`
 - **WhatsApp:** 067 059 0600 (`https://wa.me/27670590600`)
-- **Instagram:** @melz.crotchet.creations
+- **Instagram:** @melz.crotchet.creations (⚠️ site URL uses `melz_crotchet_creations` — confirm; see `lib/site.ts`)
 - **Tagline:** "Providing Warmth, Comfort & Timeless Handmade Creations"
 
 ## Categories (12, exact names)
@@ -42,7 +44,8 @@ app/              — pages and routes (App Router)
 app/api/          — route handlers (admin CRUD, uploads, enquiries)
 app/admin/        — protected admin panel pages
 components/       — React components (Server Components by default)
-lib/              — shared utilities (prisma.ts, auth.ts, cloudinary.ts, queries.ts, slug.ts, api-response.ts)
+lib/              — shared utilities (prisma.ts, auth.ts, cloudinary.ts, queries.ts, slug.ts, api-response.ts,
+                    collections.ts, policies.ts, catalogue.ts)
 prisma/           — schema, migrations, seed data
 prisma.config.ts  — Prisma 7 CLI datasource config (repo root)
 docs/             — specs, plans, and project documentation (do NOT delete)
@@ -82,6 +85,9 @@ After every change, run in this order:
 - Admin routes use `requireAuth` from `lib/auth.ts` — JWT cookie auth, no external auth library
 - Image uploads go through Cloudinary via `lib/cloudinary.ts` — never store images on disk
 - Slugs generated via `lib/slug.ts` `slugify()` helper
+- Collections (customer-facing groups of categories) are static config in `lib/collections.ts` — map any new category there
+- Policy copy (lead time, payment, delivery, care, returns) lives only in `lib/policies.ts`
+- Use `next/image` `preload` (not the deprecated `priority`); use the `shell` utility for page gutters and `label` for uppercase eyebrows
 - Use Zod schemas for all API input validation (co-located in `app/api/[resource]/schema.ts`)
 - Import alias: `@/*` maps to repo root
 - Commits: conventional commit format (`feat:`, `fix:`, `chore:`, etc.) — no AI attribution lines
@@ -110,5 +116,6 @@ After every change, run in this order:
 ## Reference
 
 - Full spec: `docs/superpowers/specs/2026-07-09-melcrochet-website-design.md`
+- Redesign spec: `docs/superpowers/specs/2026-10-09-fashion-editorial-redesign.md`
 - Foundation plan: `docs/superpowers/plans/2026-07-09-01-foundation.md`
 - API layer plan: `docs/superpowers/plans/2026-07-09-02-api-layer.md`

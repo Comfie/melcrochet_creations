@@ -1,19 +1,24 @@
-import Link from "next/link";
+import { ButtonLink, TextLink } from "@/components/ui/Button";
 
 export default function SiteNotFound() {
   return (
-    <div className="mx-auto max-w-xl px-5 py-32 text-center">
-      <h1 className="text-display">Page Not Found</h1>
-      <p className="mt-4 font-sans text-ink/70">
-        We couldn&apos;t find what you were looking for. It may have been moved,
-        or the link might be out of date.
-      </p>
-      <Link
-        href="/"
-        className="mt-8 inline-block font-sans text-sm font-semibold uppercase tracking-wide text-brown hover:text-ink"
-      >
-        Back to Home &rarr;
-      </Link>
-    </div>
+    <section className="bg-cream">
+      <div className="shell flex min-h-[70svh] flex-col items-center justify-center py-24 text-center">
+        <p className="label text-gold-deep">Error 404</p>
+        <h1 className="mt-6 text-display">
+          A dropped <span className="italic">stitch.</span>
+        </h1>
+        <p className="mt-6 max-w-md font-sans leading-relaxed text-ink/70">
+          We couldn&apos;t find what you were looking for. It may have been moved,
+          or the link might be out of date.
+        </p>
+        <div className="mt-10 flex flex-col items-center gap-6 sm:flex-row sm:gap-10">
+          <ButtonLink href="/products">Shop the Collection</ButtonLink>
+          <TextLink href="/" className="text-ink">
+            Back to Home
+          </TextLink>
+        </div>
+      </div>
+    </section>
   );
 }

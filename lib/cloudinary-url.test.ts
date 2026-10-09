@@ -16,6 +16,12 @@ describe("cld", () => {
     );
   });
 
+  it("injects the portrait (3:4, auto-gravity) transformation", () => {
+    expect(cld(SAMPLE, "portrait")).toBe(
+      "https://res.cloudinary.com/demo/image/upload/f_auto,q_auto,c_fill,g_auto,ar_3:4,w_900/v1699999999/products/abc123.jpg"
+    );
+  });
+
   it("injects the og transformation", () => {
     expect(cld(SAMPLE, "og")).toBe(
       "https://res.cloudinary.com/demo/image/upload/f_auto,q_auto,c_fill,w_1200,h_630/v1699999999/products/abc123.jpg"

@@ -10,21 +10,69 @@ export function getCategoryBySlug(slug: string) {
 
 export function getProducts(options?: {
   categorySlug?: string;
+  /** Any-of filter, used for collections (groups of categories). */
+  categorySlugs?: readonly string[];
   featured?: boolean;
+  /** Case-insensitive match against product name, description or category. */
+  search?: string;
 }) {
+  const search = options?.search?.trim();
   return prisma.product.findMany({
     where: {
       isActive: true,
       ...(options?.categorySlug
         ? { category: { slug: options.categorySlug } }
-        : {}),
+        : options?.categorySlugs
+          ? { category: { slug: { in: [...options.categorySlugs] } } }
+          : {}),
       ...(options?.featured !== undefined
         ? { featured: options.featured }
+        : {}),
+      ...(search
+        ? {
+            OR: [
+              { name: { contains: search, mode: "insensitive" as const } },
+              { description: { contains: search, mode: "insensitive" as const } },
+              { category: { name: { contains: search, mode: "insensitive" as const } } },
+            ],
+          }
         : {}),
     },
     include: { category: true },
     orderBy: { sortOrder: "asc" },
   });
+}
+
+/**
+ * "You may also like" — other active pieces from the same category first,
+ * then the rest of the same collection, capped at `limit`.
+ */
+export async function getRelatedProducts(
+  product: { id: string; categoryId: string },
+  collectionCategorySlugs: readonly string[],
+  limit = 4
+) {
+  const sameCategory = await prisma.product.findMany({
+    where: { isActive: true, categoryId: product.categoryId, id: { not: product.id } },
+    include: { category: true },
+    orderBy: { sortOrder: "asc" },
+    take: limit,
+  });
+  if (sameCategory.length >= limit || collectionCategorySlugs.length === 0) {
+    return sameCategory;
+  }
+
+  const rest = await prisma.product.findMany({
+    where: {
+      isActive: true,
+      id: { notIn: [product.id, ...sameCategory.map((p) => p.id)] },
+      category: { slug: { in: [...collectionCategorySlugs] } },
+    },
+    include: { category: true },
+    orderBy: { sortOrder: "asc" },
+    take: limit - sameCategory.length,
+  });
+  return [...sameCategory, ...rest];
 }
 
 export function getProductBySlug(slug: string) {

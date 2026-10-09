@@ -9,6 +9,9 @@ describe("sitemap", () => {
     expect(urls).toContain("https://melcrochet-creations.vercel.app");
     expect(urls).toContain("https://melcrochet-creations.vercel.app/products");
     expect(urls).toContain("https://melcrochet-creations.vercel.app/faq");
+    expect(urls).toContain("https://melcrochet-creations.vercel.app/collections");
+    expect(urls).toContain("https://melcrochet-creations.vercel.app/custom-orders");
+    expect(urls).toContain("https://melcrochet-creations.vercel.app/products?collection=home-living");
   });
 
   it("includes a URL for a known seeded product", async () => {

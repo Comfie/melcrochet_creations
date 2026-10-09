@@ -14,6 +14,30 @@ const baseProduct = {
 };
 
 describe("ProductCard", () => {
+  it("links the card to the product detail page", () => {
+    const html = renderToStaticMarkup(<ProductCard product={baseProduct} />);
+    expect(html).toContain('href="/products/lap-throw-blanket"');
+  });
+
+  it("offers a WhatsApp enquiry prefilled with the product name", () => {
+    const html = renderToStaticMarkup(<ProductCard product={baseProduct} />);
+    expect(html).toContain("https://wa.me/27670590600?text=");
+    expect(html).toContain("Lap%20Throw%20Blanket");
+  });
+
+  it("renders a second hover image when provided", () => {
+    const html = renderToStaticMarkup(
+      <ProductCard
+        product={{
+          ...baseProduct,
+          imageUrl: "https://res.cloudinary.com/pk8vhsyp/image/upload/v1/melcrochet/a.jpg",
+          hoverImageUrl: "https://res.cloudinary.com/pk8vhsyp/image/upload/v1/melcrochet/b.jpg",
+        }}
+      />
+    );
+    expect(html.match(/<img/g)).toHaveLength(2);
+  });
+
   it("renders the formatted price", () => {
     const html = renderToStaticMarkup(<ProductCard product={baseProduct} />);
     expect(html).toContain("R650");
@@ -38,7 +62,7 @@ describe("ProductCard", () => {
     expect(html).not.toContain("Made to order");
   });
 
-  it("renders the product image routed through the card preset", () => {
+  it("renders the product image routed through the portrait preset", () => {
     const html = renderToStaticMarkup(
       <ProductCard
         product={{ ...baseProduct, imageUrl: "https://res.cloudinary.com/pk8vhsyp/image/upload/v1/melcrochet/x.jpg" }}
@@ -47,7 +71,7 @@ describe("ProductCard", () => {
     expect(html).toContain("<img");
     const srcSetMatch = html.match(/srcSet="([^"]+)"/);
     expect(srcSetMatch).not.toBeNull();
-    expect(decodeURIComponent(srcSetMatch![1])).toContain("f_auto,q_auto,c_fill,ar_1:1,w_600");
+    expect(decodeURIComponent(srcSetMatch![1])).toContain("f_auto,q_auto,c_fill,g_auto,ar_3:4,w_900");
   });
 
   it("carries its own text-ink color instead of inheriting ambient color", () => {
@@ -56,7 +80,7 @@ describe("ProductCard", () => {
         <ProductCard product={baseProduct} />
       </div>
     );
-    const rootMatch = html.match(/<div class="([^"]*border-taupe\/30[^"]*)"/);
+    const rootMatch = html.match(/<article class="([^"]*)"[^>]*data-product-card/);
     expect(rootMatch).not.toBeNull();
     expect(rootMatch![1]).toContain("text-ink");
   });

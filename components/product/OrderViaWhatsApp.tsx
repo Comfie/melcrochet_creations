@@ -34,6 +34,9 @@ interface Props {
   className?: string;
 }
 
+const OPTION_BASE =
+  "relative flex min-h-11 cursor-pointer items-center gap-2 border px-4 font-sans text-sm transition-colors duration-300 focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-ink";
+
 export function OrderViaWhatsApp({ productName, productUrl, colours, sizes, className }: Props) {
   const [colour, setColour] = useState<string | null>(null);
   // Pre-select when there's exactly one size — no decision to make, but
@@ -47,17 +50,21 @@ export function OrderViaWhatsApp({ productName, productUrl, colours, sizes, clas
 
   return (
     <div className={className}>
+      {sizes.length === 1 && (
+        <p className="mb-6 font-sans text-sm text-ink/75">{`Size: ${sizes[0]}`}</p>
+      )}
+
       {sizes.length > 1 && (
-        <fieldset className="mb-4">
-          <legend className="mb-2 font-sans text-sm font-medium text-ink">Size</legend>
+        <fieldset className="mb-7">
+          <legend className="label mb-3 text-ink/75">Size</legend>
           <div className="flex flex-wrap gap-2">
             {sizes.map((label) => {
               const selected = size === label;
               return (
                 <label
                   key={label}
-                  className={`cursor-pointer rounded-full border px-4 py-2 font-sans text-sm transition-colors focus-within:outline focus-within:outline-2 focus-within:outline-ink ${
-                    selected ? "border-ink bg-ink text-cream" : "border-taupe/40 text-ink/70 hover:border-ink"
+                  className={`${OPTION_BASE} ${
+                    selected ? "border-ink bg-ink text-cream" : "border-ink/20 text-ink/80 hover:border-ink"
                   }`}
                 >
                   <input
@@ -77,8 +84,8 @@ export function OrderViaWhatsApp({ productName, productUrl, colours, sizes, clas
       )}
 
       {colours.length > 0 && (
-        <fieldset className="mb-4">
-          <legend className="mb-2 font-sans text-sm font-medium text-ink">
+        <fieldset className="mb-7">
+          <legend className="label mb-3 text-ink/75">
             Colour{colour ? `: ${colour}` : ""}
           </legend>
           <div className="flex flex-wrap gap-2">
@@ -90,8 +97,8 @@ export function OrderViaWhatsApp({ productName, productUrl, colours, sizes, clas
                 <label
                   key={name}
                   title={name}
-                  className={`flex cursor-pointer items-center gap-2 rounded-full border px-2 py-1 font-sans text-sm transition-colors focus-within:outline focus-within:outline-2 focus-within:outline-ink ${
-                    selected ? "border-ink ring-1 ring-ink" : "border-taupe/40 hover:border-ink"
+                  className={`${OPTION_BASE} pl-2.5 ${
+                    selected ? "border-ink ring-1 ring-ink" : "border-ink/20 hover:border-ink"
                   }`}
                 >
                   <input
@@ -105,7 +112,7 @@ export function OrderViaWhatsApp({ productName, productUrl, colours, sizes, clas
                   {hex ? (
                     <span
                       aria-hidden="true"
-                      className={`h-5 w-5 rounded-full ${LIGHT_COLOURS.has(key) ? "border border-taupe/40" : ""}`}
+                      className={`h-5 w-5 rounded-full ${LIGHT_COLOURS.has(key) ? "border border-ink/20" : ""}`}
                       style={{ backgroundColor: hex }}
                     />
                   ) : null}
@@ -117,14 +124,18 @@ export function OrderViaWhatsApp({ productName, productUrl, colours, sizes, clas
         </fieldset>
       )}
 
-      <WhatsAppButton href={href} label="Order via WhatsApp" />
+      <WhatsAppButton href={href} label="Order via WhatsApp" size="lg" className="w-full" />
 
       {/* Gentle nudge, not a blocker — customers can still order without selecting. */}
       {colours.length > 0 && !colour && (
-        <p className="mt-2 font-sans text-sm text-ink/60">
+        <p className="mt-3 font-sans text-sm text-ink/65">
           Tip: pick a colour above and it&apos;ll be included in your message.
         </p>
       )}
+      <p className="mt-4 font-sans text-xs leading-relaxed text-ink/65">
+        Opens a WhatsApp chat with your selections filled in. We&apos;ll confirm your exact
+        lead time and payment details before we begin — nothing is charged online.
+      </p>
     </div>
   );
 }

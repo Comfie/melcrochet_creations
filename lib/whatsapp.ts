@@ -38,3 +38,38 @@ export function buildOrderMessage({
     .filter(Boolean)
     .join("\n");
 }
+
+export interface CustomOrderOptions {
+  piece?: string | null;
+  colours?: string | null;
+  size?: string | null;
+  neededBy?: string | null;
+  details?: string | null;
+}
+
+/**
+ * Builds the pre-filled WhatsApp message for the Custom Orders request
+ * builder. Blank answers are left out so the message reads naturally; the
+ * customer can still edit everything in WhatsApp before sending.
+ */
+export function buildCustomOrderMessage({
+  piece,
+  colours,
+  size,
+  neededBy,
+  details,
+}: CustomOrderOptions = {}): string {
+  const clean = (v: string | null | undefined) => v?.trim() || null;
+  const p = clean(piece);
+  return [
+    p
+      ? `Hi MelCrochet! I'd like to request a custom ${p}.`
+      : "Hi MelCrochet! I'd like to request a custom piece.",
+    clean(colours) ? `Colours: ${clean(colours)}` : null,
+    clean(size) ? `Size: ${clean(size)}` : null,
+    clean(neededBy) ? `Needed by: ${clean(neededBy)}` : null,
+    clean(details) ? `Details: ${clean(details)}` : null,
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
