@@ -95,6 +95,7 @@ After every change, run in this order:
 - SEO: every indexable page builds metadata with `pageMetadata()` from `lib/seo.ts` (canonical, Open Graph, Twitter in one place — never set `openGraph` by hand, Next merges it shallowly). Category search copy is `CATEGORY_SEO` in `lib/seo.ts`; collection copy is `seo` in `lib/collections.ts`. JSON-LD components live in `components/seo/JsonLd.tsx` — verified facts only (no invented ratings, reviews, SKUs, stock or addresses)
 - Don't put `notFound()` behind a `loading.tsx`/Suspense boundary — it can then only stream a soft 404 (HTTP 200). `/products/[slug]` is deliberately outside the `(shop)` group's `loading.tsx`
 - Analytics: GA4 is off unless `NEXT_PUBLIC_GA_MEASUREMENT_ID` is set. Track lead actions with `analyticsAttributes()` (server components) or `trackEvent()` (client) from `lib/analytics.ts`; never send names, messages or other form contents
+- Privacy notice: `app/(site)/privacy/page.tsx` describes exactly what the site collects. Any new data collection, cookie, tracker or third-party embed must be added there (and `PRIVACY_UPDATED` bumped) in the same change
 - SEO regression check: `npm run build && npm start`, then `npm run seo:check` (or `npm run seo:check -- https://melcrochet.co.za`)
 - Use `next/image` `preload` (not the deprecated `priority`); use the `shell` utility for page gutters and `label` for uppercase eyebrows
 - Use Zod schemas for all API input validation (co-located in `app/api/[resource]/schema.ts`)

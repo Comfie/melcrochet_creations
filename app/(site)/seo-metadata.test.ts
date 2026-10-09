@@ -13,6 +13,7 @@ import { metadata as collections } from "./collections/page";
 import { metadata as contact } from "./contact/page";
 import { metadata as customOrders } from "./custom-orders/page";
 import { metadata as faq } from "./faq/page";
+import { metadata as privacy } from "./privacy/page";
 
 const PAGES: [path: string, metadata: Metadata][] = [
   ["/", home],
@@ -22,6 +23,7 @@ const PAGES: [path: string, metadata: Metadata][] = [
   ["/contact", contact],
   ["/custom-orders", customOrders],
   ["/faq", faq],
+  ["/privacy", privacy],
 ];
 
 function titleText(title: Metadata["title"]): string {

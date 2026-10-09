@@ -162,9 +162,14 @@ consolidating them.
    `contact_form_submit` as **Key events**.
 4. Admin → Data settings: data retention 14 months; leave Google signals **off**.
 5. Link GA4 to Search Console (Admin → Product links).
-6. **Before enabling GA4, publish a privacy notice** that mentions Google
-   Analytics, as Google's terms require and POPIA expects. A new page, its
-   copy and a footer link need owner/design approval.
+6. ~~Publish a privacy notice that mentions Google Analytics.~~ Done:
+   `/privacy` (`app/(site)/privacy/page.tsx`), linked from the footer and
+   the contact form, and listed in the sitemap. It covers the contact form,
+   WhatsApp, Google Analytics cookies and opt-outs, YouTube
+   (privacy-enhanced embeds), service providers, cross-border transfer,
+   retention and POPIA rights. Have Mel read it, and keep it in step with
+   any new tracking or data collection (bump "Last updated"). It isn't legal
+   advice — get a professional review if the business grows.
 
 ## 6. Owner content actions (highest impact)
 

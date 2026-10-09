@@ -6,8 +6,9 @@ export default function YouTubeEmbed({ url }: { url: string }) {
 
   return (
     <div className="aspect-video w-full overflow-hidden">
+      {/* youtube-nocookie: no YouTube cookies until the visitor plays the video (see /privacy). */}
       <iframe
-        src={`https://www.youtube.com/embed/${videoId}`}
+        src={`https://www.youtube-nocookie.com/embed/${videoId}`}
         title="Embedded YouTube video"
         className="h-full w-full"
         loading="lazy"

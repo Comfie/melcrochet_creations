@@ -145,7 +145,12 @@ export default function Footer() {
 
       <div className="shell flex flex-col gap-2 border-t border-cream/10 py-6 font-sans text-xs text-cream/60 sm:flex-row sm:justify-between">
         <p>&copy; {new Date().getFullYear()} {SITE.name}. All rights reserved.</p>
-        <p>Handmade in South Africa &middot; Prices in ZAR</p>
+        <p>
+          Handmade in South Africa &middot; Prices in ZAR &middot;{" "}
+          <Link href="/privacy" className="underline decoration-cream/30 underline-offset-4 hover:text-cream">
+            Privacy Notice
+          </Link>
+        </p>
       </div>
     </footer>
   );

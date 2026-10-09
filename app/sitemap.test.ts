@@ -11,6 +11,7 @@ describe("sitemap", () => {
     expect(urls).toContain("https://melcrochet.co.za/faq");
     expect(urls).toContain("https://melcrochet.co.za/collections");
     expect(urls).toContain("https://melcrochet.co.za/custom-orders");
+    expect(urls).toContain("https://melcrochet.co.za/privacy");
     expect(urls).toContain("https://melcrochet.co.za/products?collection=home-living");
   });
 

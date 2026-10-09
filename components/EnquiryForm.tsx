@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import Link from "next/link";
 import { buttonClasses } from "@/components/ui/Button";
 import { ANALYTICS_EVENTS, trackEvent } from "@/lib/analytics";
 
@@ -142,6 +143,14 @@ export default function EnquiryForm() {
       >
         {status === "submitting" ? "Sending..." : "Send Message"}
       </button>
+
+      <p className="-mt-4 font-sans text-xs leading-relaxed text-ink/65">
+        We only use your details to reply to you. See our{" "}
+        <Link href="/privacy" className="underline underline-offset-4 hover:text-ink">
+          Privacy Notice
+        </Link>
+        .
+      </p>
     </form>
   );
 }
