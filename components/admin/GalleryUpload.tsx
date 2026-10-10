@@ -13,13 +13,15 @@ interface Props {
   onBusyChange?: (busy: boolean) => void;
   /** Shows a "Make main" action on each photo (product forms). */
   onMakeMain?: (image: ProductGalleryImage) => void;
+  /** Called for each newly uploaded photo (used to clean up if the form is cancelled). */
+  onUploaded?: (image: ProductGalleryImage) => void;
 }
 
 /**
  * Extra product photos. Picks several at once from the phone's library and
  * uploads them one after another, showing a placeholder per pending photo.
  */
-export default function GalleryUpload({ value, onChange, max = 6, onBusyChange, onMakeMain }: Props) {
+export default function GalleryUpload({ value, onChange, max = 6, onBusyChange, onMakeMain, onUploaded }: Props) {
   const [pending, setPending] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -51,6 +53,7 @@ export default function GalleryUpload({ value, onChange, max = 6, onBusyChange, 
     for (const file of accepted) {
       try {
         const img = await uploadImage(file);
+        onUploaded?.(img);
         const next = [...valueRef.current, img];
         valueRef.current = next;
         onChange(next);

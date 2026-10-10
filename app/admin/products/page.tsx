@@ -1,11 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ChevronRight, ExternalLink, LoaderCircle, Package, Sparkles } from "lucide-react";
+import Link from "next/link";
+import { ChevronRight, ExternalLink, LoaderCircle, Package, Sparkles, Tags } from "lucide-react";
 import { useApiList } from "@/hooks/use-api-list";
 import { useApiMutation } from "@/hooks/use-api-mutation";
 import { usePagination } from "@/hooks/use-pagination";
 import { useLaunchParams } from "@/hooks/use-launch-params";
+import { useUploadSession } from "@/hooks/use-upload-session";
 import SlideOver from "@/components/admin/SlideOver";
 import ImageUpload from "@/components/admin/ImageUpload";
 import GalleryUpload from "@/components/admin/GalleryUpload";
@@ -131,6 +133,7 @@ export default function ProductsPage() {
   const { data: products, loading, error, refresh } = useApiList<Product>("/api/products");
   const { data: categories } = useApiList<Category>("/api/categories");
   const { mutate, loading: saving } = useApiMutation();
+  const uploads = useUploadSession();
 
   const [panelOpen, setPanelOpen] = useState(false);
   const [editing, setEditing] = useState<Product | null>(null);
@@ -233,6 +236,7 @@ export default function ProductsPage() {
       method: editing ? "PATCH" : "POST",
       body,
       onSuccess: () => {
+        uploads.commit([form.imagePublicId, ...form.gallery.map((g) => g.publicId)]);
         setPanelOpen(false);
         refresh();
         setToast({
@@ -249,6 +253,7 @@ export default function ProductsPage() {
     await mutate(`/api/products/${editing.id}`, {
       method: "DELETE",
       onSuccess: () => {
+        uploads.discard();
         setConfirmHide(false);
         setPanelOpen(false);
         refresh();
@@ -330,6 +335,13 @@ export default function ProductsPage() {
             ))}
           </select>
         </div>
+        <Link
+          href="/admin/categories"
+          className="inline-flex min-h-10 items-center gap-1.5 text-sm font-semibold text-gold-deep underline-offset-4 hover:underline"
+        >
+          <Tags className="h-4 w-4" aria-hidden="true" />
+          Manage categories
+        </Link>
         <FilterChips
           label="Filter by status"
           value={status}
@@ -409,7 +421,10 @@ export default function ProductsPage() {
 
       <SlideOver
         open={panelOpen}
-        onClose={() => setPanelOpen(false)}
+        onClose={() => {
+          uploads.discard();
+          setPanelOpen(false);
+        }}
         title={editing ? "Edit product" : "New product"}
         dirty={dirty}
         footer={
@@ -465,6 +480,7 @@ export default function ProductsPage() {
                 currentUrl={form.imageUrl || null}
                 onBusyChange={trackUpload}
                 onUploaded={(url, publicId) => {
+                  uploads.track(publicId);
                   setForm((prev) => ({ ...prev, imageUrl: url, imagePublicId: publicId }));
                   setFormError(null);
                 }}
@@ -479,6 +495,7 @@ export default function ProductsPage() {
                 onChange={(gallery) => updateForm("gallery", gallery)}
                 onBusyChange={trackUpload}
                 onMakeMain={makeMain}
+                onUploaded={(img) => uploads.track(img.publicId)}
               />
             </Field>
           </FormSection>

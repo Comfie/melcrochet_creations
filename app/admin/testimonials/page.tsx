@@ -6,6 +6,7 @@ import { useApiList } from "@/hooks/use-api-list";
 import { useApiMutation } from "@/hooks/use-api-mutation";
 import { usePagination } from "@/hooks/use-pagination";
 import { useLaunchParams } from "@/hooks/use-launch-params";
+import { useUploadSession } from "@/hooks/use-upload-session";
 import SlideOver from "@/components/admin/SlideOver";
 import ImageUpload from "@/components/admin/ImageUpload";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
@@ -64,6 +65,7 @@ function Stars({ rating }: { rating: number }) {
 export default function TestimonialsPage() {
   const { data: testimonials, loading, error, refresh } = useApiList<Testimonial>("/api/testimonials");
   const { mutate, loading: saving } = useApiMutation();
+  const uploads = useUploadSession();
 
   const [panelOpen, setPanelOpen] = useState(false);
   const [editing, setEditing] = useState<Testimonial | null>(null);
@@ -136,6 +138,7 @@ export default function TestimonialsPage() {
       method: editing ? "PATCH" : "POST",
       body,
       onSuccess: () => {
+        uploads.commit([form.imagePublicId]);
         setPanelOpen(false);
         refresh();
         setToast({ message: editing ? "Testimonial updated" : "Testimonial added", type: "success" });
@@ -149,6 +152,7 @@ export default function TestimonialsPage() {
     await mutate(`/api/testimonials/${editing.id}`, {
       method: "DELETE",
       onSuccess: () => {
+        uploads.discard();
         setConfirmHide(false);
         setPanelOpen(false);
         refresh();
@@ -230,7 +234,10 @@ export default function TestimonialsPage() {
 
       <SlideOver
         open={panelOpen}
-        onClose={() => setPanelOpen(false)}
+        onClose={() => {
+          uploads.discard();
+          setPanelOpen(false);
+        }}
         title={editing ? "Edit testimonial" : "New testimonial"}
         dirty={dirty}
         footer={
@@ -336,6 +343,7 @@ export default function TestimonialsPage() {
                 onBusyChange={setUploading}
                 onRemove={() => setForm((prev) => ({ ...prev, imageUrl: "", imagePublicId: "" }))}
                 onUploaded={(url, publicId) => {
+                  uploads.track(publicId);
                   setForm((prev) => ({ ...prev, imageUrl: url, imagePublicId: publicId }));
                   setFormError(null);
                 }}

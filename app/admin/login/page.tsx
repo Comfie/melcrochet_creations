@@ -103,7 +103,7 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <p className="mt-6 text-center text-xs text-brown/80">You’ll stay signed in on this device for 7 days.</p>
+        <p className="mt-6 text-center text-xs text-brown/80">You’ll stay signed in on this device for 30 days.</p>
       </div>
     </div>
   );

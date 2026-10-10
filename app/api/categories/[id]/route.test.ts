@@ -3,15 +3,16 @@ import { describe, it, expect, beforeEach, afterEach, beforeAll } from "vitest";
 import { NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
 import { slugify } from "@/lib/slug";
-import { signSessionToken } from "@/lib/auth";
+import { setupTestAdmin } from "@/lib/test-admin";
 
 beforeAll(() => {
   process.env.JWT_SECRET = process.env.JWT_SECRET || "test-secret-for-vitest-only";
 });
 
+const testAdmin = setupTestAdmin();
+
 async function authCookie() {
-  const token = await signSessionToken("melissa");
-  return `mc_admin=${token}`;
+  return testAdmin.cookie();
 }
 
 let categoryId: string;

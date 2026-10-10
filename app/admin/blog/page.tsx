@@ -7,6 +7,7 @@ import { useApiList } from "@/hooks/use-api-list";
 import { useApiMutation } from "@/hooks/use-api-mutation";
 import { usePagination } from "@/hooks/use-pagination";
 import { useLaunchParams } from "@/hooks/use-launch-params";
+import { useUploadSession } from "@/hooks/use-upload-session";
 import SlideOver from "@/components/admin/SlideOver";
 import ImageUpload from "@/components/admin/ImageUpload";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
@@ -67,6 +68,7 @@ const TOOLS: { action: MarkdownAction; label: string; icon: typeof Bold }[] = [
 export default function BlogPage() {
   const { data: posts, loading, error, refresh } = useApiList<BlogPost>("/api/blog");
   const { mutate, loading: saving } = useApiMutation();
+  const uploads = useUploadSession();
 
   const [panelOpen, setPanelOpen] = useState(false);
   const [editing, setEditing] = useState<BlogPost | null>(null);
@@ -151,6 +153,7 @@ export default function BlogPage() {
       method: editing ? "PATCH" : "POST",
       body,
       onSuccess: () => {
+        uploads.commit([form.coverImagePublicId]);
         setPanelOpen(false);
         refresh();
         setToast({ message: form.published ? "Post is live" : "Draft saved", type: "success" });
@@ -164,6 +167,7 @@ export default function BlogPage() {
     await mutate(`/api/blog/${editing.id}`, {
       method: "DELETE",
       onSuccess: () => {
+        uploads.discard();
         setConfirmDelete(false);
         setPanelOpen(false);
         refresh();
@@ -234,7 +238,10 @@ export default function BlogPage() {
 
       <SlideOver
         open={panelOpen}
-        onClose={() => setPanelOpen(false)}
+        onClose={() => {
+          uploads.discard();
+          setPanelOpen(false);
+        }}
         title={editing ? "Edit post" : "New post"}
         width="md:max-w-2xl"
         dirty={dirty}
@@ -362,6 +369,7 @@ export default function BlogPage() {
                 onBusyChange={setUploading}
                 onRemove={() => setForm((prev) => ({ ...prev, coverImageUrl: "", coverImagePublicId: "" }))}
                 onUploaded={(url, publicId) => {
+                  uploads.track(publicId);
                   setForm((prev) => ({ ...prev, coverImageUrl: url, coverImagePublicId: publicId }));
                   setFormError(null);
                 }}

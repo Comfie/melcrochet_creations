@@ -28,8 +28,12 @@ export function useApiMutation() {
       }
 
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        const msg = (data as { error?: string }).error ?? "Something went wrong";
+        const data = (await res.json().catch(() => ({}))) as {
+          error?: string;
+          details?: { message?: string }[];
+        };
+        // Validation errors carry the specific reason in details[0].
+        const msg = data.details?.[0]?.message ?? data.error ?? "Something went wrong";
         onError?.(msg);
         return false;
       }

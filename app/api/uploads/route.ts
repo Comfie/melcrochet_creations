@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth";
 import { jsonError } from "@/lib/api-response";
 import { uploadImageBuffer } from "@/lib/cloudinary";
+import { UPLOAD_FOLDER } from "@/lib/upload-folder";
 
 // Vercel Serverless Functions hard-cap request bodies at 4.5MB; stay under
 // that with headroom for multipart overhead. Client-side resizing (see
@@ -27,7 +28,7 @@ export async function POST(request: NextRequest) {
   }
 
   const buffer = Buffer.from(await file.arrayBuffer());
-  const { url, publicId } = await uploadImageBuffer(buffer, "melcrochet");
+  const { url, publicId } = await uploadImageBuffer(buffer, UPLOAD_FOLDER);
 
   return NextResponse.json({ url, publicId });
 }

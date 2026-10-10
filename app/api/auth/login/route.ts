@@ -1,26 +1,47 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
-import {
-  signSessionToken,
-  SESSION_COOKIE_NAME,
-  SESSION_COOKIE_MAX_AGE_SECONDS,
-} from "@/lib/auth";
+import prisma from "@/lib/prisma";
+import { signSessionToken, setSessionCookie } from "@/lib/session";
 import { jsonError, jsonValidationError } from "@/lib/api-response";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
 const loginSchema = z.object({
-  username: z.string().min(1),
+  username: z.string().trim().toLowerCase().min(1),
   password: z.string().min(1),
 });
 
 // A valid-shaped but never-matching hash, so bcrypt.compare always does
-// real work even if ADMIN_PASSWORD_HASH is unset — avoids a trivial
-// "unset hash short-circuits instantly" timing signal. Generated via
-// bcrypt itself (not hand-typed) so it's guaranteed to be a well-formed
-// hash bcrypt.compare can actually process.
+// real work even for unknown usernames — avoids a "no such user answers
+// instantly" timing signal. Generated via bcrypt itself so it's well-formed.
 const DUMMY_HASH = bcrypt.hashSync("never-matches-anything", 10);
 
+const RATE_LIMIT = 10;
+const RATE_WINDOW_MS = 15 * 60 * 1000;
+
+/**
+ * First sign-in after admin accounts were introduced: there are no
+ * AdminUser rows yet, so the original ADMIN_USERNAME / ADMIN_PASSWORD_HASH
+ * env credentials are accepted once and turned into the Owner account.
+ * From then on accounts live in the database and the env pair is unused.
+ */
+async function bootstrapOwner(username: string, password: string) {
+  const envUsername = process.env.ADMIN_USERNAME?.trim().toLowerCase();
+  const envHash = process.env.ADMIN_PASSWORD_HASH;
+  const matches = await bcrypt.compare(password, envHash || DUMMY_HASH);
+  if (!envUsername || !envHash || !matches || username !== envUsername) return null;
+  const name = envUsername.charAt(0).toUpperCase() + envUsername.slice(1);
+  return prisma.adminUser
+    .create({ data: { username: envUsername, name, passwordHash: envHash, role: "OWNER" } })
+    // Two first sign-ins at once: the other request created it.
+    .catch(() => prisma.adminUser.findUnique({ where: { username: envUsername } }));
+}
+
 export async function POST(request: NextRequest) {
+  if (!checkRateLimit(`login:${getClientIp(request)}`, RATE_LIMIT, RATE_WINDOW_MS)) {
+    return jsonError("Too many sign-in attempts. Please wait 15 minutes and try again.", 429);
+  }
+
   const body = await request.json().catch(() => null);
   const parsed = loginSchema.safeParse(body);
   if (!parsed.success) {
@@ -28,24 +49,22 @@ export async function POST(request: NextRequest) {
   }
   const { username, password } = parsed.data;
 
-  const passwordMatches = await bcrypt.compare(
-    password,
-    process.env.ADMIN_PASSWORD_HASH || DUMMY_HASH
-  );
-  const usernameMatches = username === process.env.ADMIN_USERNAME;
-
-  if (!usernameMatches || !passwordMatches) {
-    return jsonError("Invalid credentials", 401);
+  let user = await prisma.adminUser.findUnique({ where: { username } });
+  if (!user && (await prisma.adminUser.count()) === 0) {
+    user = await bootstrapOwner(username, password);
+  } else {
+    const matches = await bcrypt.compare(password, user?.passwordHash ?? DUMMY_HASH);
+    if (!matches) user = null;
   }
 
-  const token = await signSessionToken(username);
+  if (!user || !user.isActive) {
+    return jsonError("Invalid username or password", 401);
+  }
+
+  await prisma.adminUser.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } });
+
+  const token = await signSessionToken(user.id, user.tokenVersion);
   const res = NextResponse.json({ ok: true });
-  res.cookies.set(SESSION_COOKIE_NAME, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: SESSION_COOKIE_MAX_AGE_SECONDS,
-  });
+  setSessionCookie(res, token);
   return res;
 }
