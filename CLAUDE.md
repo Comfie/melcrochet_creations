@@ -99,6 +99,9 @@ After every change, run in this order:
 - SEO regression check: `npm run build && npm start`, then `npm run seo:check` (or `npm run seo:check -- https://melcrochet.co.za`)
 - Use `next/image` `preload` (not the deprecated `priority`); use the `shell` utility for page gutters and `label` for uppercase eyebrows
 - Use Zod schemas for all API input validation (co-located in `app/api/[resource]/schema.ts`)
+- Admin UI is mobile-first (Melissa edits from her phone): build with `components/admin/form.tsx` (`inputClass` keeps 16px text so iOS doesn't zoom, 48px controls) and `components/admin/ui.tsx`; forms live in `SlideOver` with a pinned `footer` and `dirty` guard (phone back button closes the sheet)
+- Edit forms send `null` (not `undefined`) for an optional field the admin cleared — `undefined` means "unchanged" in PATCH; optional schema fields are `.nullable().optional()`
+- Admin mutations call `revalidatePublicSite()` from `lib/revalidate.ts` so edits show on the live site immediately
 - Import alias: `@/*` maps to repo root
 - Commits: conventional commit format (`feat:`, `fix:`, `chore:`, etc.) — no AI attribution lines
 - Env vars live in `.env` (gitignored) with `.env.example` committed as template

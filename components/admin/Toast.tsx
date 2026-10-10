@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { Check, CircleAlert } from "lucide-react";
 
 interface ToastProps {
   message: string;
@@ -8,22 +9,39 @@ interface ToastProps {
   onDismiss: () => void;
 }
 
+/** Bottom-centre on phones (above the tab bar), bottom-right on desktop. */
 export default function Toast({ message, type, onDismiss }: ToastProps) {
+  // Pages pass an inline onDismiss; keep the timer from restarting on every
+  // parent re-render (e.g. a background list refresh).
+  const onDismissRef = useRef(onDismiss);
   useEffect(() => {
-    const timer = setTimeout(onDismiss, 3000);
+    onDismissRef.current = onDismiss;
+  });
+
+  useEffect(() => {
+    // Errors stay up longer — they usually need reading.
+    const timer = setTimeout(() => onDismissRef.current(), type === "error" ? 6000 : 3000);
     return () => clearTimeout(timer);
-  }, [onDismiss]);
+  }, [message, type]);
+
+  const Icon = type === "success" ? Check : CircleAlert;
 
   return (
-    <div className="fixed right-4 top-4 z-50 animate-fade-in">
+    <div className="pointer-events-none fixed inset-x-0 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-[70] flex justify-center px-4 md:bottom-6 md:justify-end md:px-6">
       <div
-        className={`rounded-lg px-4 py-3 text-sm font-medium shadow-lg ${
-          type === "success"
-            ? "bg-green-50 text-green-800 ring-1 ring-green-200"
-            : "bg-red-50 text-red-800 ring-1 ring-red-200"
+        role={type === "error" ? "alert" : "status"}
+        className={`pointer-events-auto flex max-w-md animate-rise items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold shadow-xl ${
+          type === "success" ? "bg-ink text-cream" : "bg-red-700 text-white"
         }`}
-        role="status"
+        onClick={onDismiss}
       >
+        <span
+          className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${
+            type === "success" ? "bg-gold text-ink" : "bg-white/20"
+          }`}
+        >
+          <Icon className="h-4 w-4" aria-hidden="true" />
+        </span>
         {message}
       </div>
     </div>

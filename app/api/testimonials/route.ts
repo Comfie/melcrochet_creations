@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
+import { revalidatePublicSite } from "@/lib/revalidate";
 import { jsonValidationError } from "@/lib/api-response";
 import { testimonialInputSchema } from "./schema";
 
@@ -23,5 +24,6 @@ export async function POST(request: NextRequest) {
   if (!parsed.success) return jsonValidationError(parsed.error.issues);
 
   const testimonial = await prisma.testimonial.create({ data: parsed.data });
+  revalidatePublicSite();
   return NextResponse.json(testimonial, { status: 201 });
 }

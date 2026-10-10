@@ -3,6 +3,7 @@ import { Prisma } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { slugify } from "@/lib/slug";
 import { requireAuth } from "@/lib/auth";
+import { revalidatePublicSite } from "@/lib/revalidate";
 import { jsonError, jsonValidationError } from "@/lib/api-response";
 import { categoryInputSchema } from "./schema";
 
@@ -40,6 +41,7 @@ export async function POST(request: NextRequest) {
     const category = await prisma.category.create({
       data: { ...parsed.data, slug },
     });
+    revalidatePublicSite();
     return NextResponse.json(category, { status: 201 });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {

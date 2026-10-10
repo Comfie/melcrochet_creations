@@ -1,12 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { Archive, ArchiveRestore, ChevronDown, Inbox, Mail, MailOpen, MessageCircle, Phone } from "lucide-react";
 import { useApiList } from "@/hooks/use-api-list";
 import { useApiMutation } from "@/hooks/use-api-mutation";
-import Toast from "@/components/admin/Toast";
-import StatusBadge from "@/components/admin/StatusBadge";
-import Pagination from "@/components/admin/Pagination";
 import { usePagination } from "@/hooks/use-pagination";
+import Toast from "@/components/admin/Toast";
+import Pagination from "@/components/admin/Pagination";
+import { EmptyState, FilterChips, ListSkeleton, LoadError, PageHeader } from "@/components/admin/ui";
+import { customerTelLink, customerWhatsAppLink } from "@/lib/phone";
+import { formatFullDate, formatRelativeDate } from "@/lib/relative-date";
 
 interface Enquiry {
   id: string;
@@ -18,34 +21,50 @@ interface Enquiry {
   createdAt: string;
 }
 
-type StatusFilter = "ALL" | "NEW" | "READ" | "ARCHIVED";
+type StatusFilter = "INBOX" | "NEW" | "ARCHIVED" | "ALL";
+
+const ACTION =
+  "inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-4 text-sm font-semibold transition";
+
+function replyMessage(name: string) {
+  const first = name.trim().split(/\s+/)[0];
+  return `Hi ${first}, thank you for your enquiry with MelCrochet Gifted Hands! `;
+}
 
 export default function EnquiriesPage() {
   const { data: enquiries, loading, error, refresh } = useApiList<Enquiry>("/api/enquiries");
   const { mutate } = useApiMutation();
 
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [filter, setFilter] = useState<StatusFilter>("ALL");
+  const [filter, setFilter] = useState<StatusFilter>("INBOX");
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
 
-  const counts = {
-    ALL: enquiries.length,
-    NEW: enquiries.filter((e) => e.status === "NEW").length,
-    READ: enquiries.filter((e) => e.status === "READ").length,
-    ARCHIVED: enquiries.filter((e) => e.status === "ARCHIVED").length,
-  };
+  const counts = useMemo(
+    () => ({
+      INBOX: enquiries.filter((e) => e.status !== "ARCHIVED").length,
+      NEW: enquiries.filter((e) => e.status === "NEW").length,
+      ARCHIVED: enquiries.filter((e) => e.status === "ARCHIVED").length,
+      ALL: enquiries.length,
+    }),
+    [enquiries]
+  );
 
-  const filtered = filter === "ALL" ? enquiries : enquiries.filter((e) => e.status === filter);
+  const filtered = enquiries.filter((e) => {
+    if (filter === "INBOX") return e.status !== "ARCHIVED";
+    if (filter === "ALL") return true;
+    return e.status === filter;
+  });
 
   const { page, pageItems, totalPages, setPage, resetPage } = usePagination(filtered);
 
-  async function markStatus(id: string, status: "READ" | "ARCHIVED") {
+  async function markStatus(id: string, status: Enquiry["status"], confirmation?: string) {
     await mutate(`/api/enquiries/${id}`, {
       method: "PATCH",
       body: { status },
       onSuccess: () => {
         refresh();
         window.dispatchEvent(new Event("mc:enquiries-updated"));
+        if (confirmation) setToast({ message: confirmation, type: "success" });
       },
       onError: (msg) => setToast({ message: msg, type: "error" }),
     });
@@ -57,151 +76,190 @@ export default function EnquiriesPage() {
       return;
     }
     setExpandedId(enquiry.id);
-    if (enquiry.status === "NEW") {
-      markStatus(enquiry.id, "READ");
-    }
+    if (enquiry.status === "NEW") markStatus(enquiry.id, "READ");
   }
 
-  function formatDate(dateStr: string) {
-    return new Date(dateStr).toLocaleDateString("en-ZA", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  }
-
-  if (loading) {
-    return <p className="text-sm text-gray-400">Loading enquiries…</p>;
-  }
-
-  if (error) {
-    return <p className="text-sm text-red-600">{error}</p>;
-  }
+  const filterOptions = [
+    { value: "INBOX", label: "Inbox", count: counts.INBOX },
+    { value: "NEW", label: "Unread", count: counts.NEW },
+    { value: "ARCHIVED", label: "Archived", count: counts.ARCHIVED },
+    { value: "ALL", label: "All", count: counts.ALL },
+  ] as const;
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="font-display text-2xl font-semibold text-ink">Enquiries</h1>
+      <PageHeader
+        title="Enquiries"
+        subtitle={loading ? " " : counts.NEW > 0 ? `${counts.NEW} unread` : "You’re all caught up"}
+      />
+
+      <div className="mb-4">
+        <FilterChips
+          label="Filter enquiries"
+          value={filter}
+          options={filterOptions}
+          onChange={(v) => {
+            setFilter(v);
+            setExpandedId(null);
+            resetPage();
+          }}
+        />
       </div>
 
-      <div className="mb-4 flex gap-1 rounded-lg bg-gray-100 p-1">
-        {(["ALL", "NEW", "READ", "ARCHIVED"] as const).map((tab) => (
-          <button
-            key={tab}
-            onClick={() => {
-              setFilter(tab);
-              resetPage();
-            }}
-            className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${
-              filter === tab
-                ? "bg-white shadow-sm"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
-          >
-            {tab === "ALL" ? "All" : tab.charAt(0) + tab.slice(1).toLowerCase()}
-            <span className="ml-1.5 text-xs text-gray-400">({counts[tab]})</span>
-          </button>
-        ))}
-      </div>
-
-      <div className="overflow-x-auto rounded-lg ring-1 ring-gray-200">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Name</th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Email</th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Phone</th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Message</th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Status</th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Date</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200 bg-white">
-            {pageItems.map((enquiry) => (
-              <tr key={enquiry.id} className="group">
-                <td colSpan={6} className="p-0">
-                  <button
-                    onClick={() => handleExpand(enquiry)}
-                    className={`grid w-full grid-cols-[1fr_1fr_1fr_2fr_auto_auto] gap-0 text-left hover:bg-gray-50 ${
-                      enquiry.status === "NEW" ? "font-semibold" : ""
-                    }`}
-                  >
-                    <span className="px-4 py-3 text-sm text-ink">
-                      {enquiry.status === "NEW" && (
-                        <span className="mr-1.5 inline-block h-2 w-2 rounded-full bg-brown" />
-                      )}
-                      {enquiry.name}
+      {loading ? (
+        <ListSkeleton />
+      ) : error && enquiries.length === 0 ? (
+        <LoadError message={error} onRetry={refresh} />
+      ) : filtered.length === 0 ? (
+        <EmptyState
+          icon={<Inbox className="h-6 w-6" aria-hidden="true" />}
+          title={filter === "ARCHIVED" ? "Nothing archived" : "No enquiries here"}
+          message="Messages from the website’s contact form will appear here."
+        />
+      ) : (
+        <ul className="space-y-2">
+          {pageItems.map((enquiry) => {
+            const open = expandedId === enquiry.id;
+            const isNew = enquiry.status === "NEW";
+            const wa = customerWhatsAppLink(enquiry.phone, replyMessage(enquiry.name));
+            const tel = customerTelLink(enquiry.phone);
+            return (
+              <li
+                key={enquiry.id}
+                className={`overflow-hidden rounded-2xl bg-white ring-1 transition ${open ? "ring-brown/30" : "ring-brown/10"} ${
+                  enquiry.status === "ARCHIVED" ? "opacity-80" : ""
+                }`}
+              >
+                <button
+                  type="button"
+                  onClick={() => handleExpand(enquiry)}
+                  aria-expanded={open}
+                  className="flex w-full items-start gap-3 p-4 text-left"
+                >
+                  <span
+                    className={`mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full ${isNew ? "bg-gold" : "bg-transparent"}`}
+                    aria-hidden="true"
+                  />
+                  <span className="min-w-0 flex-1">
+                    <span className="flex items-baseline justify-between gap-3">
+                      <span className={`truncate text-base text-ink ${isNew ? "font-bold" : "font-semibold"}`}>
+                        {enquiry.name}
+                        {isNew && <span className="sr-only"> (unread)</span>}
+                      </span>
+                      <time dateTime={enquiry.createdAt} className="shrink-0 text-xs font-medium text-brown/80">
+                        {formatRelativeDate(enquiry.createdAt)}
+                      </time>
                     </span>
-                    <span className="truncate px-4 py-3 text-sm text-gray-600">
-                      {enquiry.email ?? "—"}
-                    </span>
-                    <span className="px-4 py-3 text-sm text-gray-600">
-                      {enquiry.phone ?? "—"}
-                    </span>
-                    <span className="truncate px-4 py-3 text-sm text-gray-600">
-                      {enquiry.message}
-                    </span>
-                    <span className="px-4 py-3">
-                      <StatusBadge status={enquiry.status} />
-                    </span>
-                    <span className="whitespace-nowrap px-4 py-3 text-sm text-gray-600">
-                      {formatDate(enquiry.createdAt)}
-                    </span>
-                  </button>
-
-                  {expandedId === enquiry.id && (
-                    <div className="border-t border-gray-100 bg-gray-50 px-6 py-4">
-                      <p className="whitespace-pre-wrap text-sm text-gray-700">
+                    {!open && (
+                      <span className={`mt-1 line-clamp-2 text-sm ${isNew ? "text-ink" : "text-brown/80"}`}>
                         {enquiry.message}
-                      </p>
-                      <div className="mt-3 flex items-center gap-4 text-sm">
-                        {enquiry.email && (
-                          <a
-                            href={`mailto:${enquiry.email}`}
-                            className="text-brown hover:underline"
-                          >
-                            Reply via email
-                          </a>
-                        )}
-                        {enquiry.status !== "ARCHIVED" && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              markStatus(enquiry.id, "ARCHIVED");
-                            }}
-                            className="text-gray-500 hover:text-gray-700"
-                          >
-                            Archive
-                          </button>
-                        )}
-                      </div>
+                      </span>
+                    )}
+                  </span>
+                  <ChevronDown
+                    className={`mt-1 h-5 w-5 shrink-0 text-brown/50 transition ${open ? "rotate-180" : ""}`}
+                    aria-hidden="true"
+                  />
+                </button>
+
+                {open && (
+                  <div className="px-4 pb-4 pl-[2.375rem]">
+                    <p className="whitespace-pre-wrap text-base leading-relaxed text-ink">{enquiry.message}</p>
+                    <dl className="mt-4 space-y-1 text-sm text-brown">
+                      {enquiry.phone && (
+                        <div className="flex gap-2">
+                          <dt className="sr-only">Phone</dt>
+                          <Phone className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+                          <dd className="select-all">{enquiry.phone}</dd>
+                        </div>
+                      )}
+                      {enquiry.email && (
+                        <div className="flex gap-2">
+                          <dt className="sr-only">Email</dt>
+                          <Mail className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+                          <dd className="select-all break-all">{enquiry.email}</dd>
+                        </div>
+                      )}
+                      <div className="pt-1 text-xs text-brown/80">Received {formatFullDate(enquiry.createdAt)}</div>
+                    </dl>
+
+                    <div className="mt-4 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+                      {wa && (
+                        <a
+                          href={wa}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`${ACTION} col-span-2 bg-[#25D366] text-ink hover:bg-[#1fbe5a]`}
+                        >
+                          <MessageCircle className="h-4 w-4" aria-hidden="true" />
+                          Reply on WhatsApp
+                        </a>
+                      )}
+                      {tel && (
+                        <a href={tel} className={`${ACTION} bg-sand text-ink hover:bg-sand/70`}>
+                          <Phone className="h-4 w-4" aria-hidden="true" />
+                          Call
+                        </a>
+                      )}
+                      {enquiry.email && (
+                        <a
+                          href={`mailto:${enquiry.email}?subject=${encodeURIComponent("Your MelCrochet enquiry")}`}
+                          className={`${ACTION} bg-sand text-ink hover:bg-sand/70`}
+                        >
+                          <Mail className="h-4 w-4" aria-hidden="true" />
+                          Email
+                        </a>
+                      )}
                     </div>
-                  )}
-                </td>
-              </tr>
-            ))}
-            {filtered.length === 0 && (
-              <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-sm text-gray-400">
-                  No enquiries
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+
+                    <div className="mt-3 flex flex-wrap gap-2 border-t border-brown/10 pt-3">
+                      {enquiry.status === "ARCHIVED" ? (
+                        <button
+                          type="button"
+                          onClick={() => markStatus(enquiry.id, "READ", "Moved back to inbox")}
+                          className={`${ACTION} text-brown hover:bg-sand`}
+                        >
+                          <ArchiveRestore className="h-4 w-4" aria-hidden="true" />
+                          Move to inbox
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setExpandedId(null);
+                            markStatus(enquiry.id, "ARCHIVED", "Enquiry archived");
+                          }}
+                          className={`${ACTION} text-brown hover:bg-sand`}
+                        >
+                          <Archive className="h-4 w-4" aria-hidden="true" />
+                          Archive
+                        </button>
+                      )}
+                      {enquiry.status !== "NEW" && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setExpandedId(null);
+                            markStatus(enquiry.id, "NEW", "Marked as unread");
+                          }}
+                          className={`${ACTION} text-brown hover:bg-sand`}
+                        >
+                          <MailOpen className="h-4 w-4" aria-hidden="true" />
+                          Mark unread
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      )}
 
       <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
 
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onDismiss={() => setToast(null)}
-        />
-      )}
+      {toast && <Toast message={toast.message} type={toast.type} onDismiss={() => setToast(null)} />}
     </div>
   );
 }

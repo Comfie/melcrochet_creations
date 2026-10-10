@@ -117,4 +117,25 @@ describe("DELETE /api/blog/[id]", () => {
     const stillExists = await prisma.blogPost.findUnique({ where: { id: postId } });
     expect(stillExists).toBeNull();
   });
+
+  it("deletes the post's cover photo from Cloudinary", async () => {
+    await prisma.blogPost.update({
+      where: { id: postId },
+      data: {
+        coverImageUrl: "https://res.cloudinary.com/demo/image/upload/v1/melcrochet/cover.jpg",
+        coverImagePublicId: "melcrochet/cover",
+      },
+    });
+    const { deleteImage } = await import("@/lib/cloudinary");
+    vi.mocked(deleteImage).mockClear();
+
+    const { DELETE } = await import("./route");
+    const req = new NextRequest(`http://localhost:3000/api/blog/${postId}`, {
+      method: "DELETE",
+      headers: { Cookie: await authCookie() },
+    });
+    const res = await DELETE(req, { params: Promise.resolve({ id: postId }) });
+    expect(res.status).toBe(204);
+    expect(deleteImage).toHaveBeenCalledWith("melcrochet/cover");
+  });
 });

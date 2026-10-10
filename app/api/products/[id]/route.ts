@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
+import { revalidatePublicSite } from "@/lib/revalidate";
 import { jsonError, jsonValidationError } from "@/lib/api-response";
 import { deleteImage } from "@/lib/cloudinary";
-import { parseGallery } from "@/lib/product-gallery";
+import { parseGallery, orphanedImagePublicIds } from "@/lib/product-gallery";
 import { productUpdateSchema } from "../schema";
 
 type RouteParams = { params: Promise<{ id: string }> };
@@ -44,18 +45,12 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     );
   }
 
-  const imageIsReplaced =
-    parsed.data.imagePublicId !== undefined &&
-    parsed.data.imagePublicId !== existing.imagePublicId &&
-    existing.imagePublicId;
-
-  const existingGallery = parseGallery(existing.gallery);
-  const removedGalleryPublicIds =
-    parsed.data.gallery !== undefined
-      ? existingGallery
-          .filter((img) => !parsed.data.gallery!.some((next) => next.publicId === img.publicId))
-          .map((img) => img.publicId)
-      : [];
+  // Images no longer used as the main photo or in the gallery. Computed
+  // across both so swapping the main photo with a gallery photo keeps both.
+  const orphanedPublicIds = orphanedImagePublicIds(
+    { imagePublicId: existing.imagePublicId, gallery: parseGallery(existing.gallery) },
+    { imagePublicId: parsed.data.imagePublicId, gallery: parsed.data.gallery }
+  );
 
   let product;
   try {
@@ -70,13 +65,11 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     throw error;
   }
 
-  if (imageIsReplaced && existing.imagePublicId) {
-    await deleteImage(existing.imagePublicId).catch(() => {});
-  }
-  for (const publicId of removedGalleryPublicIds) {
+  for (const publicId of orphanedPublicIds) {
     await deleteImage(publicId).catch(() => {});
   }
 
+  revalidatePublicSite();
   return NextResponse.json(product);
 }
 
@@ -89,5 +82,6 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     .update({ where: { id }, data: { isActive: false } })
     .catch(() => null);
   if (!product) return jsonError("Product not found", 404);
+  revalidatePublicSite();
   return NextResponse.json(product);
 }

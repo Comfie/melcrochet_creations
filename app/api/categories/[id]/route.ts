@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
+import { revalidatePublicSite } from "@/lib/revalidate";
 import { jsonError, jsonValidationError } from "@/lib/api-response";
 import { categoryInputSchema } from "../schema";
 
@@ -34,6 +35,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       where: { id },
       data: parsed.data,
     });
+    revalidatePublicSite();
     return NextResponse.json(category);
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
@@ -63,5 +65,6 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       return jsonError("Failed to delete category", 500);
     }
   }
+  revalidatePublicSite();
   return new NextResponse(null, { status: 204 });
 }

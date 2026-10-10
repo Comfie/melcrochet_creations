@@ -6,7 +6,7 @@ import userEvent from "@testing-library/user-event";
 import LoginPage from "./page";
 
 vi.mock("next/navigation", () => ({
-  useRouter: () => ({ push: vi.fn() }),
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn() }),
 }));
 
 afterEach(() => {
@@ -38,11 +38,11 @@ describe("LoginPage", () => {
     });
   });
 
-  it("redirects to /admin/products on success", async () => {
-    const push = vi.fn();
+  it("goes to the admin dashboard on success", async () => {
+    const replace = vi.fn();
     const mockNav = await import("next/navigation");
     (vi.mocked(mockNav).useRouter as unknown) = () =>
-      ({ push }) as unknown;
+      ({ push: vi.fn(), replace }) as unknown;
 
     vi.spyOn(global, "fetch").mockResolvedValue(
       new Response(JSON.stringify({ ok: true }), { status: 200 })
@@ -55,7 +55,7 @@ describe("LoginPage", () => {
     await user.click(screen.getByRole("button", { name: /sign in/i }));
 
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith("/admin/products");
+      expect(replace).toHaveBeenCalledWith("/admin");
     });
   });
 });
