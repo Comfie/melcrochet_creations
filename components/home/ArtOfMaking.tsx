@@ -19,7 +19,8 @@ const PRINCIPLES = [
 /**
  * "The Art of Making" — craftsmanship as design philosophy. The texture
  * close-up is a real crop of the founder photo's chunky throw (zoomed with
- * CSS, not a different image); the other frames are live catalogue photos.
+ * CSS, not a different image); the wide frame is the studio handbags photo
+ * and the last frame a live catalogue photo (see app/(site)/page.tsx).
  */
 export default function ArtOfMaking({
   images,

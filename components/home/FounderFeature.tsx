@@ -1,9 +1,6 @@
 import Image from "next/image";
 import { TextLink } from "@/components/ui/Button";
 
-export const FOUNDER_PHOTO_ALT =
-  "Melissa Ruvimbo Buchirai, founder of MelCrochet Gifted Hands, wrapped in one of her handmade chunky crochet blankets";
-
 /** Designer profile, laid out like a magazine feature. */
 export default function FounderFeature() {
   return (
@@ -12,14 +9,14 @@ export default function FounderFeature() {
         <div className="relative lg:col-span-5">
           <div className="reveal-img relative aspect-[4/5] overflow-hidden">
             <Image
-              src="/melissa.jpg"
-              alt={FOUNDER_PHOTO_ALT}
+              src="/melissa-crochet-bandana.jpg"
+              alt="Melissa Ruvimbo Buchirai, founder of MelCrochet Gifted Hands, wearing one of her hand-crocheted bandanas"
               fill
               sizes="(max-width: 1024px) 100vw, 42vw"
               className="object-cover object-[50%_30%]"
             />
           </div>
-          <p className="label mt-4 text-ink/65">Melissa, at home with a MelCrochet throw</p>
+          <p className="label mt-4 text-ink/65">Melissa, wearing one of her crochet bandanas</p>
         </div>
 
         <div className="flex flex-col justify-center lg:col-span-6 lg:col-start-7">
