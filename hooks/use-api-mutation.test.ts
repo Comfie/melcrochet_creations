@@ -57,4 +57,19 @@ describe("useApiMutation", () => {
     expect(success).toBe(false);
     expect(onError).toHaveBeenCalledWith("Name is required");
   });
+
+  it("shows the specific validation message when the server sends one", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValue(
+      new Response(
+        JSON.stringify({ error: "Validation failed", details: [{ message: "Username must be at least 3 characters" }] }),
+        { status: 400 }
+      )
+    );
+    const onError = vi.fn();
+    const { result } = renderHook(() => useApiMutation());
+    await act(async () => {
+      await result.current.mutate("/api/profile", { method: "PATCH", body: {}, onError });
+    });
+    expect(onError).toHaveBeenCalledWith("Username must be at least 3 characters");
+  });
 });

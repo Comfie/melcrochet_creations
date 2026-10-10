@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { renderHook, waitFor, cleanup } from "@testing-library/react";
+import { renderHook, waitFor, cleanup, act } from "@testing-library/react";
 import { useApiList } from "./use-api-list";
 
 afterEach(() => {
@@ -43,6 +43,41 @@ describe("useApiList", () => {
 
     expect(result.current.error).toBe("Forbidden");
     expect(result.current.data).toEqual([]);
+  });
+
+  it("refreshes in place without going back to the loading state", async () => {
+    vi.spyOn(global, "fetch")
+      .mockResolvedValueOnce(new Response(JSON.stringify([{ id: "1" }]), { status: 200 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify([{ id: "1" }, { id: "2" }]), { status: 200 }));
+
+    const { result } = renderHook(() => useApiList<{ id: string }>("/api/test"));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    let pending: Promise<void> | undefined;
+    act(() => {
+      pending = result.current.refresh();
+    });
+    expect(result.current.loading).toBe(false);
+    expect(result.current.data).toHaveLength(1);
+
+    await act(async () => {
+      await pending;
+    });
+    expect(result.current.data).toHaveLength(2);
+  });
+
+  it("refetches when the page becomes visible again", async () => {
+    const fetchSpy = vi
+      .spyOn(global, "fetch")
+      .mockImplementation(async () => new Response("[]", { status: 200 }));
+
+    renderHook(() => useApiList("/api/test"));
+    await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(1));
+
+    act(() => {
+      document.dispatchEvent(new Event("visibilitychange"));
+    });
+    await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(2));
   });
 
   it("redirects to login on 401", async () => {

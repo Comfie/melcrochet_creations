@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeAll } from "vitest";
 import { NextRequest } from "next/server";
+import { setupTestAdmin } from "@/lib/test-admin";
 
 vi.mock("@/lib/cloudinary", () => ({
   uploadImageBuffer: vi.fn(async () => ({
@@ -8,6 +9,8 @@ vi.mock("@/lib/cloudinary", () => ({
   })),
   deleteImage: vi.fn(async () => {}),
 }));
+
+const testAdmin = setupTestAdmin();
 
 beforeAll(() => {
   process.env.JWT_SECRET = "test-secret-for-vitest-only";
@@ -35,16 +38,14 @@ describe("POST /api/uploads", () => {
 
   it("returns 400 when no file is provided", async () => {
     const { POST } = await import("./route");
-    const { signSessionToken } = await import("@/lib/auth");
-    const token = await signSessionToken("melissa");
+    const token = await testAdmin.token();
     const res = await POST(makeUploadRequest(null, `mc_admin=${token}`));
     expect(res.status).toBe(400);
   });
 
   it("returns 400 for an unsupported file type", async () => {
     const { POST } = await import("./route");
-    const { signSessionToken } = await import("@/lib/auth");
-    const token = await signSessionToken("melissa");
+    const token = await testAdmin.token();
     const file = new File([new Uint8Array([1, 2, 3])], "doc.pdf", {
       type: "application/pdf",
     });
@@ -54,8 +55,7 @@ describe("POST /api/uploads", () => {
 
   it("returns 400 for a file over the size limit", async () => {
     const { POST } = await import("./route");
-    const { signSessionToken } = await import("@/lib/auth");
-    const token = await signSessionToken("melissa");
+    const token = await testAdmin.token();
     const oversized = new Uint8Array(4 * 1024 * 1024 + 1);
     const file = new File([oversized], "big.jpg", { type: "image/jpeg" });
     const res = await POST(makeUploadRequest(file, `mc_admin=${token}`));
@@ -66,8 +66,7 @@ describe("POST /api/uploads", () => {
 
   it("uploads a valid image and returns url + publicId", async () => {
     const { POST } = await import("./route");
-    const { signSessionToken } = await import("@/lib/auth");
-    const token = await signSessionToken("melissa");
+    const token = await testAdmin.token();
     const file = new File([new Uint8Array([1, 2, 3])], "photo.jpg", {
       type: "image/jpeg",
     });

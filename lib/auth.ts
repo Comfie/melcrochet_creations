@@ -1,45 +1,63 @@
-import { SignJWT, jwtVerify } from "jose";
-import { NextResponse, type NextRequest } from "next/server";
+import type { NextRequest, NextResponse } from "next/server";
+import type { AdminUser } from "@prisma/client";
+import prisma from "@/lib/prisma";
 import { jsonError } from "@/lib/api-response";
+import { SESSION_COOKIE_NAME, verifySessionToken, type SessionClaims } from "@/lib/session";
 
-const COOKIE_NAME = "mc_admin";
+export {
+  signSessionToken,
+  verifySessionToken,
+  setSessionCookie,
+  SESSION_COOKIE_NAME,
+  SESSION_COOKIE_MAX_AGE_SECONDS,
+  SESSION_MAX_AGE_SECONDS,
+} from "@/lib/session";
 
-function getSecret() {
-  const secret = process.env.JWT_SECRET;
-  if (!secret) throw new Error("JWT_SECRET is not set");
-  return new TextEncoder().encode(secret);
+/** The fields of an admin that are safe to send to the browser. */
+export const PUBLIC_USER_SELECT = {
+  id: true,
+  username: true,
+  name: true,
+  email: true,
+  role: true,
+  isActive: true,
+  lastLoginAt: true,
+  createdAt: true,
+} as const;
+
+export interface Session {
+  user: AdminUser;
+  claims: SessionClaims;
 }
 
-export async function signSessionToken(username: string): Promise<string> {
-  return new SignJWT({ sub: username })
-    .setProtectedHeader({ alg: "HS256" })
-    .setIssuedAt()
-    .setExpirationTime("7d")
-    .sign(getSecret());
+/**
+ * The signed-in admin, or null. Beyond a valid JWT the account must still
+ * exist, be active, and have the same tokenVersion as when the token was
+ * issued — so deactivating someone or changing a password signs them out.
+ */
+export async function getSession(request: NextRequest): Promise<Session | null> {
+  const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
+  const claims = token ? await verifySessionToken(token) : null;
+  if (!claims) return null;
+  const user = await prisma.adminUser.findUnique({ where: { id: claims.sub } });
+  if (!user || !user.isActive || user.tokenVersion !== claims.v) return null;
+  return { user, claims };
 }
 
-export async function verifySessionToken(
-  token: string
-): Promise<{ sub: string } | null> {
-  try {
-    const { payload } = await jwtVerify(token, getSecret());
-    if (typeof payload.sub !== "string") return null;
-    return { sub: payload.sub };
-  } catch {
-    return null;
-  }
+/** Route guard: null when signed in, otherwise a 401 response to return. */
+export async function requireAuth(request: NextRequest): Promise<NextResponse | null> {
+  const session = await getSession(request);
+  return session ? null : jsonError("Unauthorized", 401);
 }
 
-export async function requireAuth(
+/** Route guard for team management: owners only. */
+export async function requireOwner(
   request: NextRequest
-): Promise<NextResponse | null> {
-  const token = request.cookies.get(COOKIE_NAME)?.value;
-  const session = token ? await verifySessionToken(token) : null;
-  if (!session) {
-    return jsonError("Unauthorized", 401);
+): Promise<{ session: Session; response?: never } | { session?: never; response: NextResponse }> {
+  const session = await getSession(request);
+  if (!session) return { response: jsonError("Unauthorized", 401) };
+  if (session.user.role !== "OWNER") {
+    return { response: jsonError("Only the owner can manage the team", 403) };
   }
-  return null;
+  return { session };
 }
-
-export const SESSION_COOKIE_NAME = COOKIE_NAME;
-export const SESSION_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 7; // 7 days

@@ -97,3 +97,27 @@ model BlogPost {
 
   @@index([published, publishedAt])
 }
+
+enum AdminRole {
+  OWNER
+  ADMIN
+}
+
+/// People who can sign in to /admin. Owners can also manage the team.
+/// Never hard-deleted — deactivate with isActive: false.
+model AdminUser {
+  id           String    @id @default(cuid())
+  /// Lowercase; what they type to sign in.
+  username     String    @unique
+  name         String
+  email        String?
+  passwordHash String
+  role         AdminRole @default(ADMIN)
+  isActive     Boolean   @default(true)
+  /// Bumped on password change/reset or deactivation to sign out every
+  /// existing session (it's embedded in the session token).
+  tokenVersion Int       @default(0)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}

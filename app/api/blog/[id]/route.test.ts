@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach, afterEach, beforeAll } from "vite
 import { NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
 import { slugify } from "@/lib/slug";
-import { signSessionToken } from "@/lib/auth";
+import { setupTestAdmin } from "@/lib/test-admin";
 
 vi.mock("@/lib/cloudinary", () => ({
   deleteImage: vi.fn(async () => {}),
@@ -13,9 +13,10 @@ beforeAll(() => {
   process.env.JWT_SECRET = process.env.JWT_SECRET || "test-secret-for-vitest-only";
 });
 
+const testAdmin = setupTestAdmin();
+
 async function authCookie() {
-  const token = await signSessionToken("melissa");
-  return `mc_admin=${token}`;
+  return testAdmin.cookie();
 }
 
 let postId: string;
@@ -116,5 +117,26 @@ describe("DELETE /api/blog/[id]", () => {
 
     const stillExists = await prisma.blogPost.findUnique({ where: { id: postId } });
     expect(stillExists).toBeNull();
+  });
+
+  it("deletes the post's cover photo from Cloudinary", async () => {
+    await prisma.blogPost.update({
+      where: { id: postId },
+      data: {
+        coverImageUrl: "https://res.cloudinary.com/demo/image/upload/v1/melcrochet/cover.jpg",
+        coverImagePublicId: "melcrochet/cover",
+      },
+    });
+    const { deleteImage } = await import("@/lib/cloudinary");
+    vi.mocked(deleteImage).mockClear();
+
+    const { DELETE } = await import("./route");
+    const req = new NextRequest(`http://localhost:3000/api/blog/${postId}`, {
+      method: "DELETE",
+      headers: { Cookie: await authCookie() },
+    });
+    const res = await DELETE(req, { params: Promise.resolve({ id: postId }) });
+    expect(res.status).toBe(204);
+    expect(deleteImage).toHaveBeenCalledWith("melcrochet/cover");
   });
 });

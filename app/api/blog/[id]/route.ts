@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
+import { revalidatePublicSite } from "@/lib/revalidate";
 import { jsonError, jsonValidationError } from "@/lib/api-response";
 import { deleteImage } from "@/lib/cloudinary";
 import { blogPostUpdateSchema } from "../schema";
@@ -49,6 +50,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     await deleteImage(existing.coverImagePublicId).catch(() => {});
   }
 
+  revalidatePublicSite();
   return NextResponse.json(post);
 }
 
@@ -57,12 +59,18 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
   if (unauthorized) return unauthorized;
 
   const { id } = await params;
+  let coverImagePublicId: string | null = null;
   try {
-    await prisma.blogPost.delete({ where: { id } });
+    ({ coverImagePublicId } = await prisma.blogPost.delete({ where: { id } }));
   } catch (error) {
     if (!(error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025")) {
       return jsonError("Failed to delete post", 500);
     }
   }
+  // The post is gone for good, so its cover photo would only be an orphan.
+  if (coverImagePublicId) {
+    await deleteImage(coverImagePublicId).catch(() => {});
+  }
+  revalidatePublicSite();
   return new NextResponse(null, { status: 204 });
 }

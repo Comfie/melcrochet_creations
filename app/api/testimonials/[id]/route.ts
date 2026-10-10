@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
+import { revalidatePublicSite } from "@/lib/revalidate";
 import { jsonError, jsonValidationError } from "@/lib/api-response";
 import { deleteImage } from "@/lib/cloudinary";
 import { testimonialUpdateSchema } from "../schema";
@@ -43,6 +44,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     await deleteImage(existing.imagePublicId).catch(() => {});
   }
 
+  revalidatePublicSite();
   return NextResponse.json(testimonial);
 }
 
@@ -55,5 +57,6 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     .update({ where: { id }, data: { isActive: false } })
     .catch(() => null);
   if (!testimonial) return jsonError("Testimonial not found", 404);
+  revalidatePublicSite();
   return NextResponse.json(testimonial);
 }

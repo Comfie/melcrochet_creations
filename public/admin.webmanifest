@@ -1,0 +1,15 @@
+{
+  "name": "MelCrochet Studio",
+  "short_name": "MelCrochet",
+  "description": "Manage MelCrochet Gifted Hands products, enquiries, testimonials and blog posts.",
+  "id": "/admin",
+  "start_url": "/admin",
+  "scope": "/admin",
+  "display": "standalone",
+  "background_color": "#F7F0E3",
+  "theme_color": "#151515",
+  "icons": [
+    { "src": "/apple-icon.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

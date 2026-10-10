@@ -1,12 +1,13 @@
 // @vitest-environment jsdom
 import "@testing-library/jest-dom/vitest";
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { render, screen, cleanup } from "@testing-library/react";
+import { render, screen, cleanup, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import GalleryUpload from "./GalleryUpload";
 
 afterEach(() => {
   cleanup();
+  vi.restoreAllMocks();
 });
 
 describe("GalleryUpload", () => {
@@ -55,5 +56,57 @@ describe("GalleryUpload", () => {
       />
     );
     expect(screen.queryByRole("button", { name: /add photo/i })).not.toBeInTheDocument();
+  });
+
+  it("offers Make main when a handler is given", async () => {
+    const user = userEvent.setup();
+    const onMakeMain = vi.fn();
+    const img = { url: "https://res.cloudinary.com/demo/image/upload/v1/a.jpg", publicId: "products/a" };
+    render(<GalleryUpload value={[img]} onChange={vi.fn()} onMakeMain={onMakeMain} />);
+    await user.click(screen.getByRole("button", { name: /make photo 1 the main photo/i }));
+    expect(onMakeMain).toHaveBeenCalledWith(img);
+  });
+
+  it("uploads several selected photos and appends each one", async () => {
+    let n = 0;
+    vi.spyOn(global, "fetch").mockImplementation(async () => {
+      n += 1;
+      return new Response(
+        JSON.stringify({ url: `https://res.cloudinary.com/demo/image/upload/v1/new${n}.jpg`, publicId: `new${n}` }),
+        { status: 200 }
+      );
+    });
+    const onChange = vi.fn();
+    const onBusyChange = vi.fn();
+    const user = userEvent.setup();
+    const { container } = render(<GalleryUpload value={[]} onChange={onChange} onBusyChange={onBusyChange} />);
+
+    const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+    await user.upload(input, [
+      new File(["a"], "a.jpg", { type: "image/jpeg" }),
+      new File(["b"], "b.jpg", { type: "image/jpeg" }),
+    ]);
+
+    await waitFor(() => expect(onChange).toHaveBeenCalledTimes(2));
+    expect(onChange).toHaveBeenLastCalledWith([
+      { url: "https://res.cloudinary.com/demo/image/upload/v1/new1.jpg", publicId: "new1" },
+      { url: "https://res.cloudinary.com/demo/image/upload/v1/new2.jpg", publicId: "new2" },
+    ]);
+    expect(onBusyChange).toHaveBeenNthCalledWith(1, true);
+    expect(onBusyChange).toHaveBeenLastCalledWith(false);
+  });
+
+  it("skips photos beyond the limit and says so", async () => {
+    vi.spyOn(global, "fetch").mockImplementation(
+      async () => new Response(JSON.stringify({ url: "https://res.cloudinary.com/demo/image/upload/v1/x.jpg", publicId: "x" }), { status: 200 })
+    );
+    const user = userEvent.setup();
+    const { container } = render(<GalleryUpload value={[]} onChange={vi.fn()} max={1} />);
+    const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+    await user.upload(input, [
+      new File(["a"], "a.jpg", { type: "image/jpeg" }),
+      new File(["b"], "b.jpg", { type: "image/jpeg" }),
+    ]);
+    await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent(/1 was skipped/));
   });
 });

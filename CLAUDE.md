@@ -15,7 +15,7 @@ MelCrochet Gifted Hands — A handmade crochet business portfolio and product sh
 - Tailwind CSS v4 (uses `@theme` directive in `globals.css`, not `tailwind.config.ts`)
 - `next/font` — Cormorant Garamond (display/headings) + Manrope (body)
 - Cloudinary for image storage (Vercel filesystem is ephemeral)
-- JWT-based admin auth (cookie: `HttpOnly; Secure; SameSite=Lax; Path=/`)
+- JWT-based admin auth backed by `AdminUser` accounts (cookie: `HttpOnly; Secure; SameSite=Lax; Path=/`, 30-day sliding session)
 - Zod for API validation
 - Vitest for testing
 - Deployed on Vercel
@@ -57,12 +57,12 @@ docs/             — specs, plans, and project documentation (do NOT delete)
 
 ## Data Models
 
-Five Prisma models — `Category`, `Product` (with `PriceType` enum: FIXED|QUOTE), `Testimonial`, `Enquiry` (with `EnquiryStatus` enum: NEW|READ|ARCHIVED), `BlogPost`. Soft-delete via `isActive` flag — never hard-delete catalogue rows.
+Six Prisma models — `Category`, `Product` (with `PriceType` enum: FIXED|QUOTE), `Testimonial`, `Enquiry` (with `EnquiryStatus` enum: NEW|READ|ARCHIVED), `BlogPost`, `AdminUser` (with `AdminRole` enum: OWNER|ADMIN). Soft-delete via `isActive` flag — never hard-delete catalogue rows or admin accounts.
 
 ## Commands
 
 - Dev: `npm run dev`
-- Build: `npm run build`
+- Build: `npm run build` (Vercel runs `vercel-build`, which applies pending Prisma migrations first)
 - Lint: `npm run lint`
 - Test: `npm test`
 - Type check: `npx tsc --noEmit`
@@ -87,7 +87,8 @@ After every change, run in this order:
 - Route params, searchParams, `cookies()`, and `headers()` are **async** in Next.js 16 — always `await` them
 - Prisma client is a singleton at `lib/prisma.ts` — import as `import prisma from "@/lib/prisma"`. Uses `@prisma/adapter-pg` driver adapter, NOT the old `datasource { url = env() }` pattern
 - API route handlers use `lib/api-response.ts` helpers (`jsonError`, `jsonValidationError`)
-- Admin routes use `requireAuth` from `lib/auth.ts` — JWT cookie auth, no external auth library
+- Admin routes use `requireAuth` (or `requireOwner` for team management) from `lib/auth.ts` — JWT cookie auth checked against the `AdminUser` row (active + `tokenVersion`), no external auth library. `lib/session.ts` holds the DB-free JWT/cookie helpers (the proxy imports only that). Bump `tokenVersion` to sign someone out everywhere
+- Route tests authenticate with `setupTestAdmin()` from `lib/test-admin.ts` (a throwaway account per test file)
 - Image uploads go through Cloudinary via `lib/cloudinary.ts` — never store images on disk
 - Slugs generated via `lib/slug.ts` `slugify()` helper
 - Collections (customer-facing groups of categories) are static config in `lib/collections.ts` — map any new category there
@@ -99,6 +100,10 @@ After every change, run in this order:
 - SEO regression check: `npm run build && npm start`, then `npm run seo:check` (or `npm run seo:check -- https://melcrochet.co.za`)
 - Use `next/image` `preload` (not the deprecated `priority`); use the `shell` utility for page gutters and `label` for uppercase eyebrows
 - Use Zod schemas for all API input validation (co-located in `app/api/[resource]/schema.ts`)
+- Admin UI is mobile-first (Melissa edits from her phone): build with `components/admin/form.tsx` (`inputClass` keeps 16px text so iOS doesn't zoom, 48px controls) and `components/admin/ui.tsx`; forms live in `SlideOver` with a pinned `footer` and `dirty` guard (phone back button closes the sheet)
+- Edit forms send `null` (not `undefined`) for an optional field the admin cleared — `undefined` means "unchanged" in PATCH; optional schema fields are `.nullable().optional()`
+- Admin mutations call `revalidatePublicSite()` from `lib/revalidate.ts` so edits show on the live site immediately
+- Admin forms that upload photos use `useUploadSession()` (`track` each upload, `commit(keptIds)` after save, `discard()` on cancel) so unsaved uploads are removed from Cloudinary via `/api/uploads/discard`, which never deletes an image still referenced in the DB
 - Import alias: `@/*` maps to repo root
 - Commits: conventional commit format (`feat:`, `fix:`, `chore:`, etc.) — no AI attribution lines
 - Env vars live in `.env` (gitignored) with `.env.example` committed as template
@@ -107,7 +112,7 @@ After every change, run in this order:
 
 - `DATABASE_URL` — Railway Postgres (use pooled connection in production)
 - `JWT_SECRET` — for admin auth token signing
-- `ADMIN_USERNAME` / `ADMIN_PASSWORD_HASH` — admin credentials
+- `ADMIN_USERNAME` / `ADMIN_PASSWORD_HASH` — first-sign-in bootstrap only: accepted while no `AdminUser` exists, then become the Owner account. Accounts are managed at `/admin/team`; lockout recovery: `npm run admin:reset-password -- <username> <new-password>`
 - `CLOUDINARY_URL` (or `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`)
 - `NEXT_PUBLIC_GA_MEASUREMENT_ID` — optional GA4 Measurement ID (Production only)
 - `GOOGLE_SITE_VERIFICATION` — optional Search Console HTML-tag token
