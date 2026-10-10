@@ -62,7 +62,7 @@ Six Prisma models — `Category`, `Product` (with `PriceType` enum: FIXED|QUOTE)
 ## Commands
 
 - Dev: `npm run dev`
-- Build: `npm run build`
+- Build: `npm run build` (Vercel runs `vercel-build`, which applies pending Prisma migrations first)
 - Lint: `npm run lint`
 - Test: `npm test`
 - Type check: `npx tsc --noEmit`
