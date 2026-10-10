@@ -122,10 +122,10 @@ The current imagery is authentic but casual (phone shots, domestic backgrounds, 
 
 | Priority | Shot | Used in |
 |---|---|---|
-| 1 | **Campaign hero:** a model wearing a statement crochet piece (adult sweater or ruffle bucket hat), warm natural light, plain wall or South African landscape. Landscape and portrait crops. | Home hero (`public/landing-page-hero.jpg`) |
-| 2 | **Founder portrait:** Melissa at work, hands visible with yarn and hook, plus one styled portrait. | Founder feature, Our Story |
+| 1 | **Campaign hero:** a model wearing a statement crochet piece (adult sweater or ruffle bucket hat), warm natural light, plain wall or South African landscape. Landscape and portrait crops. *Interim (2026-10-10): Melissa at the market stall, `public/hero-market-stall.jpg`.* | Home hero |
+| 2 | **Founder portrait:** Melissa at work, hands visible with yarn and hook, plus one styled portrait. *Done for the home founder feature (2026-10-10): Melissa wearing a crochet bandana, `public/melissa-crochet-bandana.jpg`.* | Founder feature, Our Story |
 | 3 | **Studio product set:** every product on a seamless cream (#F7F0E3) or sand backdrop, shot 3:4 portrait, front plus 1–2 detail shots. | All product cards and galleries (upload via admin) |
-| 4 | **Texture macros:** stitch close-ups for each yarn type (chunky chenille, cotton, acrylic). | Art of Making, Our Story "The Craft" |
+| 4 | **Texture macros:** stitch close-ups for each yarn type (chunky chenille, cotton, acrylic). *Partly done (2026-10-10): black and navy handbags, `public/craft-handbags.jpg`, in Art of Making.* | Art of Making, Our Story "The Craft" |
 | 5 | **Lifestyle:** throws in a living room, baby blanket in a nursery, bag carried on the street. | Collections pages, bespoke feature |
 | 6 | **Adult Sweaters, Custom Orders and Gift Sets** currently have no photography. Their tiles render a typographic "Made for you" panel until photos exist. | Collections, shop |
 

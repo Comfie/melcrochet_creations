@@ -59,14 +59,15 @@ export default async function Home() {
     imageUrl: collectionLead(products, c)?.imageUrl ?? null,
   }));
 
-  // Craft collage: a home piece and a fashion/accessory piece, when photographed.
+  // Craft collage: the studio photo of the black and navy handbags (static,
+  // public/craft-handbags.jpg), then an accessory from the catalogue —
+  // scrunchies first, so a bag doesn't appear twice in the same section.
+  const craftAccessory =
+    photographedIn(products, ["scrunchies"])[0] ?? photographedIn(products, ["baskets", "hats"])[0];
   const craftImages = [
-    photographedIn(products, ["throw-blankets", "baby-blankets", "baskets"])[1] ??
-      photographedIn(products, ["throw-blankets", "baby-blankets", "baskets"])[0],
-    photographedIn(products, ["scrunchies", "bags", "hats"])[0],
-  ]
-    .filter((p): p is (typeof products)[number] => Boolean(p))
-    .map(asImage);
+    { url: "/craft-handbags.jpg", name: "Handbags in black and navy, with chain straps", slug: "" },
+    ...(craftAccessory ? [asImage(craftAccessory)] : []),
+  ];
 
   const bespoke =
     photographedIn(products, ["custom-orders", "gift-sets"])[0] ??

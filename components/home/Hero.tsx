@@ -3,10 +3,10 @@ import { ButtonLink, TextLink } from "@/components/ui/Button";
 import { cld } from "@/lib/cloudinary-url";
 
 /**
- * Cinematic hero. The main frame is the real MelCrochet market-stall photo,
- * cropped tight on the chunky throws; the inset is a live catalogue photo.
- * Both are authentic MelCrochet work — see docs/redesign for the campaign
- * shoot that should eventually replace the market photo.
+ * Cinematic hero. The main frame is Melissa at the MelCrochet market stall
+ * (public/hero-market-stall.jpg), cropped to her and the chunky throw — the
+ * crop also keeps the children at the photo's left edge out of frame. The
+ * inset is a live catalogue photo. Both are authentic MelCrochet work.
  */
 export default function Hero({
   inset,
@@ -20,13 +20,13 @@ export default function Hero({
         <div className="absolute inset-0 -z-10 lg:relative lg:inset-auto lg:z-0 lg:col-span-6 lg:col-start-7 lg:row-start-1 lg:my-14">
           <div className="relative h-full w-full overflow-hidden">
             <Image
-              src="/landing-page-hero.jpg"
-              alt="Chunky handmade MelCrochet throw blankets in dusty pink, with hand-crocheted hats and bags beside them"
+              src="/hero-market-stall.jpg"
+              alt="Melissa Ruvimbo Buchirai at the MelCrochet market stall, beside a chunky pink throw blanket and a table of hand-crocheted bandanas, scrunchies and bags"
               fill
               preload
               fetchPriority="high"
               sizes="(max-width: 1024px) 100vw, 50vw"
-              className="animate-fade object-cover object-[30%_60%] lg:object-[28%_55%]"
+              className="animate-fade object-cover object-[77%_center] lg:object-[80%_center]"
             />
           </div>
           <div
@@ -34,7 +34,7 @@ export default function Hero({
             className="absolute inset-0 bg-gradient-to-t from-ink via-ink/70 to-ink/20 lg:hidden"
           />
           <p className="label absolute -left-8 top-[36%] hidden origin-center -translate-x-1/2 -rotate-90 whitespace-nowrap text-cream/60 xl:block">
-            Throw Blankets &middot; Handmade to order
+            At the market &middot; Handmade to order
           </p>
 
           {inset && (

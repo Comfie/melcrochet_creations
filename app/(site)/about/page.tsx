@@ -3,7 +3,9 @@ import { pageMetadata } from "@/lib/seo";
 import Image from "next/image";
 import { ButtonLink } from "@/components/ui/Button";
 import Logo from "@/components/Logo";
-import { FOUNDER_PHOTO_ALT } from "@/components/home/FounderFeature";
+
+const FOUNDER_PHOTO_ALT =
+  "Melissa Ruvimbo Buchirai, founder of MelCrochet Gifted Hands, wrapped in one of her handmade chunky crochet blankets";
 
 export const metadata: Metadata = pageMetadata({
   title: "Our Story — Founder Melissa Ruvimbo Buchirai",
