@@ -33,7 +33,7 @@ export default function Hero({
             aria-hidden="true"
             className="absolute inset-0 bg-gradient-to-t from-ink via-ink/70 to-ink/20 lg:hidden"
           />
-          <p className="label absolute -left-8 top-[36%] hidden origin-center -translate-x-1/2 -rotate-90 whitespace-nowrap text-cream/60 xl:block">
+          <p className="label absolute -right-8 top-1/2 hidden origin-center translate-x-1/2 rotate-90 whitespace-nowrap text-cream/60 xl:block">
             At the market &middot; Handmade to order
           </p>
 
