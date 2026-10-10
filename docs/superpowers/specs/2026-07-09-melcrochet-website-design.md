@@ -35,7 +35,7 @@ categories, blog articles, and view contact enquiries, without touching code.
 ### Contacts (canonical)
 
 - WhatsApp: `067 059 0600` → link `https://wa.me/27670590600`
-- Instagram: `@melz.crotchet.creations`
+- Instagram: `@melcrochet_giftedhands` → `https://www.instagram.com/melcrochet_giftedhands` (confirmed October 2026; replaces the earlier `@melz.crotchet.creations`)
 - Currency: ZAR (South African Rand), price badges render as `R450`
 
 ## 2. Architecture

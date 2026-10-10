@@ -36,6 +36,25 @@ describe("sitemap", () => {
     }
   });
 
+  it("writes every lastmod as a plain YYYY-MM-DD date", async () => {
+    const entries = await sitemap();
+    const dated = entries.filter((e) => e.lastModified !== undefined);
+    expect(dated.length).toBeGreaterThan(0);
+    for (const e of dated) {
+      expect(e.lastModified).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    }
+  });
+
+  it("dates the home page by its newest content, catalogue or journal", async () => {
+    const entries = await sitemap();
+    const lastmod = (url: string) => entries.find((e) => e.url === url)?.lastModified as string | undefined;
+    const home = lastmod("https://melcrochet.co.za");
+    for (const url of ["https://melcrochet.co.za/products", "https://melcrochet.co.za/blog"]) {
+      const other = lastmod(url);
+      if (home && other) expect(home >= other).toBe(true);
+    }
+  });
+
   it("uses metadata-stripped Cloudinary transforms for image entries", async () => {
     const images = (await sitemap()).flatMap((e) => e.images ?? []);
     for (const image of images) {
