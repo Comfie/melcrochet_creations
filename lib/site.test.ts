@@ -17,6 +17,10 @@ describe("SITE", () => {
     expect(SITE.facebook).toBe("https://www.facebook.com/profile.php?id=100064727240793");
   });
 
+  it("exposes the Search Console verification token", () => {
+    expect(SITE.googleSiteVerification).toBe("q7KeLbFyJxBKagn5PtSmIqZfZ7shGhmffnbde2iia2s");
+  });
+
   it("exposes brand name and short name", () => {
     expect(SITE.name).toBe("MelCrochet Gifted Hands");
     expect(SITE.shortName).toBe("MelCrochet");

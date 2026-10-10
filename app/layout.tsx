@@ -33,11 +33,10 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_ZA",
   },
-  // Search Console HTML-tag verification — optional; DNS (domain property)
-  // verification needs no code. Set in Vercel, then redeploy.
-  ...(process.env.GOOGLE_SITE_VERIFICATION
-    ? { verification: { google: process.env.GOOGLE_SITE_VERIFICATION } }
-    : {}),
+  // Search Console HTML-tag verification (see SITE.googleSiteVerification).
+  verification: {
+    google: process.env.GOOGLE_SITE_VERIFICATION || SITE.googleSiteVerification,
+  },
 };
 
 export const viewport: Viewport = {

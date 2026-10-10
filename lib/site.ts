@@ -22,4 +22,10 @@ export const SITE = {
   youtubeHandle: "@melcrochets-85",
   facebook: "https://www.facebook.com/profile.php?id=100064727240793",
   locality: "Johannesburg",
+  /**
+   * Google Search Console HTML-tag verification token (public — it is
+   * published in every page's <head>). GOOGLE_SITE_VERIFICATION overrides it.
+   * Keep this tag even after verifying: removing it un-verifies the property.
+   */
+  googleSiteVerification: "q7KeLbFyJxBKagn5PtSmIqZfZ7shGhmffnbde2iia2s",
 } as const;

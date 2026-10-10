@@ -142,8 +142,11 @@ consolidating them.
 1. Add a **Domain property** for `melcrochet.co.za` in Search Console and verify
    it with the DNS TXT record at the domain's DNS host. This covers
    http/https/www in one property. *Alternative:* a URL-prefix property for
-   `https://melcrochet.co.za/` using the HTML-tag method — put the token in
-   Vercel as `GOOGLE_SITE_VERIFICATION` (Production) and redeploy.
+   `https://melcrochet.co.za/` using the HTML-tag method. **Done (2026-10-10):**
+   the HTML-tag token is `SITE.googleSiteVerification` in `lib/site.ts`, so
+   `<meta name="google-site-verification">` is on every page. A
+   `GOOGLE_SITE_VERIFICATION` env var overrides it. Never remove the tag —
+   Search Console re-checks it and drops verification if it's gone.
 2. Sitemaps → submit `https://melcrochet.co.za/sitemap.xml`.
 3. URL Inspection → test live URL and request indexing for `/`, `/products`,
    `/collections`, `/custom-orders` and 3–5 key product pages.
