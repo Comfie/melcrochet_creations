@@ -15,6 +15,11 @@ import { formatPrice } from "@/lib/format-price";
 
 /** Google typically shows ~155–160 characters of a meta description. */
 export const META_DESCRIPTION_MAX = 155;
+/** Shorter descriptions under-sell the page in search results. */
+export const META_DESCRIPTION_MIN = 70;
+/** Titles longer than ~60 characters are cut off in search results. */
+export const TITLE_MAX = 60;
+const TITLE_MIN = 30;
 
 const BASE_OPEN_GRAPH = {
   siteName: SITE.name,
@@ -102,6 +107,39 @@ export function markdownToPlainText(markdown: string): string {
     .replace(/[*_`~]/g, "")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+/**
+ * Journal titles are often YouTube video titles, which run long. Keeps the
+ * " | MelCrochet" suffix when it fits; otherwise drops it, then trailing
+ * " | …" segments ("Video Title | Series Name"), and only as a last resort
+ * cuts at a word boundary. The on-page <h1> keeps the full title.
+ */
+export function articleTitle(title: string): { title: string; absoluteTitle: boolean } {
+  const clean = title.replace(/\s+/g, " ").trim();
+  if (`${clean} | ${SITE.shortName}`.length <= TITLE_MAX) return { title: clean, absoluteTitle: false };
+  if (clean.length <= TITLE_MAX) return { title: clean, absoluteTitle: true };
+
+  const segments = clean.split(/\s+\|\s+/);
+  while (segments.length > 1 && segments.join(" | ").length > TITLE_MAX) segments.pop();
+  const head = segments.join(" | ");
+  if (head !== clean && head.length >= TITLE_MIN && head.length <= TITLE_MAX) return articleTitle(head);
+
+  return { title: truncateText(clean, TITLE_MAX), absoluteTitle: true };
+}
+
+/**
+ * The excerpt when it's long enough to stand alone; a short excerpt is
+ * followed by the opening of the article (headings skipped — they usually
+ * repeat the title) so the snippet says more than a one-line teaser.
+ */
+export function articleMetaDescription(post: { excerpt: string | null; content: string }): string {
+  const excerpt = post.excerpt?.replace(/\s+/g, " ").trim() ?? "";
+  const body = markdownToPlainText(post.content.replace(/^\s{0,3}#{1,6}\s.*$/gm, ""));
+  if (!excerpt) return truncateText(body);
+  if (excerpt.length >= META_DESCRIPTION_MIN || !body) return truncateText(excerpt);
+  const lead = /[.!?…]$/.test(excerpt) ? excerpt : `${excerpt}.`;
+  return truncateText(`${lead} ${body}`);
 }
 
 type ProductSeoInput = {

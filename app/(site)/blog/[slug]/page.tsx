@@ -10,15 +10,11 @@ import BlogCard from "@/components/BlogCard";
 import YouTubeEmbed from "@/components/YouTubeEmbed";
 import { ButtonLink } from "@/components/ui/Button";
 import { BlogPostingJsonLd, BreadcrumbJsonLd } from "@/components/seo/JsonLd";
-import { markdownToPlainText, pageMetadata, truncateText } from "@/lib/seo";
+import { articleMetaDescription, articleTitle, pageMetadata } from "@/lib/seo";
 
 export const revalidate = 60;
 
 type Props = { params: Promise<{ slug: string }> };
-
-function postDescription(post: { excerpt: string | null; content: string }): string {
-  return truncateText(post.excerpt?.trim() || markdownToPlainText(post.content));
-}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
@@ -26,8 +22,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!post) return { title: "Post not found", robots: { index: false, follow: true } };
 
   return pageMetadata({
-    title: post.title,
-    description: postDescription(post),
+    ...articleTitle(post.title),
+    description: articleMetaDescription(post),
     path: `/blog/${post.slug}`,
     images: post.coverImageUrl
       ? [{ url: cld(post.coverImageUrl, "og"), width: 1200, height: 630, alt: post.title }]
@@ -53,7 +49,7 @@ export default async function BlogPostPage({ params }: Props) {
     <>
       <BlogPostingJsonLd
         title={post.title}
-        description={postDescription(post)}
+        description={articleMetaDescription(post)}
         slug={post.slug}
         image={post.coverImageUrl ? cld(post.coverImageUrl, "wide") : null}
         datePublished={post.publishedAt ? new Date(post.publishedAt) : null}
