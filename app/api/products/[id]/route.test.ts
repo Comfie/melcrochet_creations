@@ -78,6 +78,64 @@ describe("PATCH /api/products/[id]", () => {
   });
 });
 
+describe("PATCH /api/products/[id] — names stay unique among active products", () => {
+  let twinId: string;
+  let twinName: string;
+
+  beforeEach(async () => {
+    twinName = `Vitest Name Twin ${Date.now()}`;
+    const twin = await prisma.product.create({
+      data: {
+        name: twinName,
+        slug: slugify(twinName),
+        description: "temp",
+        priceType: "QUOTE",
+        categoryId,
+        imageUrl: "https://res.cloudinary.com/demo/image/upload/v1/melcrochet/twin.jpg",
+      },
+    });
+    twinId = twin.id;
+  });
+
+  afterEach(async () => {
+    await prisma.product.deleteMany({ where: { id: twinId } });
+  });
+
+  async function patch(body: object) {
+    const { PATCH } = await import("./route");
+    const req = new NextRequest(`http://localhost:3000/api/products/${productId}`, {
+      method: "PATCH",
+      headers: { Cookie: await authCookie(), "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    return PATCH(req, { params: Promise.resolve({ id: productId }) });
+  }
+
+  it("rejects renaming a product to another active product's name (any case)", async () => {
+    const res = await patch({ name: `  ${twinName.toUpperCase()} ` });
+    expect(res.status).toBe(409);
+    expect((await res.json()).error).toContain("distinct name");
+  });
+
+  it("still saves other edits to a product that already shares its name", async () => {
+    await prisma.product.update({ where: { id: productId }, data: { name: twinName } });
+    const res = await patch({ name: twinName, description: "edited" });
+    expect(res.status).toBe(200);
+  });
+
+  it("rejects republishing a hidden product whose name is now taken", async () => {
+    await prisma.product.update({ where: { id: productId }, data: { name: twinName, isActive: false } });
+    const res = await patch({ isActive: true });
+    expect(res.status).toBe(409);
+  });
+
+  it("allows the name once the other product is hidden", async () => {
+    await prisma.product.update({ where: { id: twinId }, data: { isActive: false } });
+    const res = await patch({ name: twinName });
+    expect(res.status).toBe(200);
+  });
+});
+
 describe("PATCH /api/products/[id] — publish requires an image", () => {
   it("rejects setting isActive: true on a product with no image", async () => {
     const name = `Vitest Tmp Imageless ${Date.now()}`;
