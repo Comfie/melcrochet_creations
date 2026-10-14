@@ -46,6 +46,9 @@ export default function Logo({
       // Vector artwork: serve the SVG as-is rather than through the optimiser.
       unoptimized
       preload={preload}
+      // The header logo is the first image painted, and on phones Lighthouse
+      // picks it as the LCP element: fetch it ahead of other images.
+      fetchPriority={preload ? "high" : undefined}
       className={className}
     />
   );

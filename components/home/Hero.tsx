@@ -25,6 +25,9 @@ export default function Hero({
               fill
               preload
               fetchPriority="high"
+              // The LCP image on phones, where it sits under a dark gradient:
+              // q60 roughly halves the download (AVIF ~36 KB vs ~70 KB).
+              quality={60}
               sizes="(max-width: 1024px) 100vw, 50vw"
               className="animate-fade object-cover object-[77%_center] lg:object-[80%_center]"
             />
