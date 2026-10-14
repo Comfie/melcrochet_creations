@@ -99,6 +99,7 @@ listings as out of scope unless Google Merchant Center is set up later.
 | `custom_order_enquiry` | custom-order builder send, custom-orders hero, empty-category CTA | `piece`, `link_location` |
 | `contact_form_submit` | contact form sent successfully | `form_location` |
 | `whatsapp_click` | any other WhatsApp link | `link_location` (header, footer, floating_button, mobile_menu, announcement_bar, page) |
+| `phone_call_click` | any click-to-call (`tel:`) link | `link_location` |
 
 A WhatsApp click is a **lead**, not a sale. No names, messages or form contents are ever sent.
 

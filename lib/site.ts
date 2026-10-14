@@ -29,3 +29,6 @@ export const SITE = {
    */
   googleSiteVerification: "q7KeLbFyJxBKagn5PtSmIqZfZ7shGhmffnbde2iia2s",
 } as const;
+
+/** Click-to-call link for the business number (the same number as WhatsApp). */
+export const PHONE_HREF = `tel:+${SITE.whatsappNumber}`;

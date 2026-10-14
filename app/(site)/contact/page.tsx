@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
-import { ArrowUpRight, Mail, MapPin, MessageCircle } from "lucide-react";
+import { ArrowUpRight, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
-import { SITE } from "@/lib/site";
+import { PHONE_HREF, SITE } from "@/lib/site";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import EnquiryForm from "@/components/EnquiryForm";
 import { FacebookIcon, InstagramIcon, YouTubeIcon } from "@/components/SocialIcons";
@@ -23,6 +23,7 @@ const CHANNELS = [
     icon: MessageCircle,
     external: true,
   },
+  { label: "Phone", value: SITE.whatsappDisplay, note: "Prefer to talk? Give us a call", href: PHONE_HREF, icon: Phone, external: false },
   { label: "Email", value: SITE.email, note: "For anything longer", href: `mailto:${SITE.email}`, icon: Mail, external: false },
   {
     label: "Instagram",

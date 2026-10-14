@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { SITE } from "./site";
+import { PHONE_HREF, SITE } from "./site";
 
 describe("SITE", () => {
   it("exposes the production URL with no trailing slash", () => {
@@ -8,6 +8,10 @@ describe("SITE", () => {
 
   it("exposes the WhatsApp number in international format with no plus sign", () => {
     expect(SITE.whatsappNumber).toBe("27670590600");
+  });
+
+  it("builds an international click-to-call link from the business number", () => {
+    expect(PHONE_HREF).toBe("tel:+27670590600");
   });
 
   it("exposes the official Instagram and YouTube accounts", () => {

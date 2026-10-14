@@ -17,7 +17,8 @@ function parseParams(raw: string | undefined): AnalyticsParams {
  * One delegated click listener for the whole site, so server-rendered links
  * stay server components. Links with `data-ga-event` (see
  * analyticsAttributes) send that event; any other WhatsApp link sends
- * `whatsapp_click` with the nearest `data-ga-location` as context.
+ * `whatsapp_click` and any tel: link `phone_call_click`, each with the
+ * nearest `data-ga-location` as context.
  */
 export default function AnalyticsClickTracker() {
   useEffect(() => {
@@ -32,9 +33,10 @@ export default function AnalyticsClickTracker() {
         return;
       }
 
-      const link = event.target.closest<HTMLAnchorElement>('a[href*="wa.me/"]');
+      const link = event.target.closest<HTMLAnchorElement>('a[href*="wa.me/"], a[href^="tel:"]');
       if (link) {
-        trackEvent(ANALYTICS_EVENTS.whatsappClick, {
+        const isCall = link.getAttribute("href")?.startsWith("tel:");
+        trackEvent(isCall ? ANALYTICS_EVENTS.phoneCallClick : ANALYTICS_EVENTS.whatsappClick, {
           link_location: link.closest<HTMLElement>("[data-ga-location]")?.dataset.gaLocation ?? "page",
           page_path: window.location.pathname,
         });
