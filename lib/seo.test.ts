@@ -1,13 +1,17 @@
 import { describe, it, expect } from "vitest";
 import {
+  articleMetaDescription,
+  articleTitle,
   CATEGORY_SEO,
   DEFAULT_OG_IMAGE,
   categorySeo,
   markdownToPlainText,
   META_DESCRIPTION_MAX,
+  META_DESCRIPTION_MIN,
   pageMetadata,
   productMetaDescription,
   productTitle,
+  TITLE_MAX,
   truncateText,
 } from "./seo";
 import { CATEGORIES } from "@/prisma/seed-data";
@@ -130,5 +134,76 @@ describe("category and collection SEO copy", () => {
 
   it("falls back to a template for a category added later", () => {
     expect(categorySeo({ slug: "cushions", name: "Cushions" }).title).toBe("Handmade Crochet Cushions");
+  });
+});
+
+describe("articleTitle", () => {
+  const rendered = ({ title, absoluteTitle }: { title: string; absoluteTitle: boolean }) =>
+    absoluteTitle ? title : `${title} | MelCrochet`;
+
+  it("keeps the brand suffix when it fits", () => {
+    expect(articleTitle("How to Wash a Crochet Blanket")).toEqual({
+      title: "How to Wash a Crochet Blanket",
+      absoluteTitle: false,
+    });
+  });
+
+  it("drops the suffix rather than cut a title that fits on its own", () => {
+    const t = "Turned 4 skeins of yarn into beautiful Chunky Blanket";
+    expect(articleTitle(t)).toEqual({ title: t, absoluteTitle: true });
+    expect(articleTitle("I made a Crochet Bandana . 5 ways to wear a Bandana!").absoluteTitle).toBe(true);
+  });
+
+  it("drops trailing ' | …' segments from YouTube-style titles", () => {
+    const result = articleTitle("MY FIRST EVERGREEN LIFESTYLE MARKET VLOG! 🧶❤️ | Small Business Owner");
+    expect(rendered(result)).toBe("MY FIRST EVERGREEN LIFESTYLE MARKET VLOG! 🧶❤️ | MelCrochet");
+  });
+
+  it("cuts an over-long single title at a word boundary", () => {
+    const result = articleTitle(
+      "A very long journal title about choosing the right throw blanket size for every bed in the house"
+    );
+    expect(result.absoluteTitle).toBe(true);
+    expect(result.title.length).toBeLessThanOrEqual(TITLE_MAX);
+    expect(result.title.endsWith("…")).toBe(true);
+  });
+
+  it("never renders a title longer than the limit", () => {
+    for (const t of [
+      "I made a Crochet Bandana . 5 ways to wear a Bandana!",
+      "MY FIRST EVERGREEN LIFESTYLE MARKET VLOG! 🧶❤️ | Small Business Owner",
+      "Turned 4 skeins of yarn into beautiful Chunky Blanket",
+      "Vlog | " + "word ".repeat(20),
+    ]) {
+      expect(rendered(articleTitle(t)).length).toBeLessThanOrEqual(TITLE_MAX);
+    }
+  });
+});
+
+describe("articleMetaDescription", () => {
+  const content = [
+    "# New Project: How to Wear a Crochet Bandana",
+    "",
+    "Welcome back to **MelCrochet Gifted Hands**! Today, I'm excited to share my new crochet project — a beautiful handmade bandana. This project is simple, stylish, and versatile.",
+  ].join("\n");
+
+  it("uses a long-enough excerpt on its own", () => {
+    const excerpt = "Five ways to style a handmade crochet bandana — as a headscarf, headband, neck scarf and more.";
+    expect(articleMetaDescription({ excerpt, content })).toBe(excerpt);
+  });
+
+  it("follows a short excerpt with the article's opening, skipping headings", () => {
+    const description = articleMetaDescription({
+      excerpt: "I Made a Crochet Bandana! 🤎 5 Different Ways to Wear It",
+      content,
+    });
+    expect(description.startsWith("I Made a Crochet Bandana! 🤎 5 Different Ways to Wear It. Welcome back to MelCrochet Gifted Hands!")).toBe(true);
+    expect(description).not.toContain("New Project");
+    expect(description.length).toBeGreaterThanOrEqual(META_DESCRIPTION_MIN);
+    expect(description.length).toBeLessThanOrEqual(META_DESCRIPTION_MAX);
+  });
+
+  it("falls back to the article text when there is no excerpt", () => {
+    expect(articleMetaDescription({ excerpt: null, content })).toMatch(/^Welcome back to MelCrochet/);
   });
 });

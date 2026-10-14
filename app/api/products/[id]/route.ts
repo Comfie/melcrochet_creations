@@ -7,6 +7,7 @@ import { jsonError, jsonValidationError } from "@/lib/api-response";
 import { deleteImage } from "@/lib/cloudinary";
 import { parseGallery, orphanedImagePublicIds } from "@/lib/product-gallery";
 import { productUpdateSchema } from "../schema";
+import { productNameClash } from "../name-clash";
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -36,6 +37,14 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
   if (!existing) return jsonError("Product not found", 404);
 
   const effectiveIsActive = parsed.data.isActive ?? existing.isActive;
+  const effectiveName = parsed.data.name ?? existing.name;
+  // Only a rename or a (re)publish is checked, so editing a product that
+  // already shares its name (from before this check) isn't blocked.
+  const renamed = effectiveName.trim().toLowerCase() !== existing.name.trim().toLowerCase();
+  if (effectiveIsActive && (renamed || !existing.isActive)) {
+    const clash = await productNameClash(effectiveName, id);
+    if (clash) return clash;
+  }
   const effectiveImageUrl =
     parsed.data.imageUrl !== undefined ? parsed.data.imageUrl : existing.imageUrl;
   if (effectiveIsActive && !effectiveImageUrl) {

@@ -9,6 +9,7 @@
  *   custom_order_enquiry   custom-order request sent to WhatsApp
  *   contact_form_submit    contact form sent successfully
  *   whatsapp_click         any other WhatsApp link (nav, footer, floating button…)
+ *   phone_call_click       any click-to-call (tel:) link
  */
 
 type AnalyticsValue = string | number | null | undefined;
@@ -35,6 +36,7 @@ export const ANALYTICS_EVENTS = {
   customOrderEnquiry: "custom_order_enquiry",
   contactFormSubmit: "contact_form_submit",
   whatsappClick: "whatsapp_click",
+  phoneCallClick: "phone_call_click",
 } as const;
 
 function clean<T extends AnalyticsParams>(params: T): Record<string, Exclude<T[keyof T], null | undefined>> {

@@ -12,6 +12,12 @@ describe("COLLECTIONS", () => {
     expect([...mapped].sort()).toEqual([...categorySlugs].sort());
   });
 
+  it("gives every collection a unique on-page intro", () => {
+    const intros = COLLECTIONS.map((c) => c.intro);
+    expect(new Set(intros).size).toBe(intros.length);
+    for (const c of COLLECTIONS) expect(c.intro.length).toBeGreaterThan(150);
+  });
+
   it("has unique collection slugs", () => {
     const slugs = COLLECTIONS.map((c) => c.slug);
     expect(new Set(slugs).size).toBe(slugs.length);

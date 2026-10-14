@@ -23,6 +23,11 @@ export const HTML_LIMITED_BOTS = new RegExp(`${HTML_LIMITED_BOT_UA_RE.source}|Go
 const nextConfig: NextConfig = {
   htmlLimitedBots: HTML_LIMITED_BOTS,
   images: {
+    // AVIF first (typically 20–30% smaller than WebP at the same quality),
+    // WebP for browsers without AVIF support.
+    formats: ["image/avif", "image/webp"],
+    // 75 is next/image's default; 60 is for the home hero (see Hero.tsx).
+    qualities: [60, 75],
     remotePatterns: [
       {
         protocol: "https",

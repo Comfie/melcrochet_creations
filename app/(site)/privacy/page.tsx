@@ -11,7 +11,7 @@ import { buildWhatsAppLink } from "@/lib/whatsapp";
  * NEXT_PUBLIC_GA_MEASUREMENT_ID is set), YouTube embeds and hosting. Update
  * PRIVACY_UPDATED whenever a practice changes.
  */
-const PRIVACY_UPDATED = { iso: "2026-10-09", label: "9 October 2026" } as const;
+const PRIVACY_UPDATED = { iso: "2026-10-14", label: "14 October 2026" } as const;
 
 export const metadata: Metadata = pageMetadata({
   title: "Privacy Notice",
@@ -74,7 +74,7 @@ const SECTIONS: Section[] = [
           We use Google Analytics to understand how visitors
           use the site — for example which pages and products are viewed, how people arrive, the
           type of device and browser, approximate location (country or city) and whether a
-          WhatsApp or enquiry button was tapped. This helps us improve the site and see which
+          WhatsApp, call or enquiry button was tapped. This helps us improve the site and see which
           pieces people are interested in. We never send your name, contact details or the content
           of your messages to Google Analytics. See{" "}
           <a href="#cookies" className={LINK}>

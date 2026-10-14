@@ -3,7 +3,7 @@ import { ArrowUpRight } from "lucide-react";
 import Logo from "@/components/Logo";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import { COLLECTIONS } from "@/lib/collections";
-import { SITE } from "@/lib/site";
+import { PHONE_HREF, SITE } from "@/lib/site";
 import { FacebookIcon, InstagramIcon, YouTubeIcon } from "@/components/SocialIcons";
 
 const CUSTOMER_LINKS = [
@@ -47,7 +47,11 @@ export default function Footer() {
                 aria-hidden="true"
               />
             </a>
-            <p className="font-sans text-sm text-cream/70">{SITE.whatsappDisplay}</p>
+            <p className="font-sans text-sm text-cream/70">
+              <a href={PHONE_HREF} className="hover:text-cream">
+                {SITE.whatsappDisplay}
+              </a>
+            </p>
           </div>
         </div>
       </div>
@@ -98,19 +102,28 @@ export default function Footer() {
 
         <div className="lg:col-span-3">
           <FooterHeading>Get in Touch</FooterHeading>
-          <ul className="mt-5 flex flex-col gap-3 font-sans text-sm text-cream/75">
-            <li>
-              <a href={buildWhatsAppLink()} target="_blank" rel="noopener noreferrer" className="hover:text-cream">
-                WhatsApp: {SITE.whatsappDisplay}
-              </a>
-            </li>
-            <li>
-              <a href={`mailto:${SITE.email}`} className="break-all hover:text-cream">
-                Email: {SITE.email}
-              </a>
-            </li>
-            <li>Based in {SITE.locality}, South Africa</li>
-          </ul>
+          {/* Home-based studio with no premises to visit: the service area stands in for a street address. */}
+          <address className="mt-5 not-italic">
+            <ul className="flex flex-col gap-3 font-sans text-sm text-cream/75">
+              <li>
+                <a href={buildWhatsAppLink()} target="_blank" rel="noopener noreferrer" className="hover:text-cream">
+                  WhatsApp: {SITE.whatsappDisplay}
+                </a>
+              </li>
+              <li>
+                <a href={PHONE_HREF} className="hover:text-cream">
+                  Call: {SITE.whatsappDisplay}
+                </a>
+              </li>
+              <li>
+                <a href={`mailto:${SITE.email}`} className="break-all hover:text-cream">
+                  Email: {SITE.email}
+                </a>
+              </li>
+              <li>Based in {SITE.locality}, South Africa</li>
+              <li>Courier delivery across South Africa &middot; collection in {SITE.locality} by arrangement</li>
+            </ul>
+          </address>
           <div className="mt-6 flex gap-3">
             <a
               href={SITE.instagram}

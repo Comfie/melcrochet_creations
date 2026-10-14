@@ -73,6 +73,25 @@ describe("POST /api/products", () => {
     expect(body.slug).toBe("vitest-tmp-product");
   });
 
+  it("rejects a name already used by another active product", async () => {
+    const existing = await prisma.product.findFirstOrThrow({ where: { isActive: true } });
+    const { POST } = await import("./route");
+    const req = new NextRequest("http://localhost:3000/api/products", {
+      method: "POST",
+      headers: { Cookie: await authCookie(), "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: existing.name.toLowerCase(),
+        description: "Same name as a live product",
+        priceType: "QUOTE",
+        categoryId,
+        imageUrl: "https://res.cloudinary.com/demo/image/upload/v1/products/twin.jpg",
+      }),
+    });
+    const res = await POST(req);
+    if (res.status === 201) createdProductIds.push((await res.json()).id);
+    expect(res.status).toBe(409);
+  });
+
   it("rejects a FIXED product with no price", async () => {
     const { POST } = await import("./route");
     const req = new NextRequest("http://localhost:3000/api/products", {

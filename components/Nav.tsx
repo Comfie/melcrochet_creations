@@ -4,10 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Form from "next/form";
 import { usePathname } from "next/navigation";
-import { Menu, MessageCircle, Search, X } from "lucide-react";
+import { Menu, MessageCircle, Phone, Search, X } from "lucide-react";
 import Logo from "@/components/Logo";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
-import { SITE } from "@/lib/site";
+import { PHONE_HREF, SITE } from "@/lib/site";
 
 const PRIMARY_LEFT = [
   { href: "/", label: "Home" },
@@ -122,6 +122,14 @@ export default function Nav() {
             >
               <Menu className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
             </button>
+            {/* Click-to-call on phones, balancing search + WhatsApp on the right. */}
+            <a
+              href={PHONE_HREF}
+              aria-label={`Call ${SITE.whatsappDisplay}`}
+              className="flex h-11 w-11 items-center justify-center text-ink/80 transition-colors hover:text-ink lg:hidden"
+            >
+              <Phone className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
+            </a>
             <nav aria-label="Primary" className="hidden items-center gap-6 lg:flex xl:gap-8">
               {PRIMARY_LEFT.map(desktopLink)}
             </nav>
@@ -267,7 +275,13 @@ export default function Nav() {
               Order on WhatsApp
             </a>
             <p className="label mt-6 text-center text-cream/60">
-              {SITE.whatsappDisplay} &middot; {SITE.email}
+              <a href={PHONE_HREF} className="hover:text-cream">
+                {SITE.whatsappDisplay}
+              </a>{" "}
+              &middot;{" "}
+              <a href={`mailto:${SITE.email}`} className="hover:text-cream">
+                {SITE.email}
+              </a>
             </p>
           </div>
         </div>

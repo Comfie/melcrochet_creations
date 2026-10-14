@@ -6,6 +6,7 @@ import { requireAuth } from "@/lib/auth";
 import { revalidatePublicSite } from "@/lib/revalidate";
 import { jsonError, jsonValidationError } from "@/lib/api-response";
 import { productInputSchema } from "./schema";
+import { productNameClash } from "./name-clash";
 
 export async function GET(request: NextRequest) {
   const unauthorized = await requireAuth(request);
@@ -36,6 +37,11 @@ export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null);
   const parsed = productInputSchema.safeParse(body);
   if (!parsed.success) return jsonValidationError(parsed.error.issues);
+
+  if (parsed.data.isActive !== false) {
+    const clash = await productNameClash(parsed.data.name);
+    if (clash) return clash;
+  }
 
   const slug = await uniqueSlug(parsed.data.name);
   try {

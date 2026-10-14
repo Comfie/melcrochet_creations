@@ -1,4 +1,7 @@
+import { unstable_cache } from "next/cache";
 import prisma from "@/lib/prisma";
+import type { CatalogueProduct } from "@/lib/catalogue";
+import { CATALOGUE_TAG } from "@/lib/revalidate";
 
 export function getCategories() {
   return prisma.category.findMany({ orderBy: { sortOrder: "asc" } });
@@ -50,6 +53,40 @@ export function getProducts(options?: {
     orderBy: { sortOrder: "asc" },
   });
 }
+
+/**
+ * Cached reads for the shop listing (/products). That page reads
+ * searchParams, so it renders on every request and isn't ISR-cached like the
+ * rest of the site; caching its data instead saves two Postgres round trips
+ * per collection or category view. Cached values are serialised, so rows are
+ * reduced to plain fields (a Prisma Decimal price becomes a string, which
+ * formatPrice renders the same way). Search results are never cached.
+ */
+export const getCachedCategories = unstable_cache(
+  async () => (await getCategories()).map(({ id, name, slug, blurb }) => ({ id, name, slug, blurb })),
+  ["shop-categories"],
+  { revalidate: 60, tags: [CATALOGUE_TAG] }
+);
+
+/** Active products in any of `categorySlugs` (all active products when null). */
+export const getCachedProducts = unstable_cache(
+  async (categorySlugs: string[] | null): Promise<CatalogueProduct[]> =>
+    (await getProducts(categorySlugs ? { categorySlugs } : undefined)).map((p) => ({
+      id: p.id,
+      slug: p.slug,
+      name: p.name,
+      priceType: p.priceType,
+      price: p.price === null ? null : p.price.toString(),
+      currency: p.currency,
+      imageUrl: p.imageUrl,
+      gallery: p.gallery,
+      leadTime: p.leadTime,
+      featured: p.featured,
+      category: { name: p.category.name, slug: p.category.slug },
+    })),
+  ["shop-products"],
+  { revalidate: 60, tags: [CATALOGUE_TAG] }
+);
 
 /**
  * "You may also like" — other active pieces from the same category first,
