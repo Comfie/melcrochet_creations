@@ -2,13 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Form from "next/form";
 import { Search } from "lucide-react";
-import { getCategories, getCategoriesWithProductCounts, getProducts } from "@/lib/queries";
+import { getCachedCategories, getCachedProducts, getCategoriesWithProductCounts, getProducts } from "@/lib/queries";
 import { COLLECTIONS, collectionForCategory, getCollectionBySlug } from "@/lib/collections";
-import { toCardProduct } from "@/lib/catalogue";
+import { toCardProduct, type CatalogueProduct } from "@/lib/catalogue";
 import { buildCustomOrderMessage, buildWhatsAppLink } from "@/lib/whatsapp";
 import CategoryFilter from "@/components/CategoryFilter";
 import ProductCard from "@/components/ProductCard";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import OrderingInfo from "@/components/OrderingInfo";
 import { BreadcrumbJsonLd, type BreadcrumbItem } from "@/components/seo/JsonLd";
 import { categorySeo, pageMetadata } from "@/lib/seo";
 import { ANALYTICS_EVENTS, analyticsAttributes } from "@/lib/analytics";
@@ -76,12 +77,20 @@ export default async function ProductsPage({ searchParams }: Props) {
   const activeCollection = category ? collectionForCategory(category) : getCollectionBySlug(collection);
 
   // Sequential to keep to one Postgres connection at a time (see app/(site)/page.tsx).
-  const categories = await getCategories();
-  const products = await getProducts({
-    categorySlug: category,
-    categorySlugs: category ? undefined : activeCollection?.categorySlugs,
-    search,
-  });
+  // Browsing views use cached data; an unknown category has no products, so
+  // junk ?category= values never reach the database or the cache.
+  const categories = await getCachedCategories();
+  const products: CatalogueProduct[] = search
+    ? await getProducts({
+        categorySlug: category,
+        categorySlugs: category ? undefined : activeCollection?.categorySlugs,
+        search,
+      })
+    : category
+      ? categories.some((c) => c.slug === category)
+        ? await getCachedProducts([category])
+        : []
+      : await getCachedProducts(activeCollection ? [...activeCollection.categorySlugs] : null);
 
   const activeCategory = categories.find((c) => c.slug === category);
   const railCategories = activeCollection
@@ -274,6 +283,19 @@ export default async function ProductsPage({ searchParams }: Props) {
           )}
         </div>
       </section>
+
+      {activeCollection && !category && !search && (
+        <OrderingInfo
+          id="about-collection"
+          eyebrow="About the collection"
+          title={
+            <>
+              {activeCollection.name}, <span className="italic">made to order.</span>
+            </>
+          }
+          intro={activeCollection.intro}
+        />
+      )}
     </>
   );
 }

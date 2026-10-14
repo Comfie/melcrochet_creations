@@ -1,4 +1,7 @@
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+
+/** Tag on cached storefront reads (lib/queries.ts) — expired by revalidatePublicSite(). */
+export const CATALOGUE_TAG = "catalogue";
 
 /**
  * Public pages are ISR-cached (`revalidate = 60`), so without this an admin
@@ -13,6 +16,9 @@ import { revalidatePath } from "next/cache";
 export function revalidatePublicSite(): void {
   try {
     revalidatePath("/", "layout");
+    // Cached shop-listing data (lib/queries.ts) — expire now, not
+    // stale-while-revalidate, so the next visit shows the edit.
+    revalidateTag(CATALOGUE_TAG, { expire: 0 });
   } catch {
     // Only throws outside a Next request (e.g. route handlers called
     // directly from tests). A cache miss must never turn a saved change

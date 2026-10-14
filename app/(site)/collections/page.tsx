@@ -7,6 +7,7 @@ import { collectionLead } from "@/lib/catalogue";
 import { cld } from "@/lib/cloudinary-url";
 import CategoryTile from "@/components/CategoryTile";
 import { ButtonLink } from "@/components/ui/Button";
+import OrderingInfo from "@/components/OrderingInfo";
 
 export const revalidate = 60;
 
@@ -114,6 +115,17 @@ export default async function CollectionsPage() {
           </section>
         );
       })}
+
+      <OrderingInfo
+        id="ordering"
+        eyebrow="Ordering"
+        title={
+          <>
+            How ordering <span className="italic">works.</span>
+          </>
+        }
+        intro="Every piece in every collection is crocheted by hand once you order. Here's what to expect before you message us."
+      />
     </>
   );
 }
