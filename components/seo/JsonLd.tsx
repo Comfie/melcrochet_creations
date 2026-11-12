@@ -43,6 +43,51 @@ const ORGANIZATION_REF = {
   url: SITE.url,
 } as const;
 
+/** Local teaching service; prices and billing units come from the visible lesson cards. */
+export function LessonsJsonLd({ lessons, image }: {
+  lessons: readonly { name: string; format: string; description: string; price: number; kit: number; unit: string }[];
+  image: string;
+}) {
+  const url = `${SITE.url}/crochet-lessons`;
+  return (
+    <JsonLdScript data={{
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "@id": `${url}#lessons`,
+      name: "Crochet lessons in Northwold, Johannesburg",
+      serviceType: "In-person crochet lessons and classes",
+      description: "Beginner, intermediate, project-based and private crochet lessons with Melissa. Each session is 1 hour. Starter kits and group classes are available.",
+      url,
+      image,
+      provider: { ...ORGANIZATION_REF, telephone: `+${SITE.whatsappNumber}` },
+      areaServed: { "@type": "City", name: "Johannesburg" },
+      availableChannel: {
+        "@type": "ServiceChannel",
+        serviceUrl: url,
+        serviceLocation: {
+          "@type": "Place",
+          name: "Graceland One, Northwold",
+          address: { "@type": "PostalAddress", addressLocality: "Northwold, Johannesburg", addressCountry: "ZA" },
+        },
+      },
+      offers: lessons.flatMap((lesson) => [false, true].map((withKit) => ({
+        "@type": "Offer",
+        name: `${lesson.name} crochet lessons — ${withKit ? "with starter kit" : "without kit"}`,
+        description: `${lesson.format}. ${lesson.description} Each session is 1 hour. Price ${lesson.unit}.`,
+        url: `${url}#lesson-options`,
+        price: withKit ? lesson.kit : lesson.price,
+        priceCurrency: "ZAR",
+        priceSpecification: {
+          "@type": "UnitPriceSpecification",
+          price: withKit ? lesson.kit : lesson.price,
+          priceCurrency: "ZAR",
+          unitText: lesson.unit,
+        },
+      }))),
+    }} />
+  );
+}
+
 /**
  * MelCrochet is a home-based maker that sells over WhatsApp with courier
  * delivery or collection by arrangement — there is no storefront, street

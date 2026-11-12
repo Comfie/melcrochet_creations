@@ -6,11 +6,13 @@ import { ButtonLink, TextLink } from "@/components/ui/Button";
 import { pageMetadata } from "@/lib/seo";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import { PHONE_HREF, SITE } from "@/lib/site";
+import { BreadcrumbJsonLd, LessonsJsonLd } from "@/components/seo/JsonLd";
 
 export const metadata: Metadata = pageMetadata({
   title: "Crochet Lessons in Northwold, Johannesburg",
-  description: "Learn to crochet with Melissa in Northwold. Beginner lessons from R100, starter kits, project classes and private lessons. Enquire on WhatsApp.",
+  description: "Crochet lessons in Northwold, Johannesburg from R100. Learn with Melissa in one-hour beginner, private or group classes. Starter kits available. Enquire.",
   path: "/crochet-lessons",
+  images: [{ url: LESSON_PHOTOS.students.url, width: 4160, height: 2340, alt: LESSON_PHOTOS.students.alt }],
 });
 
 const LESSONS = [
@@ -31,13 +33,15 @@ const FAQS = [
 export default function CrochetLessonsPage() {
   return (
     <>
+      <BreadcrumbJsonLd items={[{ name: "Home", path: "/" }, { name: "Crochet Lessons", path: "/crochet-lessons" }]} />
+      <LessonsJsonLd lessons={LESSONS} image={LESSON_PHOTOS.students.url} />
       <section className="bg-cream">
         <div className="shell grid items-center gap-12 pb-16 pt-12 sm:pb-24 sm:pt-20 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-7">
             <p className="label text-gold-deep">Crochet lessons in Northwold, Johannesburg</p>
-            <h1 className="mt-6 text-hero">A little yarn.<br />A skill for life.</h1>
+            <h1 className="mt-6 text-hero">Crochet lessons.<br />A skill for life.</h1>
             <p className="mt-8 max-w-xl font-display text-lede">Learn to crochet with Melissa, one patient stitch at a time.</p>
-            <p className="mt-5 max-w-lg leading-relaxed text-ink/75">From your very first chain to a piece you’re proud to say you made, find your rhythm in friendly, supportive lessons. All ages welcome, with a place to start at every skill level.</p>
+            <p className="mt-5 max-w-lg leading-relaxed text-ink/75">Learn to crochet in Northwold, Johannesburg, with friendly, in-person classes for beginners and experienced makers. From your very first chain to a piece you’re proud to say you made, find your rhythm with Melissa. All ages welcome.</p>
             <div className="mt-8 flex flex-wrap items-center gap-6">
               <ButtonLink href={enquiry} external size="lg"><MessageCircle size={18} aria-hidden="true" />Enquire about lessons</ButtonLink>
               <TextLink href="#lesson-options">Find your class</TextLink>
