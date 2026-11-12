@@ -13,6 +13,7 @@ const PRIMARY_LEFT = [
   { href: "/", label: "Home" },
   { href: "/products", label: "Shop" },
   { href: "/collections", label: "Collections" },
+  { href: "/crochet-lessons", label: "Lessons" },
 ];
 const PRIMARY_RIGHT = [
   { href: "/about", label: "Our Story" },
@@ -130,7 +131,7 @@ export default function Nav() {
             >
               <Phone className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
             </a>
-            <nav aria-label="Primary" className="hidden items-center gap-6 lg:flex xl:gap-8">
+            <nav aria-label="Primary" className="hidden items-center gap-4 lg:flex xl:gap-6">
               {PRIMARY_LEFT.map(desktopLink)}
             </nav>
           </div>
@@ -253,7 +254,7 @@ export default function Nav() {
                 );
               })}
             </ol>
-            <ul className="mt-8 flex gap-8">
+            <ul className="mt-8 flex flex-wrap gap-6">
               {SECONDARY.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href} onClick={closeAll} className="label text-cream/80 hover:text-cream">

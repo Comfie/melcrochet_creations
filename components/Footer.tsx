@@ -14,6 +14,7 @@ const CUSTOMER_LINKS = [
 ];
 
 const HOUSE_LINKS = [
+  { href: "/crochet-lessons", label: "Crochet Lessons" },
   { href: "/about", label: "Our Story" },
   { href: "/blog", label: "Journal" },
   { href: "/products", label: "Shop All" },

@@ -10,6 +10,7 @@ import Marquee from "@/components/home/Marquee";
 import CollectionsShowcase from "@/components/home/CollectionsShowcase";
 import SignaturePieces from "@/components/home/SignaturePieces";
 import ArtOfMaking from "@/components/home/ArtOfMaking";
+import LessonsFeature from "@/components/home/LessonsFeature";
 import FounderFeature from "@/components/home/FounderFeature";
 import BespokeFeature from "@/components/home/BespokeFeature";
 import StudioGallery from "@/components/home/StudioGallery";
@@ -99,6 +100,7 @@ export default async function Home() {
       <SignaturePieces products={signature} />
       <ArtOfMaking images={craftImages} />
       <FounderFeature />
+      <LessonsFeature />
       <BespokeFeature image={bespoke ? asImage(bespoke) : null} />
 
       {testimonials.length > 0 && (

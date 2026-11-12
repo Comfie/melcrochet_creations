@@ -26,8 +26,8 @@ const nextConfig: NextConfig = {
     // AVIF first (typically 20–30% smaller than WebP at the same quality),
     // WebP for browsers without AVIF support.
     formats: ["image/avif", "image/webp"],
-    // 75 is next/image's default; 60 is for the home hero (see Hero.tsx).
-    qualities: [60, 75],
+    // 75 is the default; 60 is for the home hero, 95 for lesson photography.
+    qualities: [60, 75, 95],
     remotePatterns: [
       {
         protocol: "https",
