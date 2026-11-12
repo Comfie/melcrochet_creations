@@ -87,6 +87,19 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
   if (unauthorized) return unauthorized;
 
   const { id } = await params;
+  if (request.nextUrl.searchParams.get("permanent") === "true") {
+    const existing = await prisma.product.findUnique({ where: { id } });
+    if (!existing) return jsonError("Product not found", 404);
+    if (existing.isActive) return jsonError("Hide the product before deleting it permanently", 409);
+
+    // Include the hidden condition in the write so a concurrent republish cannot be deleted.
+    const result = await prisma.product.deleteMany({ where: { id, isActive: false } });
+    if (result.count === 0) return jsonError("The product changed. Refresh the list and try again", 409);
+    // Photos can be shared with the website or other products; deletion removes only this record.
+    revalidatePublicSite();
+    return NextResponse.json({ id, deleted: true });
+  }
+
   const product = await prisma.product
     .update({ where: { id }, data: { isActive: false } })
     .catch(() => null);

@@ -143,9 +143,10 @@ export default function ProductsPage() {
   const [formError, setFormError] = useState<string | null>(null);
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
   const [confirmHide, setConfirmHide] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const [query, setQuery] = useState("");
-  const [status, setStatus] = useState<StatusFilter>("ALL");
+  const [status, setStatus] = useState<StatusFilter>("LIVE");
   const [filterCategory, setFilterCategory] = useState("");
 
   const dirty = panelOpen && JSON.stringify(form) !== JSON.stringify(initialForm);
@@ -238,6 +239,9 @@ export default function ProductsPage() {
       onSuccess: () => {
         uploads.commit([form.imagePublicId, ...form.gallery.map((g) => g.publicId)]);
         setPanelOpen(false);
+        if (!form.isActive) setStatus("HIDDEN");
+        else if (!editing || !editing.isActive) setStatus("LIVE");
+        resetPage();
         refresh();
         setToast({
           message: !form.isActive ? "Saved as hidden draft" : editing ? "Product updated" : "Product is live",
@@ -261,6 +265,26 @@ export default function ProductsPage() {
       },
       onError: (msg) => {
         setConfirmHide(false);
+        setToast({ message: msg, type: "error" });
+      },
+    });
+  }
+
+  async function handlePermanentDelete() {
+    if (!editing || editing.isActive) return;
+    await mutate(`/api/products/${editing.id}?permanent=true`, {
+      method: "DELETE",
+      onSuccess: () => {
+        uploads.discard();
+        setConfirmDelete(false);
+        setPanelOpen(false);
+        setEditing(null);
+        refresh();
+        resetPage();
+        setToast({ message: "Product permanently deleted", type: "success" });
+      },
+      onError: (msg) => {
+        setConfirmDelete(false);
         setToast({ message: msg, type: "error" });
       },
     });
@@ -432,8 +456,13 @@ export default function ProductsPage() {
             <FormError message={formError} />
             <div className="flex items-center gap-2">
               {editing?.isActive && (
-                <button type="button" onClick={() => setConfirmHide(true)} className={btnDanger}>
-                  Remove
+                <button type="button" onClick={() => setConfirmHide(true)} disabled={saving || uploadsInFlight > 0} className={btnDanger}>
+                  Hide product
+                </button>
+              )}
+              {editing && !editing.isActive && (
+                <button type="button" onClick={() => setConfirmDelete(true)} disabled={saving || uploadsInFlight > 0} className={btnDanger}>
+                  Delete permanently
                 </button>
               )}
               <button
@@ -653,12 +682,22 @@ export default function ProductsPage() {
 
       <ConfirmDialog
         open={confirmHide}
-        title="Remove from website?"
+        title="Hide from website?"
         message="This hides the product from customers. It stays here under “Hidden”, so you can switch it back on any time."
-        confirmLabel="Remove"
+        confirmLabel="Hide product"
         busy={saving}
         onConfirm={handleHide}
         onCancel={() => setConfirmHide(false)}
+      />
+
+      <ConfirmDialog
+        open={confirmDelete}
+        title="Permanently delete product?"
+        message={`This permanently removes “${editing?.name ?? "this product"}” from your dashboard. It cannot be restored. Photos are kept so shared website images remain available.`}
+        confirmLabel="Delete permanently"
+        busy={saving}
+        onConfirm={handlePermanentDelete}
+        onCancel={() => setConfirmDelete(false)}
       />
 
       {toast && <Toast message={toast.message} type={toast.type} onDismiss={() => setToast(null)} />}
