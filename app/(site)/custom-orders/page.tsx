@@ -3,8 +3,10 @@ import { pageMetadata } from "@/lib/seo";
 import Image from "next/image";
 import { Plus } from "lucide-react";
 import { getCategories, getProducts } from "@/lib/queries";
-import { photographedIn, singularPiece, toCardProduct } from "@/lib/catalogue";
-import { cld } from "@/lib/cloudinary-url";
+import { singularPiece, toCardProduct } from "@/lib/catalogue";
+import { getSeasonalCampaign } from "@/lib/seasons";
+import SummerInspiration from "@/components/custom/SummerInspiration";
+import GiftInspiration from "@/components/custom/GiftInspiration";
 import { FAQS } from "@/lib/policies";
 import { buildCustomOrderMessage, buildWhatsAppLink } from "@/lib/whatsapp";
 import CustomOrderBuilder from "@/components/custom/CustomOrderBuilder";
@@ -41,11 +43,9 @@ export default async function CustomOrdersPage() {
   // Sequential: one Postgres connection at a time (see app/(site)/page.tsx).
   const categories = await getCategories();
   const products = await getProducts();
+  const campaign = getSeasonalCampaign();
 
   const pieces = categories.filter((c) => c.slug !== "custom-orders").map((c) => singularPiece(c.name));
-  const heroImage =
-    photographedIn(products, ["custom-orders", "gift-sets"])[0] ??
-    photographedIn(products, ["kids-dresses", "adult-sweaters", "baby-sweaters"])[0];
   const startingPoints = products
     .filter((p) => ["custom-orders", "gift-sets", "baby-sweaters"].includes(p.category.slug))
     .slice(0, 4)
@@ -81,20 +81,22 @@ export default async function CustomOrdersPage() {
               />
             </div>
           </div>
-          {heroImage && (
-            <div className="relative min-h-[26rem] lg:min-h-full">
-              <Image
-                src={cld(heroImage.imageUrl as string, "gallery")}
-                alt={heroImage.name}
-                fill
-                preload
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-cover"
-              />
-            </div>
-          )}
+          <div className="relative min-h-[26rem] lg:min-h-full">
+            <Image
+              src={campaign.hero.url}
+              quality={95}
+              alt={campaign.hero.alt}
+              fill
+              preload
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="object-cover"
+            />
+          </div>
         </div>
       </section>
+
+      {campaign.id === "summer" && <SummerInspiration />}
+      <GiftInspiration warmWeather={campaign.id === "summer"} />
 
       {/* What can be personalised */}
       <section className="bg-cream py-24 sm:py-32">

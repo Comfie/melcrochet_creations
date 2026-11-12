@@ -30,7 +30,7 @@ function isActive(pathname: string, href: string) {
   return href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export default function Nav() {
+export default function Nav({ seasonalLink = { href: "/collections#seasonal-edit", label: "Explore the seasonal edit" } }: { seasonalLink?: { href: string; label: string } }) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -92,7 +92,7 @@ export default function Nav() {
       {/* Announcement bar — factual service promise only. */}
       <div className="bg-ink text-cream/80" data-ga-location="announcement_bar">
         <p className="shell label flex h-9 items-center justify-center gap-2 text-center text-[0.625rem]">
-          <span>Handmade to order in South Africa</span>
+          <Link href={seasonalLink.href} className="text-cream hover:text-gold">{seasonalLink.label}</Link>
           <span aria-hidden="true" className="hidden text-gold sm:inline">&middot;</span>
           <a
             href={buildWhatsAppLink()}
@@ -255,6 +255,7 @@ export default function Nav() {
               })}
             </ol>
             <ul className="mt-8 flex flex-wrap gap-6">
+              <li><Link href={seasonalLink.href} onClick={closeAll} className="label text-gold">{seasonalLink.label}</Link></li>
               {SECONDARY.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href} onClick={closeAll} className="label text-cream/80 hover:text-cream">

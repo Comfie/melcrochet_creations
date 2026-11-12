@@ -6,6 +6,7 @@ import { getCachedCategories, getCachedProducts, getCategoriesWithProductCounts,
 import { COLLECTIONS, collectionForCategory, getCollectionBySlug } from "@/lib/collections";
 import { toCardProduct, type CatalogueProduct } from "@/lib/catalogue";
 import { buildCustomOrderMessage, buildWhatsAppLink } from "@/lib/whatsapp";
+import { getSeasonalCampaign, seasonalProducts } from "@/lib/seasons";
 import CategoryFilter from "@/components/CategoryFilter";
 import ProductCard from "@/components/ProductCard";
 import WhatsAppButton from "@/components/WhatsAppButton";
@@ -106,7 +107,10 @@ export default async function ProductsPage({ searchParams }: Props) {
       activeCollection?.tagline ??
       "Every piece is made to order by hand. Prices shown are per item — reach out on WhatsApp for custom sizes, colours, or bulk orders.";
 
-  const cards = products.map(toCardProduct);
+  const campaign = getSeasonalCampaign();
+  const seasonal = !category && !collection && !search ? seasonalProducts(products, campaign, products.length) : [];
+  const promotedIds = new Set(seasonal.map((p) => p.id));
+  const cards = [...seasonal, ...products.filter((p) => !promotedIds.has(p.id))].map(toCardProduct);
   const showInterstitial = !search && cards.length > INTERSTITIAL_AFTER;
 
   const breadcrumbs: BreadcrumbItem[] = [
@@ -132,6 +136,7 @@ export default async function ProductsPage({ searchParams }: Props) {
       {/* Editorial header */}
       <section className="bg-cream">
         <div className="shell pb-10 pt-14 sm:pt-20">
+          {!category && !collection && !search && <Link href={campaign.href} className="mb-6 inline-block border-b border-gold-deep pb-2 text-sm text-gold-deep">{campaign.cta}</Link>}
           <nav aria-label="Breadcrumb" className="label text-ink/65">
             <ol className="flex flex-wrap items-center gap-2">
               <li>

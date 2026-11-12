@@ -17,6 +17,7 @@ export default function CollectionFeature({
   aspect = "aspect-[3/4]",
   sizes,
   headingLevel = "h3",
+  href,
 }: {
   index: number;
   name: string;
@@ -27,12 +28,13 @@ export default function CollectionFeature({
   aspect?: string;
   sizes: string;
   headingLevel?: "h2" | "h3";
+  href?: string;
 }) {
   const Heading = headingLevel;
   const number = String(index).padStart(2, "0");
 
   return (
-    <Link href={`/products?collection=${slug}`} className="group block">
+    <Link href={href ?? `/products?collection=${slug}`} className="group block">
       <div className={`reveal-img relative w-full overflow-hidden ${aspect} ${imageUrl ? "bg-sand" : "bg-brown"}`}>
         {imageUrl ? (
           <>

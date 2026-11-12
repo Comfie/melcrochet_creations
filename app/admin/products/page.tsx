@@ -476,11 +476,12 @@ export default function ProductsPage() {
               hint="Shown on product cards. Portrait works best — natural light, plain cream or neutral background."
             >
               <ImageUpload
+                allowPrepared
                 key={form.imagePublicId || "empty"}
                 currentUrl={form.imageUrl || null}
                 onBusyChange={trackUpload}
-                onUploaded={(url, publicId) => {
-                  uploads.track(publicId);
+                onUploaded={(url, publicId, source) => {
+                  if (source !== "library") uploads.track(publicId);
                   setForm((prev) => ({ ...prev, imageUrl: url, imagePublicId: publicId }));
                   setFormError(null);
                 }}
@@ -491,6 +492,7 @@ export default function ProductsPage() {
               hint={`Aim for at least ${RECOMMENDED_PHOTOS} photos in total: the whole piece, a close-up of the stitches, and the piece being worn or used.`}
             >
               <GalleryUpload
+                allowPrepared
                 value={form.gallery}
                 onChange={(gallery) => updateForm("gallery", gallery)}
                 onBusyChange={trackUpload}

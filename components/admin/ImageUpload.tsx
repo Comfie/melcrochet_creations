@@ -2,12 +2,14 @@
 
 import { useState, useRef, type DragEvent } from "react";
 import { Camera, LoaderCircle, RefreshCw, Trash2 } from "lucide-react";
+import PreparedPhotoPicker from "@/components/admin/PreparedPhotoPicker";
 import { cld } from "@/lib/cloudinary-url";
 import { uploadImage, ACCEPTED_IMAGE_TYPES } from "@/lib/upload-image";
 
 interface ImageUploadProps {
   currentUrl?: string | null;
-  onUploaded: (url: string, publicId: string) => void;
+  onUploaded: (url: string, publicId: string, source?: "upload" | "library") => void;
+  allowPrepared?: boolean;
   /** Lets the form block Save while a photo is still on its way up. */
   onBusyChange?: (busy: boolean) => void;
   /** Shows a Remove button for optional photos. */
@@ -32,6 +34,7 @@ export default function ImageUpload({
   onRemove,
   shape = "portrait",
   emptyLabel = "Add photo",
+  allowPrepared = false,
 }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(currentUrl ?? null);
@@ -134,6 +137,12 @@ export default function ImageUpload({
           </div>
         )}
       </div>
+
+      {allowPrepared && <PreparedPhotoPicker disabled={uploading} onSelect={(photo) => {
+        setPreview(photo.url);
+        setError(null);
+        onUploaded(photo.url, photo.publicId, "library");
+      }} />}
 
       <input
         ref={inputRef}

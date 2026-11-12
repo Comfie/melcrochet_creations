@@ -2,11 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ImagePlus, LoaderCircle, Star, X } from "lucide-react";
+import PreparedPhotoPicker from "@/components/admin/PreparedPhotoPicker";
 import { cld } from "@/lib/cloudinary-url";
 import { uploadImage, ACCEPTED_IMAGE_TYPES } from "@/lib/upload-image";
 import type { ProductGalleryImage } from "@/lib/product-gallery";
 
 interface Props {
+  allowPrepared?: boolean;
   value: ProductGalleryImage[];
   onChange: (value: ProductGalleryImage[]) => void;
   max?: number;
@@ -21,7 +23,7 @@ interface Props {
  * Extra product photos. Picks several at once from the phone's library and
  * uploads them one after another, showing a placeholder per pending photo.
  */
-export default function GalleryUpload({ value, onChange, max = 6, onBusyChange, onMakeMain, onUploaded }: Props) {
+export default function GalleryUpload({ value, onChange, max = 6, onBusyChange, onMakeMain, onUploaded, allowPrepared = false }: Props) {
   const [pending, setPending] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -120,6 +122,13 @@ export default function GalleryUpload({ value, onChange, max = 6, onBusyChange, 
           </li>
         )}
       </ul>
+
+      {allowPrepared && <PreparedPhotoPicker label="Choose edited gallery photos" excludedIds={value.map((img) => img.publicId)} disabled={remaining <= 0 || pending > 0} onSelect={(photo) => {
+        if (valueRef.current.length >= max || valueRef.current.some((img) => img.publicId === photo.publicId)) return;
+        const next = [...valueRef.current, { url: photo.url, publicId: photo.publicId }];
+        valueRef.current = next;
+        onChange(next);
+      }} />}
 
       <input
         ref={inputRef}

@@ -1,0 +1,27 @@
+/** Selected examples of real work, independent of priced catalogue listings.
+ * Portfolio links go to custom enquiries until products are added in the dashboard.
+ * Studio backgrounds have been cleaned up on the explicitly named studio images.
+ */
+export type PortfolioPhoto = { url: string; name: string; alt: string };
+
+export const PORTFOLIO = {
+  orangeTop: { url: "https://res.cloudinary.com/pk8vhsyp/image/upload/v1794477601/melcrochet/portfolio/orange-top-lifestyle.jpg", name: "Orange and cream crochet top", alt: "Orange crochet top with cream ruffle trim, worn outdoors" },
+  redCardigan: { url: "https://res.cloudinary.com/pk8vhsyp/image/upload/v1794477602/melcrochet/portfolio/red-cardigan-lifestyle.jpg", name: "Red tie-front crochet cardigan", alt: "Red openwork crochet cardigan worn over a black dress" },
+  beigeHat: { url: "https://res.cloudinary.com/pk8vhsyp/image/upload/v1794477603/melcrochet/portfolio/beige-hat-lifestyle.jpg", name: "Beige ruffle crochet hat", alt: "Beige crochet hat with a fluffy cream ruffle brim, worn in a garden" },
+  ruffleHats: { url: "https://res.cloudinary.com/pk8vhsyp/image/upload/v1794477604/melcrochet/portfolio/ruffle-hat-range.jpg", name: "Ruffle hats in colour", alt: "Olive, mustard, orange and pink crochet ruffle hats together" },
+  stitchDetail: { url: "https://res.cloudinary.com/pk8vhsyp/image/upload/v1794477605/melcrochet/portfolio/mustard-hat-detail.jpg", name: "Mustard ruffle hat — stitch detail", alt: "Close-up of mustard crochet stitches, ruffled brim and MelCrochet label" },
+  pinkBag: { url: "https://res.cloudinary.com/pk8vhsyp/image/upload/v1794477673/melcrochet/portfolio/pink-chunky-handbag-studio.png", name: "Pink chunky crochet handbag", alt: "Pale pink chunky crochet handbag with integrated handles against a neutral studio background" },
+  floralDress: { url: "https://res.cloudinary.com/pk8vhsyp/image/upload/v1794477674/melcrochet/portfolio/orange-floral-dress-studio.png", name: "Orange floral crochet dress", alt: "Orange crochet dress with floral cups and a ruffled hem, shown on a mannequin against a neutral background" },
+  blackHat: { url: "https://res.cloudinary.com/pk8vhsyp/image/upload/v1794477676/melcrochet/portfolio/black-bucket-hat-studio.png", name: "Black crochet bucket hat", alt: "Black crochet bucket hat on a mannequin head against a neutral studio background" },
+  greyScarf: { url: "https://res.cloudinary.com/pk8vhsyp/image/upload/v1794477869/melcrochet/portfolio/grey-beanie-scarf-set-studio.png", name: "Grey beanie and scarf set", alt: "Light grey chunky crochet beanie and fringed scarf on a mannequin against a neutral studio background" },
+  navyScarf: { url: "https://res.cloudinary.com/pk8vhsyp/image/upload/v1794477870/melcrochet/portfolio/navy-beanie-scarf-set-studio.png", name: "Navy beanie and scarf set", alt: "Navy chunky crochet beanie and fringed scarf on a mannequin against a neutral studio background" },
+  greyHat: { url: "https://res.cloudinary.com/pk8vhsyp/image/upload/v1794477872/melcrochet/portfolio/grey-bucket-hat-studio.png", name: "Grey crochet bucket hat", alt: "Light grey crochet bucket hat on a mannequin head against a neutral studio background" },
+  twoToneHat: { url: "https://res.cloudinary.com/pk8vhsyp/image/upload/v1794477876/melcrochet/portfolio/grey-black-bucket-hat-studio.png", name: "Grey and black crochet bucket hat", alt: "Grey crochet bucket hat with a black brim on a mannequin head against a neutral studio background" },
+  pinkBikini: { url: "https://res.cloudinary.com/pk8vhsyp/image/upload/v1794478518/melcrochet/portfolio/pink-crochet-bikini-studio.png", name: "Pink crochet bikini", alt: "Pink two-piece crochet bikini with scalloped cups and tie straps on a neutral studio background" },
+  pinkBikiniOriginal: { url: "https://res.cloudinary.com/pk8vhsyp/image/upload/v1794478519/melcrochet/portfolio/pink-crochet-bikini-original.jpg", name: "Pink crochet bikini — original photo", alt: "Original photograph of the pink crochet bikini top and matching bottoms laid flat with their tie straps" },
+  redCardiganFlatlay: { url: "https://res.cloudinary.com/pk8vhsyp/image/upload/v1794480214/melcrochet/portfolio/red-cardigan-flatlay.png", name: "Red tie-front crochet cardigan", alt: "Red cropped openwork crochet cardigan laid upright on a neutral studio surface" },
+  floralDressBack: { url: "https://res.cloudinary.com/pk8vhsyp/image/upload/v1794480215/melcrochet/portfolio/floral-dress-back.png", name: "Orange floral dress — back", alt: "Back view of the orange crochet dress on a mannequin, showing crossed straps and a tied waist cord" },
+  colourblockDress: { url: "https://res.cloudinary.com/pk8vhsyp/image/upload/v1794480216/melcrochet/portfolio/colourblock-dress.png", name: "Orange and cream crochet dress", alt: "Orange and cream colour-block crochet dress on a mannequin against a neutral studio background" },
+  floralDressWorn: { url: "https://res.cloudinary.com/pk8vhsyp/image/upload/v1794480217/melcrochet/portfolio/floral-dress-worn-original.jpg", name: "Orange floral dress — on model (original)", alt: "Original photograph showing the orange floral crochet dress being worn" },
+  redCardiganAlternate: { url: "https://res.cloudinary.com/pk8vhsyp/image/upload/v1794480326/melcrochet/portfolio/red-cardigan-flatlay-alternate.png", name: "Red cardigan — alternate flat lay", alt: "Red tie-front openwork crochet cardigan on a neutral studio surface, rotated upright from the original photograph" },
+} satisfies Record<string, PortfolioPhoto>;

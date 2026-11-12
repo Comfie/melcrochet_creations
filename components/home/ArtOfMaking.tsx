@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { cld } from "@/lib/cloudinary-url";
+import type { PortfolioPhoto } from "@/lib/portfolio";
 
 const PRINCIPLES = [
   {
@@ -18,14 +18,16 @@ const PRINCIPLES = [
 
 /**
  * "The Art of Making" — craftsmanship as design philosophy. The texture
- * close-up is a real crop of the founder photo's chunky throw (zoomed with
- * CSS, not a different image); the wide frame is the studio handbags photo
- * and the last frame a live catalogue photo (see app/(site)/page.tsx).
+ * close-up follows the season: real hat stitches in warm weather, or a crop
+ * of the founder’s chunky throw in cooler months. The accompanying frames
+ * show real bags and accessories (see app/(site)/page.tsx).
  */
 export default function ArtOfMaking({
   images,
+  detail,
 }: {
   images: { url: string; name: string }[];
+  detail?: PortfolioPhoto;
 }) {
   const [first, second] = images;
 
@@ -57,15 +59,16 @@ export default function ArtOfMaking({
           <figure className="col-span-12 sm:col-span-7 lg:col-span-6">
             <div className="reveal-img relative aspect-[4/5] overflow-hidden">
               <Image
-                src="/melissa.jpg"
-                alt="Close-up of chunky hand-crocheted loops in cream, caramel and chocolate brown"
+                src={detail?.url ?? "/melissa.jpg"}
+                alt={detail?.alt ?? "Close-up of chunky hand-crocheted loops in cream, caramel and chocolate brown"}
                 fill
                 // Zoomed 2.4× below, so request the full-resolution source.
-                sizes="(max-width: 640px) 240vw, 120vw"
-                className="origin-[40%_85%] scale-[2.4] object-cover object-[40%_85%]"
+                sizes={detail ? "(max-width: 640px) 100vw, 50vw" : "(max-width: 640px) 240vw, 120vw"}
+                quality={95}
+                className={detail ? "object-cover" : "origin-[40%_85%] scale-[2.4] object-cover object-[40%_85%]"}
               />
             </div>
-            <figcaption className="label mt-4 text-cream/60">Detail &mdash; chunky throw, hand-looped</figcaption>
+            <figcaption className="label mt-4 text-cream/60">{detail?.name ?? "Detail — chunky throw, hand-looped"}</figcaption>
           </figure>
 
           <div className="col-span-12 flex flex-col gap-4 sm:col-span-5 sm:gap-6 lg:col-span-5 lg:col-start-8">
@@ -73,7 +76,8 @@ export default function ArtOfMaking({
               <figure className="lg:mt-24">
                 <div className="reveal-img relative aspect-[4/3] overflow-hidden">
                   <Image
-                    src={cld(first.url, "wide")}
+                    src={first.url}
+                    quality={95}
                     alt={first.name}
                     fill
                     sizes="(max-width: 640px) 100vw, 40vw"
@@ -87,7 +91,8 @@ export default function ArtOfMaking({
               <figure className="w-2/3 self-end">
                 <div className="reveal-img relative aspect-[3/4] overflow-hidden">
                   <Image
-                    src={cld(second.url, "portrait")}
+                    src={second.url}
+                    quality={95}
                     alt={second.name}
                     fill
                     sizes="(max-width: 640px) 66vw, 28vw"

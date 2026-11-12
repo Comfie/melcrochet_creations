@@ -1,10 +1,13 @@
 import { getCategories, getProducts, getPublishedBlogPosts, getTestimonials } from "@/lib/queries";
 import { COLLECTIONS } from "@/lib/collections";
-import { collectionLead, diversePhotographed, photographedIn, toCardProduct } from "@/lib/catalogue";
+import { collectionLead, toCardProduct } from "@/lib/catalogue";
 import type { Metadata } from "next";
 import { OrganizationJsonLd, WebSiteJsonLd } from "@/components/seo/JsonLd";
 import { pageMetadata } from "@/lib/seo";
+import { PORTFOLIO } from "@/lib/portfolio";
 import { SITE } from "@/lib/site";
+import SeasonalEdit from "@/components/home/SeasonalEdit";
+import { getSeasonalCampaign, seasonalProducts } from "@/lib/seasons";
 import Hero from "@/components/home/Hero";
 import Marquee from "@/components/home/Marquee";
 import CollectionsShowcase from "@/components/home/CollectionsShowcase";
@@ -39,69 +42,72 @@ export default async function Home() {
   const testimonials = await getTestimonials();
   const posts = await getPublishedBlogPosts();
 
+  const campaign = getSeasonalCampaign();
   const categoryName = new Map(categories.map((c) => [c.slug, c.name]));
-  const photographed = products.filter((p) => p.imageUrl);
-  const asImage = (p: { imageUrl: string | null; name: string; slug: string }) => ({
-    url: p.imageUrl as string,
-    name: p.name,
-    slug: p.slug,
+  const signature = seasonalProducts(products, campaign).map(toCardProduct);
+
+  const collectionOrder = campaign.id === "summer"
+    ? ["bags-accessories", "crochet-fashion", "gifts-custom"]
+    : campaign.id === "winter"
+      ? ["crochet-fashion", "home-living", "baby-kids", "gifts-custom", "bags-accessories"]
+      : ["crochet-fashion", "bags-accessories", "gifts-custom", "baby-kids", "home-living"];
+  const collections = collectionOrder.flatMap((slug) => COLLECTIONS.filter((c) => c.slug === slug)).map((c) => {
+    const base = {
+      slug: c.slug,
+      name: c.name,
+      tagline: c.tagline,
+      categories: c.categorySlugs.flatMap((slug) => categoryName.get(slug) ?? []),
+      imageUrl: collectionLead(products, c)?.imageUrl ?? null,
+    };
+    if (campaign.id !== "summer") return base;
+    if (c.slug === "crochet-fashion") return {
+      ...base, name: "Summer Crochet", tagline: "Bikinis, tops, dresses and hats, made for your summer.",
+      categories: ["Bikinis", "Tops", "Dresses", "Hats"], imageUrl: PORTFOLIO.orangeTop.url, href: "/summer-collection",
+    };
+    if (c.slug === "bags-accessories") return { ...base, imageUrl: PORTFOLIO.pinkBag.url };
+    return { ...base, imageUrl: PORTFOLIO.ruffleHats.url, href: "/custom-orders#gift-inspiration" };
   });
 
-  const featured = products.filter((p) => p.featured);
-  const signature = (featured.length > 0 ? featured : photographed).slice(0, 8).map(toCardProduct);
-
-  const heroInset = featured.find((p) => p.imageUrl) ?? photographed[0];
-
-  const collections = COLLECTIONS.map((c) => ({
-    slug: c.slug,
-    name: c.name,
-    tagline: c.tagline,
-    categories: c.categorySlugs.flatMap((slug) => categoryName.get(slug) ?? []),
-    imageUrl: collectionLead(products, c)?.imageUrl ?? null,
-  }));
-
-  // Craft collage: the studio photo of the black and navy handbags (static,
-  // public/craft-handbags.jpg), then an accessory from the catalogue —
-  // scrunchies first, so a bag doesn't appear twice in the same section.
-  const craftAccessory =
-    photographedIn(products, ["scrunchies"])[0] ?? photographedIn(products, ["baskets", "hats"])[0];
   const craftImages = [
     { url: "/craft-handbags.jpg", name: "Handbags in black and navy, with chain straps", slug: "" },
-    ...(craftAccessory ? [asImage(craftAccessory)] : []),
+    campaign.id === "summer" ? PORTFOLIO.pinkBag : PORTFOLIO.greyScarf,
   ];
 
-  const bespoke =
-    photographedIn(products, ["custom-orders", "gift-sets"])[0] ??
-    photographedIn(products, ["kids-dresses", "adult-sweaters"])[0];
-
-  const studio = diversePhotographed(products, 6).map(asImage);
+  const studio = [
+    PORTFOLIO.orangeTop,
+    PORTFOLIO.redCardigan,
+    PORTFOLIO.beigeHat,
+    PORTFOLIO.ruffleHats,
+    PORTFOLIO.pinkBag,
+    campaign.id === "summer" ? PORTFOLIO.pinkBikini : PORTFOLIO.greyScarf,
+  ];
 
   return (
     <>
       <OrganizationJsonLd />
       <WebSiteJsonLd />
 
-      <Hero inset={heroInset ? { url: heroInset.imageUrl as string, name: heroInset.name } : null} />
-      <Marquee items={categories.map((c) => c.name)} />
+      <Hero campaign={campaign} />
+      <Marquee items={campaign.marquee} />
+      <SeasonalEdit campaign={campaign} preview />
 
       {/* Brand statement */}
       <section aria-label="About MelCrochet" className="bg-cream">
         <div className="shell grid gap-10 py-24 sm:py-32 lg:grid-cols-12">
           <p className="label text-gold-deep lg:col-span-3">Handmade &middot; South Africa</p>
           <p className="reveal font-display text-[clamp(1.75rem,1.2rem+2.2vw,3.5rem)] font-light leading-[1.15] lg:col-span-9">
-            MelCrochet Gifted Hands makes contemporary crochet — fashion,
-            blankets, bags and gifts — <span className="italic text-brown">slowly, carefully and entirely by hand.</span>{" "}
+            MelCrochet Gifted Hands makes contemporary crochet — {campaign.id === "summer" ? "tops, dresses, hats, bags and gifts" : "fashion, blankets, bags and gifts"} — <span className="italic text-brown">slowly, carefully and entirely by hand.</span>{" "}
             Each piece is made to order, which means it is made for you.
           </p>
         </div>
       </section>
 
-      <CollectionsShowcase collections={collections} />
       <SignaturePieces products={signature} />
-      <ArtOfMaking images={craftImages} />
+      <CollectionsShowcase collections={collections} />
+      <ArtOfMaking images={craftImages} detail={campaign.id === "summer" ? PORTFOLIO.stitchDetail : undefined} />
       <FounderFeature />
       <LessonsFeature />
-      <BespokeFeature image={bespoke ? asImage(bespoke) : null} />
+      <BespokeFeature image={campaign.id === "summer" ? PORTFOLIO.floralDress : campaign.hero} />
 
       {testimonials.length > 0 && (
         <section aria-labelledby="testimonials-title" className="bg-cream py-24 sm:py-32">

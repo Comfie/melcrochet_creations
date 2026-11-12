@@ -7,6 +7,8 @@ import { collectionLead } from "@/lib/catalogue";
 import { cld } from "@/lib/cloudinary-url";
 import CategoryTile from "@/components/CategoryTile";
 import { ButtonLink } from "@/components/ui/Button";
+import SeasonalEdit from "@/components/home/SeasonalEdit";
+import { getSeasonalCampaign } from "@/lib/seasons";
 import OrderingInfo from "@/components/OrderingInfo";
 
 export const revalidate = 60;
@@ -22,6 +24,7 @@ export default async function CollectionsPage() {
   // Sequential: one Postgres connection at a time (see app/(site)/page.tsx).
   const categories = await getCategories();
   const products = await getProducts();
+  const campaign = getSeasonalCampaign();
 
   return (
     <>
@@ -29,8 +32,9 @@ export default async function CollectionsPage() {
         <div className="shell py-20 sm:py-28">
           <p className="label text-gold">The Collections</p>
           <h1 className="mt-6 max-w-5xl text-hero">
-            Crochet, considered — <span className="italic text-gold">in five chapters.</span>
+            Crochet for the season.<br /><span className="italic text-gold">Made for you.</span>
           </h1>
+          <a href="#seasonal-edit" className="mt-8 inline-block border-b border-gold py-3 text-gold">Start with {campaign.label.toLowerCase()}</a>
           <nav aria-label="Jump to collection" className="mt-14 border-t border-cream/15">
             <ol className="flex flex-col sm:flex-row sm:flex-wrap">
               {COLLECTIONS.map((c, i) => (
@@ -45,6 +49,8 @@ export default async function CollectionsPage() {
           </nav>
         </div>
       </section>
+
+      <SeasonalEdit campaign={campaign} />
 
       {COLLECTIONS.map((collection, i) => {
         const lead = collectionLead(products, collection);

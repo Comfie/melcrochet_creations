@@ -2,7 +2,6 @@ import Image from "next/image";
 import { MessageCircle } from "lucide-react";
 import { ButtonLink, TextLink } from "@/components/ui/Button";
 import { buildCustomOrderMessage, buildWhatsAppLink } from "@/lib/whatsapp";
-import { cld } from "@/lib/cloudinary-url";
 
 const STEPS = [
   { title: "Share your idea", body: "Tell us the piece, colours and size you have in mind on WhatsApp." },
@@ -54,16 +53,18 @@ export default function BespokeFeature({ image }: { image: { url: string; name: 
               How custom orders work
             </TextLink>
           </div>
+          <TextLink href="/custom-orders#gift-inspiration" className="mt-8 text-cream">Explore custom gift ideas</TextLink>
         </div>
 
         {image && (
-          <div className="relative min-h-[28rem] sm:min-h-[36rem]">
+          <div className="relative min-h-[28rem] bg-cream sm:min-h-[36rem]">
             <Image
-              src={cld(image.url, "gallery")}
+              src={image.url}
+              quality={95}
               alt={image.name}
               fill
               sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-cover"
+              className="object-contain"
             />
             <p className="label absolute bottom-5 left-5 bg-brown/90 px-3 py-2 text-cream">{image.name}</p>
           </div>

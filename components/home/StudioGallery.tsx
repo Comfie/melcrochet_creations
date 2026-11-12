@@ -2,18 +2,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { InstagramIcon } from "@/components/SocialIcons";
 import { ButtonLink } from "@/components/ui/Button";
-import { cld } from "@/lib/cloudinary-url";
 import { SITE } from "@/lib/site";
 
 /**
- * Instagram-inspired gallery built from MelCrochet's own catalogue photos
- * (there is no Instagram API integration). Tiles link to the products they
- * show; the call to action links to the real Instagram profile.
+ * Instagram-inspired gallery built from MelCrochet's portfolio and catalogue photos
+ * (there is no Instagram API integration). Priced pieces link to their products; portfolio work links to custom enquiries; the call to action links to the real Instagram profile.
  */
 export default function StudioGallery({
   items,
 }: {
-  items: { url: string; name: string; slug: string }[];
+  items: { url: string; name: string; slug?: string; alt?: string }[];
 }) {
   if (items.length === 0) return null;
 
@@ -35,11 +33,12 @@ export default function StudioGallery({
 
         <ul className="mt-14 grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-6">
           {items.map((item, i) => (
-            <li key={item.slug} className={i % 2 === 1 ? "lg:mt-10" : ""}>
-              <Link href={`/products/${item.slug}`} className="group relative block aspect-square overflow-hidden bg-sand">
+            <li key={item.url} className={i % 2 === 1 ? "lg:mt-10" : ""}>
+              <Link href={item.slug ? `/products/${item.slug}` : "/custom-orders#request"} className="group relative block aspect-square overflow-hidden bg-sand">
                 <Image
-                  src={cld(item.url, "card")}
-                  alt={item.name}
+                  src={item.url}
+                  quality={95}
+                  alt={item.alt ?? item.name}
                   fill
                   sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
                   className="object-cover transition-transform duration-[1200ms] ease-[var(--ease-editorial)] group-hover:scale-110"

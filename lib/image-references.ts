@@ -1,9 +1,10 @@
+import { isPreparedPhoto } from "@/lib/prepared-photos";
 import prisma from "@/lib/prisma";
 import { parseGallery } from "@/lib/product-gallery";
 
 /**
  * Which of the given Cloudinary public IDs are still used by a product
- * (main photo or gallery), testimonial or blog cover. Anything referenced
+ * (main photo or gallery), testimonial, blog cover or permanent photo library. Anything referenced
  * must never be deleted, whatever the browser asks for.
  */
 export async function referencedPublicIds(publicIds: string[]): Promise<Set<string>> {
@@ -18,7 +19,7 @@ export async function referencedPublicIds(publicIds: string[]): Promise<Set<stri
     prisma.blogPost.findMany({ where: { coverImagePublicId: { in: publicIds } }, select: { coverImagePublicId: true } }),
   ]);
 
-  const used = new Set<string>();
+  const used = new Set(publicIds.filter(isPreparedPhoto));
   for (const row of [...mains, ...testimonials]) if (row.imagePublicId) used.add(row.imagePublicId);
   for (const row of posts) if (row.coverImagePublicId) used.add(row.coverImagePublicId);
   for (const row of galleries) {

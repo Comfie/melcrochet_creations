@@ -1,3 +1,4 @@
+import { isPreparedPhoto } from "@/lib/prepared-photos";
 import { v2 as cloudinary } from "cloudinary";
 
 export async function uploadImageBuffer(
@@ -24,6 +25,8 @@ export async function uploadImageBuffer(
 }
 
 export async function deleteImage(publicId: string): Promise<void> {
+  // Shared website/library assets survive product changes and cancelled forms.
+  if (isPreparedPhoto(publicId)) return;
   await cloudinary.uploader.destroy(publicId);
 }
 

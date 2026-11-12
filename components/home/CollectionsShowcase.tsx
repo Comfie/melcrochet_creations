@@ -8,6 +8,7 @@ export type ShowcaseCollection = {
   tagline: string;
   categories: string[];
   imageUrl: string | null;
+  href?: string;
 };
 
 // Magazine-style asymmetric layout: one tall lead image, staggered offsets.
@@ -28,9 +29,9 @@ export default function CollectionsShowcase({ collections }: { collections: Show
             index="01"
             eyebrow="Curated Collections"
             id="collections-title"
-            title={<>Five collections, <span className="italic">every piece by hand.</span></>}
+            title={<>More to discover, <span className="italic">all made by hand.</span></>}
           >
-            Every MelCrochet category, gathered into collections — from crochet
+            Explore our wider collections — from crochet
             fashion to pieces for the home and the little ones in it.
           </SectionHeading>
           <TextLink href="/collections" className="shrink-0 text-ink">
@@ -47,6 +48,7 @@ export default function CollectionsShowcase({ collections }: { collections: Show
                   index={i + 1}
                   name={c.name}
                   slug={c.slug}
+                  href={c.href}
                   tagline={c.tagline}
                   categories={c.categories}
                   imageUrl={c.imageUrl}

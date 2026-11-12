@@ -1,13 +1,18 @@
+import { getSeasonalCampaign } from "@/lib/seasons";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { GoogleAnalyticsTag } from "@/components/analytics/GoogleAnalytics";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 
+// Refresh calendar-driven merchandising even on otherwise static public pages.
+export const revalidate = 3600;
+
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
+  const campaign = getSeasonalCampaign();
   return (
     <>
-      <Nav />
+      <Nav seasonalLink={{ href: campaign.href, label: campaign.cta }} />
       <main id="main">{children}</main>
       <Footer />
       <WhatsAppButton
