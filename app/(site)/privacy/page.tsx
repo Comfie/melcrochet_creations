@@ -8,15 +8,15 @@ import { buildWhatsAppLink } from "@/lib/whatsapp";
  * Privacy notice (POPIA). Describes only what the site actually does — keep
  * it in step with the code: the contact form (app/api/enquiries), WhatsApp
  * ordering (lib/whatsapp.ts), Google Analytics (lib/analytics.ts, only when
- * NEXT_PUBLIC_GA_MEASUREMENT_ID is set), YouTube embeds and hosting. Update
- * PRIVACY_UPDATED whenever a practice changes.
+ * NEXT_PUBLIC_GA_MEASUREMENT_ID is set), Vercel Web Analytics, YouTube embeds
+ * and hosting. Update PRIVACY_UPDATED whenever a practice changes.
  */
-const PRIVACY_UPDATED = { iso: "2026-10-14", label: "14 October 2026" } as const;
+const PRIVACY_UPDATED = { iso: "2026-11-19", label: "19 November 2026" } as const;
 
 export const metadata: Metadata = pageMetadata({
   title: "Privacy Notice",
   description:
-    "How MelCrochet Gifted Hands collects, uses and protects your personal information — contact form, WhatsApp orders, Google Analytics and your POPIA rights.",
+    "How MelCrochet Gifted Hands collects, uses and protects your personal information — contact form, WhatsApp orders, website analytics and your POPIA rights.",
   path: "/privacy",
 });
 
@@ -98,6 +98,11 @@ const SECTIONS: Section[] = [
     body: (
       <>
         <p>
+          We use Vercel Web Analytics to count visitors and page views and see which countries
+          visitors come from, which sites referred them and what devices they use. Vercel reports
+          this data in aggregate and measures visits without using cookies.
+        </p>
+        <p>
           The shop itself does not need cookies to work. Google Analytics sets first-party cookies
           (named <code>_ga</code> and <code>_ga_…</code>) to recognise returning visits. We have
           configured it with advertising features, ad personalisation and Google signals switched
@@ -139,9 +144,9 @@ const SECTIONS: Section[] = [
         <p>
           We don&apos;t sell or rent your personal information. We share it only with the service
           providers that run this website and our ordering, and only for that purpose: website
-          hosting (Vercel), our database host (Railway), image hosting (Cloudinary), Google
-          Analytics (Google), WhatsApp (Meta), and the courier you choose when we arrange delivery
-          of your order.
+          hosting and Web Analytics (Vercel), our database host (Railway), image hosting
+          (Cloudinary), Google Analytics (Google), WhatsApp (Meta), and the courier you choose
+          when we arrange delivery of your order.
         </p>
         <p>
           Some of these providers store information on servers outside South Africa. We use

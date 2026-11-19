@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/next";
 import { getSeasonalCampaign } from "@/lib/seasons";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
@@ -22,6 +23,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
         dataAttributes={{ "data-ga-location": "floating_button" }}
       />
       <GoogleAnalyticsTag />
+      <Analytics />
     </>
   );
 }
